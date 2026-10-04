@@ -14,8 +14,11 @@ IMPLEMENTATION_IN_PROGRESS   Flux working on learner-app + evidence
 IMPLEMENTATION_QA            Argus reviewing 02-* evidence + code
 IMPLEMENTATION_APPROVED      Atlas approved (requires Argus PASS)
 CONTENT_IN_PROGRESS          Lumen authoring 04-* + lessons/
-CONTENT_QA                   Argus reviewing the draft
-CONTENT_APPROVED             Atlas approved (requires Argus PASS)
+CONTENT_QA                   dual review in flight — Argus technical QA
+                             AND Pedagogy Reviewer, same CONTENT_REVISION
+CONTENT_APPROVED             Atlas approved (requires Argus PASS AND
+                             Pedagogy PEDAGOGY_PASS/PASS_WITH_NOTES on
+                             the same revision fingerprint)
 SITE_IN_PROGRESS             Forge integrating into web/**
 SITE_QA                      Argus reviewing site implementation
 SITE_APPROVED                Atlas approved (requires Argus PASS)
@@ -37,10 +40,10 @@ BLOCKED_FOR_HUMAN            a §7 human gate was hit; only THE HUMAN unblocks
 | `IMPLEMENTATION_QA` | `BLOCKED` | Argus `BLOCKED` |
 | `IMPLEMENTATION_APPROVED` | `CONTENT_IN_PROGRESS` | Lumen accepts evidence |
 | `CONTENT_IN_PROGRESS` | `CONTENT_QA` | Lumen completes draft set |
-| `CONTENT_QA` | `CONTENT_APPROVED` | Argus `PASS` + Atlas approval |
-| `CONTENT_QA` | `CONTENT_IN_PROGRESS` | Argus `FAIL` → Lumen remediates |
-| `CONTENT_QA` | `IMPLEMENTATION_IN_PROGRESS` | Argus `FAIL` + Atlas rules defect belongs to Flux |
-| `CONTENT_QA` | `BLOCKED` | Argus `BLOCKED` |
+| `CONTENT_QA` | `CONTENT_APPROVED` | Argus `PASS` **and** Pedagogy `PEDAGOGY_PASS`/`PEDAGOGY_PASS_WITH_NOTES` (same `CONTENT_REVISION`) + Atlas approval |
+| `CONTENT_QA` | `CONTENT_IN_PROGRESS` | Argus `FAIL` **or** Pedagogy `PEDAGOGY_REVISION_REQUIRED` → Lumen remediates (both reviewers re-review the new revision) |
+| `CONTENT_QA` | `IMPLEMENTATION_IN_PROGRESS` | either reviewer's finding + Atlas rules defect belongs to Flux |
+| `CONTENT_QA` | `BLOCKED` | Argus `BLOCKED` or Pedagogy `PEDAGOGY_BLOCKED` |
 | `CONTENT_APPROVED` | `SITE_IN_PROGRESS` | Atlas issues `06-site-handoff.md`; Forge accepts |
 | `SITE_IN_PROGRESS` | `SITE_QA` | Forge completes integration + build |
 | `SITE_QA` | `SITE_APPROVED` | Argus `PASS` + Atlas approval |
@@ -53,9 +56,12 @@ BLOCKED_FOR_HUMAN            a §7 human gate was hit; only THE HUMAN unblocks
 | `BLOCKED_FOR_HUMAN` | `MILESTONE_PLANNED` or prior valid state | THE HUMAN resolves and restates scope |
 
 **Illegal:** any transition skipping a QA stage, any `*_APPROVED` without
-the matching Argus `PASS` artifact, any transition issued by a role that
-doesn't own it (Atlas owns forward transitions; Argus issues QA returns;
-owners mark their own `*_IN_PROGRESS`).
+the required review `PASS` artifacts (stage 6 requires **both** Argus and
+Pedagogy Reviewer on the same `CONTENT_REVISION`), any approval issued
+against a stale revision fingerprint, any transition issued by a role
+that doesn't own it (Atlas owns forward transitions; Argus and the
+Pedagogy Reviewer issue QA returns; owners mark their own
+`*_IN_PROGRESS`).
 
 ## Remediation counter
 

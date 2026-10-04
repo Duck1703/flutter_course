@@ -33,9 +33,10 @@ two defects to verify remediation routing.
 | 5 | Argus | Re-review → `PASS` (record the remediation) | `03-*` v2 | Re-QA path |
 | 6 | Atlas | Issue `IMPLEMENTATION_APPROVED` — **first verify the negative**: attempt the transition with a FAIL artifact → must be refused by the contract | `00-status.md` log | "no approval without PASS" enforcement |
 | 7 | Lumen | Write `04-content-draft.md` + one toy `lessons/index.md` skeleton describing the docs change; **inject defect B**: one unexplained first-appearance term | `04-*`, `lessons/` | Draft contract |
-| 8 | Argus | Content QA → catch defect B (G7 violation) → `FAIL` | `05-*` v1 | First-appearance gate works |
-| 9 | Lumen | Remediate → resubmit; Argus `PASS` | `05-*` v2 | Loop closes |
-| 10 | Atlas | `CONTENT_APPROVED`; write `06-site-handoff.md` | `06-*` | Approval + handoff mechanics |
+| 8 | Argus | Content QA (technical) → catch defect B (G7 violation) → `FAIL` | `05-content-qa.md` v1 | First-appearance gate works |
+| 8b | Pedagogy Reviewer | Independent review of the same `CONTENT_REVISION` — **blind** (must not read `05-content-qa.md` first); catch defect C: injected lesson whose only "teaching" is a pasted snippet with no mental model (P3/P7 violation) → `PEDAGOGY_REVISION_REQUIRED` | `05-pedagogy-review.md` v1 | Pedagogy instruments work; blindness recorded |
+| 9 | Lumen | Remediate both findings → resubmit new revision; **both** reviewers re-review the new fingerprint; Argus `PASS`, Pedagogy `PEDAGOGY_PASS` | `05-*` v2 (both) | Same-revision + staleness loop closes |
+| 10 | Atlas | `CONTENT_APPROVED` — **first verify the negative**: attempt approval while only Argus PASS exists → refused (dual-PASS rule); write `06-site-handoff.md` | `06-*` | Dual-PASS approval + handoff mechanics |
 | 11 | Forge | Write integration report **without touching `web/`** — the smoke test simulates the site stage (documented; real site integration is out of smoke scope) | report section | Handoff consumption, boundary respect |
 | 12 | Argus | Site QA on the simulated integration → `PASS` (noting simulation scope) | `07-*` | Stage-9 mechanics |
 | 13 | Atlas | `SITE_APPROVED` → write `08-final-verdict.md` → **verify no canonical state was touched** | `08-*` | Final verdict chain + isolation |
@@ -44,13 +45,16 @@ two defects to verify remediation routing.
 
 - [ ] Every artifact exists on disk in order (01→08 + status ledger)
 - [ ] Defect A caught at implementation QA (not by Atlas, not by luck)
-- [ ] Defect B caught at content QA
+- [ ] Defect B caught at Argus content QA; defect C caught at Pedagogy Review
 - [ ] `IMPLEMENTATION_APPROVED` was refused while only FAIL existed
+- [ ] `CONTENT_APPROVED` was refused while only the Argus PASS existed (dual-PASS rule)
+- [ ] Both stage-6 reviews name the same `CONTENT_REVISION` fingerprint
+- [ ] The second reviewer did not read the first's artifact before its verdict
 - [ ] Lumen never started before `IMPLEMENTATION_APPROVED`
 - [ ] Forge consumed only approved material
 - [ ] Zero writes outside `AI_HANDOFF/work/smoke/MX/`
 - [ ] `00-status.md` shows a legal transition chain per `STATE-MACHINE.md`
-- [ ] Final verdict cites all three PASS artifacts
+- [ ] Final verdict cites all required PASS artifacts
 
 ## Failure handling
 

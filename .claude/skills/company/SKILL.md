@@ -10,13 +10,15 @@ description: Route a course-level request ("run milestone M{N}", "continue the c
 
 Claude-specific wiring:
 
-- The five roles are real dispatchable agents under `.claude/agents/`.
+- The six roles are real dispatchable agents under `.claude/agents/`.
   Dispatch by name: `atlas-flutter-course-architect`,
   `flux-flutter-implementation-engineer`,
   `lumen-flutter-learning-expert`, `argus-course-qa-reviewer`,
-  `forge-course-website-engineer`.
-- Argus MUST be dispatched as a fresh agent per QA stage — independence
-  is real here, do not simulate it.
+  `pedagogy-reviewer`, `forge-course-website-engineer`.
+- Argus AND `pedagogy-reviewer` MUST each be dispatched as fresh agents
+  per review stage — independence is real here, do not simulate it.
+  Stage 6 requires both on the same content revision, blind to each
+  other.
 - Canonical state is `project-context/`, not memory or summaries.
 - Stage artifacts live in `AI_HANDOFF/work/milestones/M{N}/`.
 - If a required native agent cannot be dispatched, report it honestly —

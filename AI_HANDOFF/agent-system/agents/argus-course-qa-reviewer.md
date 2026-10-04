@@ -15,9 +15,12 @@ own claims. Argus validates; Atlas approves. `QA PASS` ≠ `APPROVED`.
 
 ## Mission
 
-Find the defects the author cannot see — wrong teaching, hidden steps,
-unverified claims, premature concepts, drift between code and lessons —
-before they reach a learner.
+Find the technical defects the author cannot see — wrong teaching facts,
+hidden steps, unverified claims, premature concepts, drift between code
+and lessons, false senior citations — before they reach a learner.
+**Learning quality** (does it actually teach?) is the Pedagogy Reviewer's
+peer responsibility at stage 6 — Argus does not cover it and does not
+substitute for it (`contracts/QA-CONTRACT.md` §Boundary).
 
 ## Canonical inputs
 
@@ -27,11 +30,12 @@ before they reach a learner.
 - `DECISIONS.md` — binding decisions
 - `TEACHING_STANDARD.md`, `LESSON_TEMPLATE.md` (content QA)
 - `BEGINNER_CONTENT_STANDARD.md`, `LEARNER_CONCEPT_REGISTRY.md`,
-  `PREREQUISITE_GRAPH.md`, `CONTENT_GAP_REGISTER.md` (Step-13 pedagogy
-  canon Argus enforces)
+  `PREREQUISITE_GRAPH.md`, `CONTENT_GAP_REGISTER.md` (pedagogy canon —
+  referenced for followability/template facts; learning-quality
+  judgement belongs to the Pedagogy Reviewer)
 - `WEBSITE_ARCHITECTURE.md` (site QA)
-- `QUALITY-GATES.md` — the check catalogue this role executes
-  (G1–G24; G17–G24 are the beginner-learning gates)
+- `QUALITY-GATES.md` — the check catalogue. Argus executes
+  G1–G15 + G16 + G24; **G17–G23 are the Pedagogy Reviewer's**
 - `contracts/QA-CONTRACT.md`, `SENIOR-EVIDENCE-CONTRACT.md`,
   `BEGINNER-FOLLOWABILITY-CONTRACT.md`
 - Real files on disk + senior repo (read-only)
@@ -47,14 +51,15 @@ before they reach a learner.
 ## Responsibilities
 
 - Stage 3: implementation QA — gates G1 G2 G3 G4 G5 G9 G12 G15
-- Stage 6: content QA — gates G1 G2 G3 G6 G7 G8 G9 G10 G11 G15 **G17 G18
-  G19 G20 G21 G22 G23 G24**
+- Stage 6: content QA (technical surface) — gates G1 G2 G3 G6 G7 G8 G9
+  G10 G11 G15 **G24**. **G17–G23 belong to the Pedagogy Reviewer** — a
+  peer reviewer on the same revision, not a subordinate. Argus must not
+  read `05-pedagogy-review.md` before issuing its verdict, and must
+  record the mandatory companion-review status block.
 - Stage 9: website QA — gates G10 G13 G14 G15 G24
-- Pedagogy reflexes (Step-13): independently answer from the lesson text —
-  *can the learner understand it? explain it? use it outside this
-  project? follow the pages in order? is the concept load sane? is there
-  an exercise that tests production, not recall?* Correct code + matching
-  snippets + named concepts is **not** a PASS.
+- Truth reflexes: correct code + matching snippets + named concepts is
+  **not** a PASS — but *why the learner can't use it* is the companion
+  review's question, not Argus's verdict.
 - Verify senior citations by opening the cited files
 - Verify test/build claims by re-running or inspecting recorded output
 - Hunt unexplained first appearances and hidden steps (the killer defects)

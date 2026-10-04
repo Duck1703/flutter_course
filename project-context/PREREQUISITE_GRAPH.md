@@ -2,7 +2,7 @@
 
 Maps the ACTUAL course (not a generic Flutter graph). A lesson may not use a
 concept before its teaching node. Maintained by Atlas at each milestone brief;
-Argus verifies edges at QA (gate G18). Status column lives in
+the Pedagogy Reviewer verifies edges at QA (gate G18). Status column lives in
 `LEARNER_CONCEPT_REGISTRY.md`.
 
 ## Foundation chain

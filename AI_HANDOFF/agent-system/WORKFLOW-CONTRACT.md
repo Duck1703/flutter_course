@@ -30,8 +30,8 @@
 | 3 | Implementation QA | Argus | `03-implementation-qa.md` | Stage 2 artifact exists | Verdict `PASS` → 4; `FAIL` → back to 2; `BLOCKED` → Atlas |
 | 4 | Implementation approval | Atlas | verdict recorded in `03-*` + `00-status.md` | Argus `PASS` | `IMPLEMENTATION_APPROVED`; state = `IMPLEMENTATION_APPROVED` |
 | 5 | Content authoring | Lumen | `04-content-draft.md` + `lessons/*.md` | `IMPLEMENTATION_APPROVED` | Draft complete per `CONTENT-HANDOFF-CONTRACT.md` |
-| 6 | Content QA | Argus | `05-content-qa.md` | Stage 5 artifacts exist | `PASS` → 7; `FAIL` → back to 5; `BLOCKED` → Atlas |
-| 7 | Content approval | Atlas | verdict recorded; state = `CONTENT_APPROVED` | Argus `PASS` | `CONTENT_APPROVED` issued |
+| 6 | Content review (dual, independent) | Argus **and** Pedagogy Reviewer | `05-content-qa.md` **and** `05-pedagogy-review.md` — same `CONTENT_REVISION` | Stage 5 artifacts exist | Argus `PASS` **and** Pedagogy `PEDAGOGY_PASS`/`PEDAGOGY_PASS_WITH_NOTES` → 7; either `FAIL`/`PEDAGOGY_REVISION_REQUIRED` → back to 5; `BLOCKED`/`PEDAGOGY_BLOCKED` → Atlas |
+| 7 | Content approval | Atlas | verdict recorded; state = `CONTENT_APPROVED` | Both stage-6 reviews PASS on the **same revision fingerprint** | `CONTENT_APPROVED` issued |
 | 8 | Site implementation | Forge | `web/**` changes + report section | `CONTENT_APPROVED` + `06-site-handoff.md` exists (Atlas issues handoff from approved draft) | `npm run build` passes; routes/sidebar integrated |
 | 9 | Website QA | Argus | `07-site-qa.md` | Stage 8 done | `PASS` → 10; `FAIL` → back to 8; `BLOCKED` → Atlas |
 | 10 | Site approval | Atlas | verdict recorded; state = `SITE_APPROVED` | Argus `PASS` | `SITE_APPROVED` issued |
@@ -47,14 +47,31 @@ the approved-content→website contract), not by Lumen or Forge.
 | Argus | `PASS` | Zero unresolved blocking findings. Notes allowed (non-blocking). |
 | Argus | `FAIL` | ≥1 unresolved blocking finding; artifact returns to owner. |
 | Argus | `BLOCKED` | Cannot review (missing input, missing evidence, tooling). Not a failure of the artifact. |
-| Atlas | `IMPLEMENTATION_APPROVED` / `CONTENT_APPROVED` / `SITE_APPROVED` | Stage approved — **only** after matching Argus `PASS`. |
+| Pedagogy Reviewer | `PEDAGOGY_PASS` | No unresolved learning findings above NOTE. |
+| Pedagogy Reviewer | `PEDAGOGY_PASS_WITH_NOTES` | Findings limited to NOTE / minor FRICTION — approvable at Atlas's recorded judgement. |
+| Pedagogy Reviewer | `PEDAGOGY_REVISION_REQUIRED` | ≥1 unresolved LEARNING_RISK or PEDAGOGICAL_BLOCKER; content returns to Lumen. |
+| Pedagogy Reviewer | `PEDAGOGY_BLOCKED` | Cannot review (missing input/revision). Not a failure of the content. |
+| Atlas | `IMPLEMENTATION_APPROVED` / `CONTENT_APPROVED` / `SITE_APPROVED` | Stage approved — **only** after the required review `PASS` verdicts. |
 | Atlas | `CHANGES_REQUIRED` | Atlas accepts a FAIL routing or adds requirements; returns artifact to owner. |
 | Atlas | `MILESTONE_COMPLETE` | Final verdict. Requires all three `*_APPROVED`. |
 | Any | `BLOCKED_FOR_HUMAN` | A human gate (§7) was hit. Work stops. |
 
-**`PASS` (QA) is never `APPROVED`.** Argus validates; Atlas approves.
-Atlas may not issue an `*_APPROVED` without the matching Argus `PASS`
-artifact present in the milestone directory.
+**`PASS`/`PEDAGOGY_PASS` (QA) is never `APPROVED`.** Reviewers validate;
+Atlas approves. Atlas may not issue an `*_APPROVED` without the required
+review artifacts present in the milestone directory.
+
+**`CONTENT_APPROVED` requires BOTH stage-6 reviews on the same
+`CONTENT_REVISION` fingerprint** (`PEDAGOGY-REVIEW-CONTRACT` §2/§7):
+
+- Argus technical `PASS`, **and**
+- Pedagogy `PEDAGOGY_PASS`, or `PEDAGOGY_PASS_WITH_NOTES` whose findings
+  contain no LEARNING_RISK / PEDAGOGICAL_BLOCKER.
+
+If either reviewer requires revision, `CONTENT_APPROVED` is forbidden.
+Any edit to a reviewed learner-facing file after a review makes that
+review **stale** — both reviewers re-review the new revision; no verdict
+carries forward across fingerprints. Atlas may not override an unresolved
+`PEDAGOGICAL_BLOCKER` without a recorded human decision (§7).
 
 ## 3. Remediation routing
 
@@ -64,6 +81,8 @@ artifact present in the milestone directory.
 | Implementation violates milestone scope | Argus `FAIL` → Atlas reassesses brief; scope fix → brief revision noted in `01-brief.md` (dated addendum) or Flux remediation |
 | Flux evidence claims `VERIFIED` without commands | Argus `FAIL` → Flux runs commands, corrects labels |
 | Lumen explanation incorrect | Argus `FAIL` → Lumen remediates → re-QA (stage 5→6) |
+| Lesson teaches poorly (weak model, copy-without-derivation, noise, overload, weak exercise) | Pedagogy `PEDAGOGY_REVISION_REQUIRED` → Lumen remediates per finding's remediation class → **both** reviewers re-review the new revision |
+| Pedagogy finding actually an implementation/scope defect | Pedagogy `PEDAGOGY_REVISION_REQUIRED` → Atlas decides ownership (Flux/Lumen/brief) |
 | Lumen must explain code that is itself too advanced | Argus `FAIL` → **Atlas decides** whether the defect belongs to Flux (simplify implementation) or Lumen (add micro-introduction + roadmap note) |
 | Hidden step / unexplained first appearance | Argus `FAIL` → Lumen |
 | Lesson shows code not in learner state | Argus `FAIL` → Lumen (or Flux if evidence artifact drifted) |
@@ -88,7 +107,8 @@ AI_HANDOFF/work/milestones/M{N}/
 ├── lessons/                         Lumen (draft lesson files)
 │   ├── index.md                     milestone overview draft
 │   └── NN-slug.md                   one file per lesson
-├── 05-content-qa.md                 Argus
+├── 05-content-qa.md                 Argus (technical review)
+├── 05-pedagogy-review.md            Pedagogy Reviewer (learning-quality review)
 ├── 06-site-handoff.md               Atlas (from approved draft)
 ├── 07-site-qa.md                    Argus
 ├── 08-final-verdict.md              Atlas
@@ -143,7 +163,9 @@ The workflow stops with `BLOCKED_FOR_HUMAN` when ANY is true:
 4. An architecture choice materially deviates from the senior target.
 5. Public-facing teaching philosophy changes.
 6. A dependency with major architectural impact is proposed.
-7. Argus and Atlas cannot resolve a material disagreement.
+7. Argus and Atlas cannot resolve a material disagreement — or Atlas
+   disagrees with an unresolved `PEDAGOGICAL_BLOCKER` (no override without
+   a recorded human decision).
 8. Required source evidence is missing/insufficient.
 9. `BLOCKED` persists after Atlas remediation attempt.
 10. Anything irreversible (force-push, history rewrite, deletion) seems
@@ -158,5 +180,8 @@ When the runtime provides one executor (e.g., Devin): roles are adopted
 sequentially — one role hat per stage, artifacts written to disk between
 stages, reviewer re-reads the artifact fresh. Argus must treat prior
 executor output as untrusted evidence and verify against real files.
+The stage-6 dual review runs as **two sequential hats on the same
+revision**: whichever review runs second must not read the first
+reviewer's artifact until its own verdict is frozen on disk.
 This simulated separation is documented in `adapters/devin/README.md` and
-is a **recorded limitation**, not a license to skip QA.
+is a **recorded limitation**, not a license to skip either review.

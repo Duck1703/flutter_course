@@ -39,8 +39,12 @@ senior repo and without unexplained steps.
 - `project-context/CONTENT_STATUS.md` — what earlier milestones taught
 - Existing `web/src/content/docs/m01`…`m12` lessons — style register
 - `contracts/BEGINNER-FOLLOWABILITY-CONTRACT.md`,
-  `SENIOR-EVIDENCE-CONTRACT.md`, `CONTENT-HANDOFF-CONTRACT.md`
+  `SENIOR-EVIDENCE-CONTRACT.md`, `CONTENT-HANDOFF-CONTRACT.md`,
+  `contracts/PEDAGOGY-REVIEW-CONTRACT.md` — what the independent
+  learning-quality reviewer inspects (P1–P12, port ledger, difficulty
+  ledger, noise counts)
 - `QUALITY-GATES.md` G1–G11 G15 **+ G17–G24 beginner-learning gates**
+  (G17–G23 are reviewed by the Pedagogy Reviewer; G24 by Argus)
 
 ## Mandatory reading order
 
@@ -113,9 +117,12 @@ or omitting.
 
 ## Handoff contract
 
-Input: brief + approved `02-*`. Output: draft set → Argus content QA.
-On `FAIL`: remediates the draft (content defects) or waits (defect
-belongs to Flux).
+Input: brief + approved `02-*`. Output: draft set → **dual stage-6
+review** (Argus technical + Pedagogy Reviewer learning quality, same
+revision). On `FAIL` or `PEDAGOGY_REVISION_REQUIRED`: remediates the
+draft (content defects) or waits (defect belongs to Flux). Any edit
+after a review restarts both reviews — submit coherent revisions, not
+drip-fed fixes.
 
 ## Definition of done
 

@@ -7,7 +7,7 @@ single-agent runtime.
 ## The core limitation (stated honestly)
 
 Devin executes as **one agent**. There are no native subagents to give
-the five roles real process isolation. Role independence is therefore
+the six roles real process isolation. Role independence is therefore
 **simulated** through discipline, not enforced by the runtime.
 
 Simulation mechanics:
@@ -23,11 +23,16 @@ Simulation mechanics:
    real files and real commands, never the executor's earlier claims.
    The reviewer must not rely on "I remember writing this".
 5. **No self-approval.** Even though one agent produces everything, an
-   `*_APPROVED` may only be recorded when a distinct QA artifact with
-   verdict `PASS` exists — the artifacts enforce the separation the
-   runtime can't.
-6. **Atlas approval references Argus verdict.** Every approval line cites
-   the QA artifact it is based on.
+   `*_APPROVED` may only be recorded when the required distinct review
+   artifact(s) with verdict `PASS` exist — the artifacts enforce the
+   separation the runtime can't.
+6. **Dual stage-6 review, simulated blindness.** Argus content QA and
+   Pedagogy Review run as **two sequential hats on the same
+   `CONTENT_REVISION`**. Whichever hat runs second must not read the
+   first reviewer's artifact until its own verdict is frozen on disk.
+   `CONTENT_APPROVED` requires both.
+7. **Atlas approval references review verdicts.** Every approval line
+   cites the review artifact(s) it is based on — stage 6 cites both.
 
 ## Honest consequence
 

@@ -15,6 +15,8 @@ Process authority: `../../WORKFLOW-CONTRACT.md`.
 - `../../STATE-MACHINE.md` — legal transitions
 - `../../TEAM-REGISTRY.md` — write scopes and independence rules
 - `../../QUALITY-GATES.md` — what approvals must be backed by
+- `../../contracts/PEDAGOGY-REVIEW-CONTRACT.md` — the stage-6 dual-review
+  rules Atlas enforces (same-revision, staleness, blind reviews)
 - `../../contracts/SUPERVISOR-REPORT-CONTRACT.md` — report structure
 - `../../templates/milestone-brief-template.md`,
   `../../templates/website-handoff-template.md`,
@@ -29,7 +31,14 @@ Process authority: `../../WORKFLOW-CONTRACT.md`.
    done criteria, test targets.
 3. **Dispatch → verify → advance.** For each stage: dispatch the owning
    role; on return, verify the artifact exists and is complete; require
-   Argus `PASS` before issuing any `*_APPROVED`.
+   the required review `PASS` before issuing any `*_APPROVED`. At stage
+   6 that means **two independent artifacts**: Argus `05-content-qa.md`
+   `PASS` **and** Pedagogy `05-pedagogy-review.md` `PEDAGOGY_PASS` /
+   `PEDAGOGY_PASS_WITH_NOTES` (no unresolved LEARNING_RISK /
+   PEDAGOGICAL_BLOCKER) — both naming the same `CONTENT_REVISION`
+   fingerprint. Any post-review learner-facing edit = stale verdicts:
+   re-run both reviews before approving. Never override an unresolved
+   `PEDAGOGICAL_BLOCKER` without a recorded human decision.
 4. **Route failures.** Per `WORKFLOW-CONTRACT.md` §3. A content defect that
    is really an implementation defect routes to Flux — Atlas decides
    ownership, never rewrites.

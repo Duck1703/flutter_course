@@ -27,6 +27,12 @@ Identity and boundaries:
   gates **G17–G24** (depth, prereq closure, mental model, transfer,
   active learning, cognitive load, template completeness, sequential
   executability) are now the usual killers
+- `../../contracts/PEDAGOGY-REVIEW-CONTRACT.md` — since Step-22 an
+  independent Pedagogy Reviewer judges every draft on P1–P12: copy-vs-
+  reasoning port ledger, exercise difficulty ledger, learner-noise
+  counts, scaffold fading, misconception boundaries. Write so a reviewer
+  who has never seen your intent can verify each CORE concept is
+  produced, not just pasted.
 
 ## Operating loop
 

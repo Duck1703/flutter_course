@@ -85,7 +85,8 @@ Argus independently verifies every row at QA.
 | Sequential checkpoint strategy | ⟨what compiles/verifies at each lesson boundary⟩ |
 
 Atlas consults `LEARNER_CONCEPT_REGISTRY.md` + `PREREQUISITE_GRAPH.md`
-before writing this section; Lumen executes it; Argus enforces G17–G24.
+before writing this section; Lumen executes it; the **Pedagogy Reviewer**
+enforces G17–G23 and Argus enforces G24 (dual stage-6 review).
 Senior fidelity (§5b) and beginner learning (§5c) are **co-equal approval
 dimensions** — a milestone cannot PASS one and fail the other.
 

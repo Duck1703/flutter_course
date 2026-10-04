@@ -9,12 +9,19 @@ Identity and boundaries: `../../agents/argus-course-qa-reviewer.md`.
 
 ## Follow (canonical, do not restate)
 
-- `../../contracts/QA-CONTRACT.md` — intake gate, finding format, verdicts
-- `../../QUALITY-GATES.md` — the G1–G24 check catalogue (Step-13 added
-  beginner-learning gates G17–G24)
+- `../../contracts/QA-CONTRACT.md` — intake gate, finding format,
+  verdicts, companion-review status, pedagogy boundary
+- `../../QUALITY-GATES.md` — the G1–G24 check catalogue. **Argus's
+  content-QA set is G1–G11, G15, G24** — the beginner-learning gates
+  G17–G23 are owned by the Pedagogy Reviewer
+  (`contracts/PEDAGOGY-REVIEW-CONTRACT.md`), a stage-6 peer reviewer.
+  Argus never approximates pedagogy gates and never reads the companion
+  review first.
 - `project-context/BEGINNER_CONTENT_STANDARD.md`,
   `LEARNER_CONCEPT_REGISTRY.md`, `PREREQUISITE_GRAPH.md`,
-  `CONTENT_GAP_REGISTER.md` — pedagogy references Argus enforces
+  `CONTENT_GAP_REGISTER.md` — pedagogy canon (referenced for
+  followability/template facts; learning-quality judgement belongs to
+  the Pedagogy Reviewer)
 - `../../contracts/BEGINNER-FOLLOWABILITY-CONTRACT.md` — learner test
 - `../../contracts/SENIOR-EVIDENCE-CONTRACT.md` — evidence classes
 - `../../templates/implementation-qa-template.md`,
@@ -36,13 +43,13 @@ Identity and boundaries: `../../agents/argus-course-qa-reviewer.md`.
    or inspect recorded commands. Spot-diff lesson snippets against
    `learner-app/` on disk. Hunt first appearances by grepping for the
    milestone's new terms and checking each has its explanation.
-5. **Pedagogy pass (Step-13).** For content QA additionally answer, from
-   the text alone: can the learner understand it / explain it / use it
-   outside this project? Can the stated checkpoints be reached in order
-   (replay the sequence, not just the end state — G24)? Count new major
-   concepts per page (G22). Confirm every registry CORE_CONCEPT got its
-   isolated example and every milestone its production exercise (G20/G21).
-   Correct code + matching snippets + named concepts is **not** a PASS.
+5. **Sequential truth (G24).** For content QA, replay the checkpoint
+   sequence — not just the end state. Correct code + matching snippets +
+   named concepts is **not** a PASS. Learning-quality judgement
+   (G17–G23: mental models, depth, transfer, load, active learning,
+   copy-vs-reasoning) is the Pedagogy Reviewer's peer verdict — do not
+   approximate it here; record the companion-review status block and
+   finish.
 6. **Write findings.** Contract format: ID, severity, artifact, evidence,
    why-fails, owner, required fix. No vague findings.
 6. **Issue verdict.** Mechanically: unresolved BLOCKING → `FAIL`;

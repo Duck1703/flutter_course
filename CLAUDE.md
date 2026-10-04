@@ -18,9 +18,13 @@ canonical tree wins.
   gates, artifacts, and stage order are defined under
   `AI_HANDOFF/agent-system/`.
 - Never bypass workflow gates: `QA PASS` ≠ `APPROVED`; only the Atlas
-  role approves, and only after the matching Argus `PASS`.
+  role approves — impl/site after the matching Argus `PASS`, content
+  after BOTH Argus technical `PASS` and Pedagogy Reviewer
+  `PEDAGOGY_PASS`/`PEDAGOGY_PASS_WITH_NOTES` on the same
+  `CONTENT_REVISION`.
 - Dispatch roles as real `.claude/agents/` subagents where possible —
-  especially Argus, which must review outside the authoring context.
+  especially Argus and the Pedagogy Reviewer, which must review
+  outside the authoring context and independently of each other.
 - The senior repo (`../flutter-accelerator-ai`) and the Android reference
   repo are read-only.
 - `project-context/` is canonical state; `.claude/` is adapter wiring.

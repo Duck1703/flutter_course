@@ -6,7 +6,7 @@
 ## What Claude Code supports natively
 
 - **Subagents** (`.claude/agents/*.md`) — real role dispatch is possible:
-  each of the five roles maps to a native agent file.
+  each of the six roles maps to a native agent file.
 - **Skills** (`.claude/skills/*/SKILL.md`) — on-demand protocol loading.
 - **CLAUDE.md** at repo root — always-on project memory; keep it a thin
   pointer, not a copy of the workflow.
@@ -15,9 +15,9 @@
 
 ```text
 .claude/
-├── agents/   5 files — one per role; each points to
+├── agents/   6 files — one per role; each points to
 │             AI_HANDOFF/agent-system/agents/<role>.md as its contract
-└── skills/   6 files — one per skill; each points to
+└── skills/   7 files — one per skill; each points to
               AI_HANDOFF/agent-system/skills/<skill>/SKILL.md
 CLAUDE.md     thin bootstrap pointer (repo root)
 ```
@@ -30,8 +30,9 @@ canonical file disagree, **the canonical file wins** — fix the adapter.
 
 Claude Code can spawn real subagents, so role independence is **real**
 here (unlike the single-agent Devin simulation): dispatch
-`argus-course-qa-reviewer` as a separate agent so it reviews without the
-authoring context. Prefer a fresh agent instance for each QA stage over
+`argus-course-qa-reviewer` and `pedagogy-reviewer` as separate fresh
+agents so they review without the authoring context — and without each
+other's verdicts. Prefer a fresh agent instance for each QA stage over
 reusing the author's context.
 
 ## Rules that survive any adapter

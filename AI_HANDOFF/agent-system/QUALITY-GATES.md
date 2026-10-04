@@ -1,18 +1,29 @@
 # QUALITY GATES — Flutter Course Agent Product v1.0
 
 The reusable gate catalogue. Every gate names its PASS condition, FAIL
-examples, owner (who must satisfy it), and evidence required. Argus applies
-these gates at the matching QA stage; authors satisfy them before handing
-off.
+examples, owner (who must satisfy it), and evidence required. Reviewers
+apply these gates at the matching QA stage; authors satisfy them before
+handing off. **Review ownership is split at stage 6** (Step-22): Argus
+owns technical truth; the Pedagogy Reviewer owns learning quality.
 
 Gate → stage mapping:
 
 | Stage | Gates enforced |
 |-------|----------------|
 | Implementation QA (Argus on Flux) | G1 G2 G3 G4 G5 G9 G12 G15 |
-| Content QA (Argus on Lumen) | G1 G2 G3 G6 G7 G8 G9 G10 G11 G15 **G17 G18 G19 G20 G21 G22 G23 G24** |
+| Content QA — technical (Argus on Lumen) | G1 G2 G3 G6 G7 G8 G9 G10 G11 G15 **G24** |
+| Content QA — learning quality (Pedagogy Reviewer on Lumen) | **G17 G18 G19 G20 G21 G22 G23** |
 | Website QA (Argus on Forge) | G10 G13 G14 G15 G24 |
 | Final verdict (Atlas) | all gates' verdicts present + PASSed |
+
+Reviewer ownership summary (author → reviewer → approver):
+
+| Gate | Author | Primary reviewer | Approver |
+|------|--------|------------------|----------|
+| G1–G15 technical gates | owning author per gate | Argus | Atlas |
+| G17–G23 pedagogy gates | Lumen | **Pedagogy Reviewer** | Atlas |
+| G24 sequential executability | Lumen (ordering) | Argus | Atlas |
+| G16 senior fidelity | all (register discipline) | Argus | Atlas |
 
 > Gates G17–G24 (added at Step-13 beginner-content remediation) make
 > **beginner learning quality a co-equal approval dimension with senior
@@ -20,6 +31,9 @@ Gate → stage mapping:
 > definitions live in `project-context/BEGINNER_CONTENT_STANDARD.md`,
 > `LEARNER_CONCEPT_REGISTRY.md`, `PREREQUISITE_GRAPH.md`, and
 > `CONTENT_GAP_REGISTER.md` — those files are inputs to these gates.
+> Since Step-22, G17–G23 are evaluated exclusively by the Pedagogy
+> Reviewer through `contracts/PEDAGOGY-REVIEW-CONTRACT.md` (P1–P12);
+> G24 remains with Argus as executable-replay truth.
 
 ---
 
@@ -214,8 +228,9 @@ Gate → stage mapping:
   definition + snippet + Android analogy as the entire treatment; a
   CORE_CONCEPT's first appearance inside production code with no isolated
   example.
-- **Owner:** Lumen writes; Argus judges depth against the standard, not the
-  presence of keywords. **Evidence:** registry depth column ↔ lesson sections.
+- **Owner:** Lumen writes; **Pedagogy Reviewer** judges depth against the
+  standard, not the presence of keywords. **Evidence:** registry depth
+  column ↔ lesson sections.
 
 ## G18 — Prerequisite closure (learning)
 
@@ -228,8 +243,10 @@ Gate → stage mapping:
 - **FAIL examples:** claiming `factory`/`async*` was covered when it was
   only listed as deferred; using `pumpEventQueue` before any lesson explains
   it; assuming M12 `Provider` knowledge covers `MultiProvider`-by-contract.
-- **Owner:** Lumen (declares), Argus (greps/verifies each claim).
-  **Evidence:** per-claim resolution to `CONCEPT_REGISTRY` rows.
+- **Owner:** Lumen (declares), **Pedagogy Reviewer** (verifies each claim
+  against the actual earlier lesson — taught, not merely named).
+  **Evidence:** per-claim resolution to `CONCEPT_REGISTRY` rows + the
+  earlier lesson text.
 
 ## G19 — Mental model present
 
@@ -239,8 +256,10 @@ Gate → stage mapping:
 - **FAIL examples:** replay semantics of `BehaviorSubject` taught as a
   bullet list with no "holds latest value" picture; a lesson whose only
   model is the code itself.
-- **Owner:** Lumen; Argus rejects "keyword coverage disguised as teaching".
-  **Evidence:** named mental-model section per core concept.
+- **Owner:** Lumen; **Pedagogy Reviewer** rejects "keyword coverage
+  disguised as teaching" and heading-presence-as-model. **Evidence:**
+  quoted model prose tested against the model questions
+  (`PEDAGOGY-REVIEW-CONTRACT` P3).
 
 ## G20 — Independent transfer
 
@@ -251,8 +270,9 @@ Gate → stage mapping:
 - **FAIL examples:** `BehaviorSubject` first seen only as
   `_userProfileSubject` inside a repo impl; all 48 lessons read→copy→run
   with zero learner production.
-- **Owner:** Lumen (writes), Argus (verifies the example is genuinely
-  isolated and the exercise genuinely requires production).
+- **Owner:** Lumen (writes), **Pedagogy Reviewer** (verifies the example
+  is genuinely isolated and the exercise genuinely requires production —
+  difficulty-ledger instrument, contract P9).
   **Evidence:** isolated-example block + exercise block per milestone.
 
 ## G21 — Active learning
@@ -263,8 +283,10 @@ Gate → stage mapping:
   RECOGNIZE→PREDICT→MODIFY→PRODUCE→DEBUG.
 - **FAIL examples:** comprehension Q&A only; exercise = "change text A→B";
   solution shown before the task.
-- **Owner:** Lumen; Argus counts production tasks per milestone.
-  **Evidence:** exercise blocks + index synthesis sections.
+- **Owner:** Lumen; **Pedagogy Reviewer** classifies production tasks by
+  level (RECOGNIZE→…→DERIVE) per milestone — heading presence is not
+  counted. **Evidence:** exercise blocks + index synthesis sections +
+  difficulty ledger.
 
 ## G22 — Lesson cognitive load
 
@@ -272,9 +294,11 @@ Gate → stage mapping:
   explicit Atlas split decision in the brief's LEARNING DESIGN CHECK.
 - **FAIL examples:** one page introducing `abstract interface class` +
   `implements` + `BehaviorSubject` + `MultiProvider` + model parity + fakes.
-- **Owner:** Atlas (split decision), Lumen (decomposition), Argus (counts
-  new-vs-assumed concepts per page). **Evidence:** concept-count per lesson
-  in `04-content-draft.md`.
+- **Owner:** Atlas (split decision), Lumen (decomposition),
+  **Pedagogy Reviewer** (evaluates KNOWN/NEW models + NEW→NEW chains per
+  page — not raw concept-ID counts). **Evidence:** concept-load table per
+  lesson in `05-pedagogy-review.md` + concept-count in
+  `04-content-draft.md`.
 
 ## G23 — Template completeness
 
@@ -282,8 +306,11 @@ Gate → stage mapping:
   for its declared depth level; dropped sections name their reason.
 - **FAIL examples:** a CORE_CONCEPT lesson missing mental-model, mistakes,
   or exercise sections; silent section loss vs the shipped M01–M13 norm.
-- **Owner:** Lumen; Argus diffs section list against the template.
-  **Evidence:** section checklist in `04-content-draft.md`.
+- **Owner:** Lumen; **Pedagogy Reviewer** judges completeness against the
+  declared depth level and named drop-reasons (Argus's per-lesson
+  structural presence check remains an input, not the judgement).
+  **Evidence:** section checklist in `04-content-draft.md` +
+  pedagogy review P12 rows.
 
 ## G24 — Sequential executability
 

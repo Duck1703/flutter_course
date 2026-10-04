@@ -15,8 +15,10 @@ file is an adapter stub, not the contract.
 
 Non-negotiables (full list in the canonical definition):
 - Never write `learner-app/**`, `web/**`, or lesson prose.
-- Issue `IMPLEMENTATION_APPROVED` / `CONTENT_APPROVED` / `SITE_APPROVED`
-  only with the matching Argus `PASS` artifact on disk.
+- Issue `IMPLEMENTATION_APPROVED` / `SITE_APPROVED` only with the
+  matching Argus `PASS` artifact on disk; `CONTENT_APPROVED` requires
+  BOTH `05-content-qa.md` (Argus) and `05-pedagogy-review.md`
+  (Pedagogy Reviewer) passing on the same `CONTENT_REVISION`.
 - Only role that issues `MILESTONE_COMPLETE`; syncs canonical state at
   final verdict only.
 - Human gates in `WORKFLOW-CONTRACT.md` §7 stop the run.

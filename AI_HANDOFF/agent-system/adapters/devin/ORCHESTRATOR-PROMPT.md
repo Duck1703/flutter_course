@@ -38,9 +38,11 @@ STEP 4 — Execute the stage machine exactly:
   Argus   → write 03-implementation-qa.md          (PASS/FAIL/BLOCKED)
   Atlas   → IMPLEMENTATION_APPROVED only if PASS
   Lumen   → write 04-content-draft.md + lessons/   (CONTENT_QA)
-  Argus   → write 05-content-qa.md
-  Atlas   → CONTENT_APPROVED only if PASS;
-            write 06-site-handoff.md
+  Argus   → write 05-content-qa.md                 (technical review)
+  Pedagogy Reviewer → write 05-pedagogy-review.md  (learning-quality
+            review, same CONTENT_REVISION, blind to Argus)
+  Atlas   → CONTENT_APPROVED only if BOTH reviews pass on the same
+            revision fingerprint; write 06-site-handoff.md
   Forge   → integrate web/**                       (SITE_QA)
   Argus   → write 07-site-qa.md
   Atlas   → SITE_APPROVED only if PASS
@@ -52,7 +54,10 @@ ROLE DISCIPLINE (single-agent simulation):
   switching.
 - As Argus: re-read artifacts from disk; verify against real files and
   real commands; treat earlier executor output as untrusted.
-- Never issue *_APPROVED without the matching Argus PASS artifact.
+- As Pedagogy Reviewer: review the same CONTENT_REVISION blind — do not
+  read 05-content-qa.md before writing 05-pedagogy-review.md.
+- Never issue *_APPROVED without the required review PASS artifacts
+  (stage 6 requires two on the same fingerprint).
 - Record every state transition in 00-status.md.
 
 HARD STOPS:

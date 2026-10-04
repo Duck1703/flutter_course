@@ -1,6 +1,6 @@
 ---
 name: company
-description: Human-facing entrypoint + orchestration protocol for running one milestone through the complete Agent Product workflow (Atlas → Flux → Argus → Lumen → Argus → Forge → Argus → Atlas). Use for "run milestone M{N}", "continue the course", or any request that means "execute the company workflow".
+description: Human-facing entrypoint + orchestration protocol for running one milestone through the complete Agent Product workflow (Atlas → Flux → Argus → Lumen → Argus + Pedagogy Reviewer → Forge → Argus → Atlas). Use for "run milestone M{N}", "continue the course", or any request that means "execute the company workflow".
 ---
 
 # company — milestone orchestration entrypoint
@@ -43,7 +43,10 @@ approves on its own; it enforces `WORKFLOW-CONTRACT.md`.
 ## Verification duties (orchestrator-level)
 
 - Artifact exists on disk before its consumer stage starts.
-- `*_APPROVED` is never issued without the matching Argus `PASS` file.
+- `*_APPROVED` is never issued without the required review `PASS`
+  file(s) — stage 6 requires **both** `05-content-qa.md` (Argus) and
+  `05-pedagogy-review.md` (Pedagogy Reviewer) on the same
+  `CONTENT_REVISION` fingerprint, produced blind to each other.
 - No stage output comes from the wrong role.
 - Workflow state transitions match `STATE-MACHINE.md` exactly.
 

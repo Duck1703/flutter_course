@@ -1,6 +1,8 @@
 # Beginner Content Standard
 
-Canonical, binding on Lumen (authoring) and Argus (QA) for all lessons.
+Canonical, binding on Lumen (authoring) for all lessons, and enforced at
+review by the Pedagogy Reviewer (G17–G23) and Argus (G24) per
+`AI_HANDOFF/agent-system/contracts/PEDAGOGY-REVIEW-CONTRACT.md`.
 Companion to `TEACHING_STANDARD.md` (section structure) — this file defines
 **depth**. A lesson may be technically correct and still fail this standard.
 Gates G17–G24 in `AI_HANDOFF/agent-system/QUALITY-GATES.md` enforce it.

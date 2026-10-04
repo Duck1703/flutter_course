@@ -1,6 +1,8 @@
 # agent-system/ — Flutter Course Agent Product (canonical, tool-neutral)
 
-> **Version: v1.0** — first production definition, built at Step 07.
+> **Version: v1.1** — Step-22 added the sixth role (Pedagogy Reviewer) and
+> made stage 6 a dual independent review (Argus technical + Pedagogy
+> learning quality). Original v1.0 built at Step 07.
 > **Authority:** this directory is the permanent, tool-neutral definition of
 > how the Flutter course is produced. It is canonical for **process and
 > roles**. It is **not** canonical for **project state** — state lives in
@@ -8,7 +10,7 @@
 
 ## 1. What the Agent Product is
 
-A five-role course-production **company** that turns one approved milestone
+A six-role course-production **company** that turns one approved milestone
 at a time into: implemented learner-app code → verified evidence →
 Vietnamese lessons → integrated website pages → a supervisor report.
 
@@ -46,14 +48,15 @@ gate list, or role definition — that duplication is a known failure mode
 (reference evidence: the Android course project maintained three copies of
 its skill trees and they drifted).
 
-## 4. The five roles
+## 4. The six roles
 
 | ID | Name | One-line job |
 |----|------|--------------|
 | `atlas-flutter-course-architect` | **Atlas** | Owns scope, briefs, approvals, stage transitions, canonical state, final verdict |
 | `flux-flutter-implementation-engineer` | **Flux** | Implements `learner-app/**` and produces verified implementation evidence |
 | `lumen-flutter-learning-expert` | **Lumen** | Authors Vietnamese lessons from approved evidence — never from invention |
-| `argus-course-qa-reviewer` | **Argus** | Independent evidence-based QA; PASS/FAIL/BLOCKED; never approves, never fixes |
+| `argus-course-qa-reviewer` | **Argus** | Independent technical/evidence QA (incl. content technical surface); PASS/FAIL/BLOCKED; never approves, never fixes |
+| `pedagogy-reviewer` | **Pedagogy Reviewer** | Independent learning-quality review of content (P1–P12); PEDAGOGY_* verdicts; never approves, never fixes, peer of Argus at stage 6 |
 | `forge-course-website-engineer` | **Forge** | Integrates CONTENT_APPROVED drafts into `web/**`; production build verification |
 
 Full contracts: `TEAM-REGISTRY.md` + `agents/*.md`.
@@ -69,7 +72,10 @@ Atlas → Milestone Brief → Flux → Implementation + Evidence
         ↓                                            ↓
 Atlas Implementation Approval → Lumen → Content Draft
         ↓                                            ↓
-   (scope fix)  ← Argus Content QA (FAIL)         PASS
+        ┌──── Argus Content QA (technical) ──────────┐
+        └──── Pedagogy Review (learning quality) ────┘   same revision, blind
+        ↓                                            ↓
+   (scope fix)  ← either review FAILs            both PASS
         ↓                                            ↓
 Atlas Content Approval → Forge → Website Implementation
         ↓                                            ↓
