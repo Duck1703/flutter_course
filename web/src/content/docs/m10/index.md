@@ -66,4 +66,4 @@ Tiến trình người chơi **sống sót qua việc đóng/mở lại app**:
   chuyện gì xảy ra? (MissingPluginException/prefs lẫn nhau giữa test.)
 - **Concept cần lại sau:** prefs+codec — hấp thụ vào
   `UserProfileRepositoryImpl` M14; `factory` → `static create()` M14;
-  `fromMap` phòng thủ → FR-19 parity M14.
+  `fromMap` phòng thủ → parity với senior ở M14.

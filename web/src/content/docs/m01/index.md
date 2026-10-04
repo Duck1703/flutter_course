@@ -44,8 +44,8 @@ Trạng thái app cuối M01: một `MaterialApp` hiển thị màn hình chào 
   một lần; `build` được gọi lại nhiều lần.
 - **Tôi giải thích được gì?** Hot Reload vs Hot Restart khác nhau ở
   *phần nào chạy lại* — và khi nào cái nào không cứu được.
-- **Tôi viết được gì không copy?** Một `StatelessWidget` mới hiển thị
-  text của riêng mình (bài Tự làm).
+- **Tôi viết được gì không copy?** Đổi `Text('…')` thành tên của mình
+  — và đoán trước Hot Reload áp dụng được không (bài Tự làm).
 - **Nếu X đổi thì sao?** Nếu đổi code trong `main()` trước `runApp`,
   reload có đủ không? (Không — cần restart.)
 - **Concept cần lại sau:** `Widget`/`StatelessWidget`/`BuildContext` —

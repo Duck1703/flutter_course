@@ -43,7 +43,7 @@ Không có construct mới — bài này củng cố: `GameEndedDialog`,
 ## Senior project connection — bảng parity 9 variant
 
 | Variant | Learner view | Senior widget | Tap-outside | Back | Ghi chú |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `GameDialogHidden` | `SizedBox.expand` (key "hidden") | cùng | — | mở confirm-exit | parity |
 | `GameMoneyLadderDialog` | `GameMoneyLadderDialogView` | `GameMoneyLadderDialogView` | chặn | ignore | parity; shell-visual → M28 |
 | `GameConfirmExitDialog` | `GameConfirmExitDialogView` | `GameConfirmExitDialogView` | dismiss | dismiss | parity |

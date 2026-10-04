@@ -32,7 +32,7 @@ table (mọi con số khớp senior).
 ## Bảng parity — 4 đường save
 
 | Trigger | Senior (DRE) | Learner M22 | `earnedAmount` | `isWin` | `questionCount` |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Thắng câu cuối | `_loadNextQuestionOrVictory` nhánh victory → `GameSaveResult` op | `_loadNextQuestionOrVictory` → `_emitWithSaveResult` | `moneyEarned` | `true` | `questionIndex+1` |
 | Sai/hết giờ | `_endGame` → op | `_endGame` → `_emitWithSaveResult` | `guaranteedAmount` | `false` | `questionIndex+1` |
 | Dừng cuộc | `_confirmWalkAway` → op | `confirmWalkAway` → `_emitWithSaveResult` | `_walkAwayAmount` | `false` | `questionIndex+1` |
@@ -92,7 +92,7 @@ trọn vẹn.
 ## Ranh giới M22 — những gì CỐ Ý chưa làm
 
 | Chưa làm | Milestone sở hữu | Vì sao |
-|---|---|---|
+| --- | --- | --- |
 | `_syncSavedGameResult` thật (Supabase sync + auth check) | M24/M25 | chưa có `AuthRepository`/`UserProfileSyncRepository` trên ctor |
 | DRE `GameSaveResult` asyncOp + reducer queue | M26 | learner VM chưa là `DreChangeNotifier` |
 | `LevelProgressCard` ring/glass/tier-gradient | M28 | visual polish — M22 chỉ cần data |

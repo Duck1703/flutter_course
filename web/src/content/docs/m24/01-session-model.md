@@ -93,7 +93,7 @@ compiler kiểm kiệt hợp: nếu sau này thêm variant thứ ba (ví dụ
 điển của auth):
 
 | Danh từ | Là gì | Sống ở đâu |
-|---|---|---|
+| --- | --- | --- |
 | **Identity** (auth user) | "bạn là ai" — uid + email + tên do provider cấp | `AuthSessionData` — milestone này |
 | **Authorization** | "bạn được làm gì" — quyền trên dữ liệu | RLS policies phía SERVER (M23); client không quyết |
 | **Profile** | dữ liệu game của bạn (username, level, EXP…) | `UserProfileData` local SharedPreferences; `public.users` remote (M25) |
@@ -107,13 +107,13 @@ bước riêng (coordinator ở Bài 3).
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `sealed class X` + `final class V extends X` | union đóng cho session — áp dụng lại cho identity |
 | `bool get isAuthenticated => this is AuthSessionAuthenticated` | getter tiện cho UI thay `is` lặp lại |
 | `class R { const R._(...); const R.success(m) : this._(...); }` | private ctor `._` + **redirecting ctor** — `success`/`failure` là hai tên gọi vào cùng một ctor thật |
-| `ValueStream<T> get` | kiểu stream "luôn có `.value`" — |
-| `abstract interface class` | contract repo — |
-| `?? 'fallback'` trên `configurationError` | env error → message mặc định — |
+| `ValueStream<T> get` | kiểu stream "luôn có `.value`" |
+| `abstract interface class` | contract repo |
+| `?? 'fallback'` trên `configurationError` | env error → message mặc định |
 
 Redirecting ctor (`: this._(...)`) là construct mới ở đây:
 `AuthActionResult._` là ctor private thật sự khởi tạo field;
@@ -190,7 +190,7 @@ kênh đó.
 ## Senior project connection
 
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
-|---|---|
+| --- | --- |
 | `lib/data/auth/auth_session_data.dart` | learner port nguyên văn — cùng sealed family, `isAuthenticated` getter, `==`/`hashCode` đủ field |
 | `lib/repositories/auth/auth_repository_contract.dart` | `AuthActionResult` + contract — verbatim |
 | `lib/repositories/auth/disabled_auth_repository.dart` | guest impl — verbatim, kể cả chuỗi `'Sign in is unavailable.'` fallback |
@@ -232,7 +232,7 @@ final class AuthSessionAuthenticated extends AuthSessionData {
     this.displayName,
     this.photoUrl,
   });
-  // + == / hashCode so trên cả 4 field (D-05 — verbatim senior)
+  // + == / hashCode so trên cả 4 field (verbatim senior)
 }
 ```
 
@@ -500,7 +500,7 @@ Không chạy test. Với từng env dưới đây, viết ra giấy hai giá tr
 `(await repo.signInWithGoogle()).message`:
 
 | # | `SupabaseEnvironment` truyền vào `makeRepo` |
-|---|---|
+| --- | --- |
 | a | *(tất cả rỗng)* |
 | b | `supabaseUrl` + `publishableKey` đủ, không Google |
 | c | đủ cả bốn field |

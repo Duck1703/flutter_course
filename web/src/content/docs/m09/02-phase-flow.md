@@ -61,7 +61,7 @@ field mới.
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | guard bằng enum | `if (_phase != GamePhase.answering) return;` | Chặn hành vi sai phase — thay cho `if (_submitted)` |
 | `?? -1` | `_selectedIndex ?? -1` | Fallback an toàn: chưa chọn → index -1 không trùng `correctIndex` nào |
 | early return + else-free | `if (!wasCorrect) { _finish(...); return; }` | Nhánh kết thúc viết trước, nhánh tiếp tục không lồng else |
@@ -271,7 +271,7 @@ từ `!submitted` thành `!revealed` — phần còn lại giữ nguyên.
 trước → phase sau** + **timer chạy hay dừng**:
 
 | Tình huống | Phase trước → sau | Timer |
-|---|---|---|
+| --- | --- | --- |
 | 1. Người chơi chọn rồi bấm CHỐT | ? | ? |
 | 2. Đang reveal, bấm TIẾP (đúng, còn câu) | ? | ? |
 | 3. Đang reveal, bấm TIẾP (sai — ván thua) | ? | ? |
@@ -290,7 +290,7 @@ cho câu mới — vậy thì timer cũ phải… và timer mới phải…?
 <details><summary>Đáp án</summary>
 
 | Tình huống | Phase | Timer |
-|---|---|---|
+| --- | --- | --- |
 | 1. Chốt | answering → revealing | dừng (cancel — đã xong lượt) |
 | 2. TIẾP đúng, còn câu | revealing → answering | restart: cancel cũ + timer mới 15s |
 | 3. TIẾP sai | revealing → finished | dừng (hết ván) |

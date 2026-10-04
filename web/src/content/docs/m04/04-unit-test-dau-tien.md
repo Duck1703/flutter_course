@@ -109,7 +109,7 @@ void main() {
 
       // Senior `UserProfileData`: defaultUsername '0XFF', mọi counter = 0.
       // `expForNextLevel = 35000` = LevelConfig.getExpRequiredForLevel(1)
-      // — hardcode tạm (fidelity register), M22 tính thật và xoá field.
+      // — hardcode tạm theo senior; M22 tính thật và xoá field.
       expect(profile.username, '0XFF');
       expect(profile.level, 1);
       expect(profile.currentExp, 0);
@@ -300,13 +300,12 @@ là unit test đúng nghĩa, chạy trong vài mili-giây.
 
 ## Tự làm
 
-**Tự viết test — không copy.** Viết **một** test mới vào
-`test/models/app_models_test.dart` (tự viết, không chép 3 test đã có):
+**Tự viết test — không copy.** Viết **hai** test mới vào
+`test/user_profile_data_test.dart` (tự viết, không chép các test đã có):
 
-- `copyWith` trên `PlayerProfile` (hoặc field bạn chọn) giữ nguyên các
-  field không truyền — khác gì `expect` của test bài này?
-- Một test cho `UserStats`: `gamesPlayed + 1` qua `copyWith` không làm
-  đổi `bestScore`.
+- `copyWith` trên `UserProfileData` (đổi `username` hoặc field bạn chọn)
+  giữ nguyên các field không truyền — assert cả hai phía.
+- Một test nữa: `copyWith(gamesJoined: 4)` không làm đổi `gamesWon`.
 - Dự đoán: nếu `copyWith` bị bug quên `?? this.field` (trả `null` khi
   param null), test nào sẽ fail? Viết test đó và xem nó fail đỏ (đừng
   sửa model — xóa test sau khi xác nhận).
@@ -320,17 +319,17 @@ null — test phải assert cả hai phía: field đổi *và* field giữ nguy�
 
 ```dart
 test('copyWith only changes provided fields', () {
-  const p = PlayerProfile(displayName: 'Lan', totalCoins: 100);
-  final p2 = p.copyWith(displayName: 'Minh');
-  expect(p2.displayName, 'Minh');
-  expect(p2.totalCoins, 100);          // giữ nguyên
+  const p = UserProfileData(username: 'Lan', totalMoneyWon: 100);
+  final p2 = p.copyWith(username: 'Minh');
+  expect(p2.username, 'Minh');
+  expect(p2.totalMoneyWon, 100);       // giữ nguyên
 });
 
-test('copyWith increments gamesPlayed, keeps bestScore', () {
-  const s = UserStats(gamesPlayed: 3, bestScore: 9000);
-  final s2 = s.copyWith(gamesPlayed: 4);
-  expect(s2.gamesPlayed, 4);
-  expect(s2.bestScore, 9000);
+test('copyWith increments gamesJoined, keeps gamesWon', () {
+  const s = UserProfileData(gamesJoined: 3, gamesWon: 2);
+  final s2 = s.copyWith(gamesJoined: 4);
+  expect(s2.gamesJoined, 4);
+  expect(s2.gamesWon, 2);
 });
 ```
 

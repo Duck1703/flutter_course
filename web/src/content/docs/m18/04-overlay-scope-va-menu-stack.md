@@ -122,7 +122,7 @@ widget này ở `lib/widgets/common/language_chip_row.dart`:
 > hai bước sẽ báo thiếu file — đó là điều bình thường, compile sạch
 > lại sau Bước 3.
 
-Scope = cổng + chủ VM (đúng shape senior, rút gọn đã register):
+Scope = cổng + chủ VM (đúng shape senior, rút gọn có chủ đích):
 
 ```dart
 class _OnboardingOverlayScopeState extends State<OnboardingOverlayScope> {

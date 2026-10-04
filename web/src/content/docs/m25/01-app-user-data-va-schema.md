@@ -133,13 +133,12 @@ tự đối chiếu tên cột
  với field 
 `camelCase`, và một lỗi
 chính tả trong key là bug lặng đến khi có người nhìn vào database.
-Senior giải bằng một DTO biên: **
-`AppUserData`
- biết đúng shape của
+Senior giải bằng một DTO biên:
+**`AppUserData`** biết đúng shape của
 bảng 
 `users`, 
 `UserProfileData`
- không biết gì về remote cả.** Upsert
+ không biết gì về remote cả. Upsert
 payload do 
 `toUpsertMap`
  sinh — sai key là fail ngay ở test schema,
@@ -151,8 +150,7 @@ không phải ở production.
 `Map<String, dynamic>`
  row → typed model + parse phòng thủ
  
-`_intValue`
-/
+`_intValue`/
 `_stringValue`
  (M23 — 
 `_LeaderboardRecord`);
@@ -175,8 +173,7 @@ không phải ở production.
 `LevelConfig`
  level 1–100 (M22).
 - 
-`AuthSessionAuthenticated{uid,email,displayName,photoUrl}`
- —
+`AuthSessionAuthenticated{uid,email,displayName,photoUrl}` —
  
 `uid`
  là sợi nối identity↔profile (M24).
@@ -186,8 +183,7 @@ không phải ở production.
 - 
 `factory`
  ctor + named params + 
-`T?`
-/
+`T?`/
 `??`.
 
 ## Mental model mới — ba cái cùng lúc
@@ -208,13 +204,11 @@ UserProfileData (domain, local)          public.users row (remote, SQL)
 
 `AppUserData`
  đứng giữa: một chiều 
-`fromProfile`
-/
+`fromProfile`/
 `toUpsertMap`
  đi lên,
 một chiều 
-`fromMap`
-/
+`fromMap`/
 `toProfile`
  đi xuống. Đổi tên cột ở SQL → chỉ file
 này đổi; đổi field domain → cũng chỉ file này đổi. Đó là anti-corruption
@@ -281,29 +275,13 @@ này, không phải bảng generic.
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
-| 
-`factory X.fromMap(Map<String, dynamic> m)`
- | row JSON → DTO — / áp dụng |
-| 
-`factory X.fromProfile({required session, required profile})`
- | domain + session → DTO — named factory đọc hai nguồn |
-| 
-`Map<String, Object?> toUpsertMap()`
- | DTO → payload 
-`upsert`
- — key = tên cột |
-| 
-`static T _xValue(Object? v, T fallback)`
- | parse phòng thủ — reuse |
-| 
-`const UserProfileData()`
- làm 
-`defaults`
- | fallback = default domain, không magic number |
-| 
-`map['snake_key']`
- ↔ field camelCase | dịch thủ công, không codegen — giữ verbatim senior |
+| --- | --- |
+| `factory X.fromMap(Map<String, dynamic> m)` | row JSON → DTO — áp dụng |
+| `factory X.fromProfile({required session, required profile})` | domain + session → DTO — named factory đọc hai nguồn |
+| `Map<String, Object?> toUpsertMap()` | DTO → payload `upsert` — key = tên cột |
+| `static T _xValue(Object? v, T fallback)` | parse phòng thủ — reuse |
+| `const UserProfileData()` làm `defaults` | fallback = default domain, không magic number |
+| `map['snake_key']` ↔ field camelCase | dịch thủ công, không codegen — giữ verbatim senior |
 
 Không construct Dart mới ở đây — mới ở **pattern**: một class chỉ để
 dịch biên, nằm trong 
@@ -382,8 +360,7 @@ Room/Retrofit bạn đã quen
 `data class UserEntity`
  với field khác tên
 domain model + hàm 
-`toDomain()`
-/
+`toDomain()`/
 `toEntity()`. 
 `AppUserData`
  là đúng
@@ -405,8 +382,7 @@ Moshi/kotlinx.serialization map
 `snake_case↔camelCase`
  tự động; ở đây
 ánh xạ viết tay trong 
-`fromMap`
-/
+`fromMap`/
 `toUpsertMap`
  — dễ đọc, dễ review,
 và sai thì test schema (Bước 3) bắt ngay. Đừng tìm annotation — không
@@ -425,25 +401,11 @@ tồn tại phía domain (đừng cố ghi
 
 ## Senior project connection
 
-| Senior @ 
-`main@c8eb860`
- | Dùng để chứng minh |
-|---|---|
-| 
-`lib/data/profile/app_user_data.dart`
- | learner port verbatim — cùng 8 field, 4 ctor/method, 3 parser phòng thủ (file senior còn chứa 
-`mergeUserProfileForSync`
- + helpers — Bài 2) |
-| 
-`supabase/student-setup/01-setup-database.sql`
- | bảng 
-`public.users`
- + unique 
-`auth_uuid`
- + FK + CHECKs + RLS own-row — learner byte-identical từ M23 |
-| 
-`supabase/student-setup/02-verify-database.sql`
- | script verify 11 cột + policies + trigger + view — learner port byte-identical (file mới M25) |
+| Senior @ `main@c8eb860` | Dùng để chứng minh |
+| --- | --- |
+| `lib/data/profile/app_user_data.dart` | learner port verbatim — cùng 8 field, 4 ctor/method, 3 parser phòng thủ (file senior còn chứa `mergeUserProfileForSync` + helpers — Bài 2) |
+| `supabase/student-setup/01-setup-database.sql` | bảng `public.users` + unique `auth_uuid` + FK + CHECKs + RLS own-row — learner byte-identical từ M23 |
+| `supabase/student-setup/02-verify-database.sql` | script verify 11 cột + policies + trigger + view — learner port byte-identical (file mới M25) |
 
 ## Build it step by step
 
@@ -673,37 +635,15 @@ tính đã ở
 
 ## Hiểu code — ba chi tiết dễ trượt
 
-1. **
-`fromProfile`
- đọc 
-`profile.username`
- → 
-`displayName`
- → cột
- 
-`name`.** Ba tên cho một khái niệm: domain gọi 
-`username`, DTO gọi
- 
-`displayName`
- (thân thiện với session 
-`displayName`), SQL gọi
- 
-`name`. Lần dịch nào cũng tường minh — không có ánh xạ ngầm.
-2. **
-`toProfile`
- trả 
-`gamesWon: 0`
- là cố ý, không phải sót.** Row
- remote không biết 
-`gamesWon`; Bài 2 merge lấy lại từ local —
- 
-`gamesWon: normalizedLocalProfile.gamesWon`. Nếu "fix" bằng cách
- giữ giá trị remote… remote không có gì để giữ.
-3. **
-`_intValue`
- từ chối cả số âm.** CHECK 
-`≥ 0`
- phía server và guard
+1. **`fromProfile` đọc `profile.username` → `displayName` → cột
+   `name`.** Ba tên cho một khái niệm: domain gọi `username`, DTO
+   gọi `displayName` (thân thiện với session `displayName`), SQL
+   gọi `name`. Lần dịch nào cũng tường minh — không có ánh xạ ngầm.
+2. **`toProfile` trả `gamesWon: 0` là cố ý, không phải sót.**
+   Row remote không biết `gamesWon`; Bài 2 merge lấy lại từ local —
+   `gamesWon: normalizedLocalProfile.gamesWon`. Nếu "fix" bằng cách
+   giữ giá trị remote… remote không có gì để giữ.
+3. **`_intValue` từ chối cả số âm.** CHECK `≥ 0` phía server và guard
  
 `value >= 0`
  phía client là cùng luật hai đầu — row bẩn (âm) rơi
@@ -738,8 +678,7 @@ thật. Bài này chứng minh shape bằng: schema test khóa key-payload,
 file SQL byte-identical senior (diff 
 `-q`
  sạch), và 
-`fromMap`
-/
+`fromMap`/
 `toProfile`
 
 unit-level. Đường live (chạy 
@@ -807,17 +746,14 @@ parse phòng thủ.
 ## Lỗi hay gặp
 
 1. **Coi 
-`name`
-/
-`displayName`
-/
+`name`/
+`displayName`/
 `username`
  khác nhau là bug.** Đó là
  thiết kế: cột SQL 
 `name`, DTO 
 `displayName`, domain 
-`username`
- —
+`username` —
  DTO dịch tường minh mỗi chiều.
 2. **Thêm 
 `email`
@@ -856,25 +792,11 @@ Không chạy test. Với từng input, viết ra giấy kết quả
 `AppUserData.fromProfile(session: s, profile: p).toUpsertMap()`
 :
 
-| # | 
-`session`
- | 
-`profile`
- |
-|---|---|---|
-| a | 
-`AuthSessionAuthenticated(uid: 'u9')`
- | 
-`UserProfileData()`
- (mặc định) |
-| b | 
-`AuthSessionAuthenticated(uid: 'u7', displayName: 'G')`
- | 
-`UserProfileData(username: 'LAN', level: 3, gamesJoined: 2, gamesWon: 1, totalMoneyWon: 9000)`
- |
-| c | như b | 
-`UserProfileData(avatarUrl: 'a.png', username: ' ')`
- |
+| # | `session` | `profile` |
+| --- | --- | --- |
+| a | `AuthSessionAuthenticated(uid: 'u9')` | `UserProfileData()` (mặc định) |
+| b | `AuthSessionAuthenticated(uid: 'u7', displayName: 'G')` | `UserProfileData(username: 'LAN', level: 3, gamesJoined: 2, gamesWon: 1, totalMoneyWon: 9000)` |
+| c | như b | `UserProfileData(avatarUrl: 'a.png', username: ' ')` |
 
 Cụ thể cần ghi: giá trị của 
 `'auth_uuid'`, 
@@ -970,15 +892,11 @@ và
 - 
 `mergeUserProfileForSync`
  + 
-`_higherLevelProgressionProfile`
-/
+`_higherLevelProgressionProfile`/
  
-`_maxInt`
-/
-`_nonEmpty`
-/
-`_withoutDemoProgression`
-/
+`_maxInt`/
+`_nonEmpty`/
+`_withoutDemoProgression`/
 `_hasDemoProgression`
 
  — **Bài 2**, cùng file 
@@ -1008,12 +926,9 @@ và
 `AppUserData`
 
  8 field + 
-`fromMap`
-/
-`fromProfile`
-/
-`toUpsertMap`
-/
+`fromMap`/
+`fromProfile`/
+`toUpsertMap`/
 `toProfile`
  +
  3 parser phòng thủ (merge chưa có — Bài 2).

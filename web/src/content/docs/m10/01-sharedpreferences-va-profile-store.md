@@ -287,7 +287,7 @@ M14+; bài chỉ yêu cầu nhận ra *hướng*.)
 - `int.tryParse` cho dữ liệu string-hoá — profile ta lưu thuần typed
   JSON nên `is int` đủ; `tryParse` sẽ xuất hiện nếu phải đọc legacy
   string (senior có `_moneyFromDisplay` xử lý đúng ca đó — ta bỏ qua,
-  ghi chú trong DECISIONS).
+  đây là lựa chọn có chủ đích, không phải thiếu sót).
 
 ## Checkpoint hoàn thành
 

@@ -252,6 +252,69 @@ class AIMillionaireApp extends StatelessWidget {
 `AIMillionaireApp` trở lại `const` không-tham-số: đường threading
 `main → App → MenuScreen` của M10 bị xoá sạch.
 
+### Bước 4 — `MenuScreen` đọc store từ scope
+
+Bỏ tham số `profileStore` thì `widget.profileStore` trong `initState`
+không còn tồn tại — store giờ lấy *từ cây* bằng đúng `context.read`
+vừa học (tra một lần, không cần subscribe):
+
+```dart
+// lib/screens/menu_screen.dart
+import 'package:provider/provider.dart';   // THÊM — extension read/watch
+
+class MenuScreen extends StatefulWidget {
+  const MenuScreen({super.key});           // BỎ `required this.profileStore`
+  // (field `profileStore` cũng xoá)
+  // …
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  late final MenuViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    // context.read hợp lệ trong initState: provider đã gắn phía trên,
+    // tra một lần không subscribe — thay widget.profileStore của M11.
+    _viewModel = MenuViewModel(store: context.read<ProfileStore>());
+    unawaited(_viewModel.load());
+  }
+  // … ListenableBuilder + dispose giữ nguyên …
+}
+```
+
+Đây là lần áp dụng đầu tiên của bảng quy tắc vừa học: initState cần
+object *một lần* → `read`, không phải `watch`.
+
+### Bước 5 — cập nhật widget test cũ
+
+`initState` giờ gọi `context.read<ProfileStore>()` → mọi test pump
+`MenuScreen` *không có scope phía trên* sẽ nổ
+`ProviderNotFoundException` — đúng lỗi bạn sắp thử ở mục "Chạy và
+quan sát". Ba chỗ pump còn lại từ M08–M10 (hai ở M08, một ở M09) đang
+truyền tham số đã bị xoá, sửa mỗi chỗ từ:
+
+```dart
+await tester.pumpWidget(
+  MaterialApp(home: MenuScreen(profileStore: profileStore)),
+);
+```
+
+thành bọc scope *ngoài* `MaterialApp` — đúng thứ tự cây thật:
+
+```dart
+await tester.pumpWidget(
+  AppDependencyScope(
+    profileStore: profileStore,   // store test tự tạo (M10: prefs giả)
+    child: const MaterialApp(home: MenuScreen()),
+  ),
+);
+```
+
+Đây là **test seam** của DI: test tự dựng dependency tại biên, không
+mượn `main()`. Từ đây mọi test chạm `MenuScreen` đều đi qua scope —
+giống hệt pattern Bước 3 ở production.
+
 ## Hiểu code
 
 - **`Provider.value` vs `Provider(create:)`** — quyết định duy nhất:

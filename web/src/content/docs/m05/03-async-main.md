@@ -64,7 +64,7 @@ nó hoàn thành trước khi coi chương trình "chạy xong phần khởi đ�
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `Future<void> main() async` | signature mới | `main` là hàm async — được chứa `await` |
 | `WidgetsFlutterBinding.ensureInitialized()` | gọi đồng bộ | Khởi tạo binding sớm — bắt buộc nếu có await/plugin call trước `runApp` |
 
@@ -75,7 +75,7 @@ hại (idempotent).
 ## Flutter cần dùng
 
 | API | Vai trò |
-|-----|---------|
+| ----- | --------- |
 | `WidgetsFlutterBinding` | Lớp keo giữa framework và engine; `ensureInitialized()` tạo nó sớm |
 | `runApp` | Gắn widget gốc — như M01, vẫn vậy |
 

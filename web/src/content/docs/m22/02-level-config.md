@@ -33,11 +33,11 @@ không đào code. Một bảng tra cứu + một hàm đọc — đó là toàn
 So sánh hai curve để thấy cái scaffold tạm khác gì:
 
 | Cấp | learner cũ (`expForNextLevel`, ×1.5/cấp) | senior `getExpRequiredForLevel` |
-|---|---|---|
+| --- | --- | --- |
 | 1 → 2 | 35000 | 35000 (`(30000+5000)×1`) |
 | 2 → 3 | 52500 | 40000 (`(30000+10000)×1`) |
 | 4 → 5 | 118125 | 75000 (`(30000+20000)×1.5` — đích là mốc 5) |
-| 100 → — | ∞ tự nhiên | `maxExpRequirement` (không lên nữa) |
+| 100 → | ∞ tự nhiên | `maxExpRequirement` (không lên nữa) |
 
 Curve learner tăng theo hàm mũ vô hạn; senior là **tuyến tính nhân
 mốc**: mỗi cấp trả `(baseExp + level×growth)` nhân hệ số của *level
@@ -54,7 +54,7 @@ mốc**: mỗi cấp trả `(baseExp + level×growth)` nhân hệ số của *le
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `static const _map = <int, double>{5: 1.5, …}` | bảng tra cứu compile-time — **config table** |
 | `map[key] ?? 1` | mốc không có trong bảng → hệ số mặc định 1 |
 | `while (level < max) { if (exp < need) break; … }` | vòng lặp "đốt" ngưỡng từng cấp — dùng ở Bài 4 |
@@ -77,7 +77,7 @@ Port verbatim (doc comment Việt hoá, còn lại y senior):
 
 ```dart
 /// Bảng cấu hình EXP/level — M22, port verbatim từ senior
-/// `lib/data/game/level_config.dart` (FR-01/FR-03 converge).
+/// `lib/data/game/level_config.dart` (converge với senior).
 ///
 /// Ngưỡng EXP để lên từ `level` sang `level + 1`:
 /// `(baseExp + level × growthPerLevel) × multiplier(level + 1)` —

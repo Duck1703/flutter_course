@@ -1,6 +1,6 @@
 ---
 title: "Bài 3 · CustomPainter + AnimationController — đồng hồ đếm ngược"
-description: "Hai CORE concept đầu của milestone. `AnimationController` + `vsync`/`TickerProviderStateMixin` : timer sở hữu HAI controller — `_pulseController` repeat(reverse) bounds 1→1.08 ở ≤20%, `_progressController` lái Tween progress 1s giữa các nhịp giây. `CustomPainter` : stadium `Path` + `computeMetrics`+`extractPath` + `Paint` stroke gradient round-cap + `shouldRepaint`. `didUpdateWidget` sync controller khi data đổi — animate vs snap. `GameScreenTopBar` host đầu tiên. +7 test → 270."
+description: "Hai CORE concept đầu của milestone. `AnimationController` + `vsync`/`TickerProviderStateMixin`: timer sở hữu HAI controller — `_pulseController` repeat(reverse) bounds 1→1.08 ở ≤20%, `_progressController` lái Tween progress 1s giữa các nhịp giây. `CustomPainter`: stadium `Path` + `computeMetrics`+`extractPath` + `Paint` stroke gradient round-cap + `shouldRepaint`. `didUpdateWidget` sync controller khi data đổi — animate vs snap. `GameScreenTopBar` host đầu tiên. +7 test → 270."
 sidebar:
   label: "Bài 3 · painter + controller"
   order: 3
@@ -8,17 +8,17 @@ sidebar:
 
 ## Mục tiêu
 
-- Phát biểu mental model : `AnimationController` là
+- Phát biểu mental model: `AnimationController` là
   *ticker mình sở hữu* — `vsync` để nhịp theo frame, `duration`
   cho một chu kỳ, `forward/reverse/repeat/stop` điều khiển,
   `dispose` bắt buộc; khác `AnimatedOpacity` ở chỗ widget
   implicit *tự* sở hữu controller, còn explicit controller mình
   phải tự quản lifecycle.
-- Phát biểu mental model : `CustomPainter` là
+- Phát biểu mental model: `CustomPainter` là
   *render-object tự vẽ* — `paint(Canvas, Size)` phát lệnh vẽ
   thuần (`Paint` = cọ/màu, `Path` = hình, `Canvas` = mặt vẽ);
   `shouldRepaint` là hợp đồng "delegate đổi → vẽ lại".
-- Phát biểu mental model : `didUpdateWidget` là *điểm
+- Phát biểu mental model: `didUpdateWidget` là *điểm
   đồng bộ* — khi widget config đổi (progress mới), State quyết
   định animate tới hay snap-ngay.
 - Port `GameCountdownTimer` + `_PillProgressPainter` (qua
@@ -174,7 +174,7 @@ void didUpdateWidget(covariant GameCountdownTimer oldWidget) {
 ## Ví dụ độc lập — một painter + một controller (DartPad)
 
 ```dart
-// ISOLATED EXAMPLE — not in project. F-38+F-39 thu nhỏ:
+// ISOLATED EXAMPLE — not in project. Thu nhỏ từ senior:
 // controller lái painter vẽ arc progress.
 import 'dart:math' as math;
 import 'package:flutter/material.dart';

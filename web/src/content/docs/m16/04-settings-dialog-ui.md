@@ -48,7 +48,7 @@ không phải nguồn.
 ## Flutter cần dùng
 
 | API | Ví dụ | Nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | `Switch` | `Switch(value: item.isEnabled, onChanged: (_) => vm.toggleSetting(item))` | controlled toggle — `value` từ data |
 | `GestureDetector(behavior: HitTestBehavior.opaque)` | quanh cả `Row` | bấm đâu trong hàng cũng chạy `onTap` |
 | `HitTestBehavior.opaque` | tham số trên | vùng hit-test gồm cả phần "trống" của hàng |
@@ -496,13 +496,13 @@ bước nào mới.
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. Vì sao `saveSettings()` của VM phát *event* thay vì gọi `pop`?
 2. `_didLoadSettings` cờ dùng để làm gì — và vì sao không để trong
    `initState`?
 3. Gear icon là `GestureDetector` — senior dùng `GlassIconButton`;
-   khác biệt nào được register (row nào)?
+   khác biệt nào đã được ghi nhận là cố ý?
 
 <details><summary>Đáp án</summary>
 

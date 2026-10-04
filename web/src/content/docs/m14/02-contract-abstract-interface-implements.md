@@ -38,13 +38,17 @@ ba thứ dễ nhầm:
 
 ```dart
 abstract class A {}            // có thể chứa code sẵn (body, field, ctor)
-abstract interface class I {}  // CHỈ chữ ký — không thân hàm, không ctor
+abstract interface class I {}  // abstract + "file khác chỉ implements được"
 class C {}                     // class thường
 ```
 
-- `abstract interface class` = **chỉ mang chữ ký**. Ai `implements` nó
-  phải cung cấp đủ các member đã hứa — compiler kiểm tra. Không có
-  code để thừa hưởng.
+- `abstract interface class` = class abstract (không `new` được) **cộng
+  hạn chế kế thừa của `interface`**: từ *file khác*, ai dùng nó chỉ được
+  `implements` — không `extends`, không `with`. Body/ctor vẫn *khai
+  được* (Dart không cấm), nhưng qua `implements` impl không thừa hưởng
+  gì — mọi member phải tự viết lại — nên theo convention contract chỉ
+  để chữ ký. Ai `implements` nó phải cung cấp đủ member đã hứa —
+  compiler kiểm tra.
 - `implements` (khác `extends`): impl **không thừa hưởng gì** — nó cam
   kết "tôi có đủ member contract nói". Một class được `implements`
   nhiều interface cùng lúc; `extends` chỉ một.
@@ -54,9 +58,10 @@ class C {}                     // class thường
 
 **Android bridge:** `abstract interface class` ≈ `interface` của Kotlin
 (không state, không ctor). `implements` ≈ `: Interface`. Khác biệt
-nhỏ: Kotlin `interface` cho phép property + hàm có body mặc định; Dart
-`interface` class không cho body — muốn code chia sẻ phải `abstract
-class` thường.
+nhỏ: Kotlin `interface` cho property + hàm có body mặc định mà impl
+*kế thừa được*; Dart `interface` class khai body được nhưng
+`implements` không thừa hưởng — member nào cũng phải viết lại, nên
+muốn code chia sẻ phải `abstract class` thường.
 
 ### Ví dụ độc lập — đọc trước khi gặp bản project
 
@@ -195,9 +200,11 @@ và VM vẫn đang dùng nó** — đúng ý đồ.
 - **"Missing concrete implementation"** — nếu bạn tự thử
   `implements UserProfileRepository` mà bỏ sót member, analyzer bắt
   ngay. Đây là contract đang làm việc, không phải lỗi.
-- **`extends` thay `implements`** — `extends UserProfileRepository`
-  trên `abstract interface class` không compile (interface không cho
-  kế thừa). Senior chọn `implements` cho tất cả impl.
+- **`extends` thay `implements`** — chú ý ranh giới file: *từ file
+  khác*, `extends` một `interface class` là lỗi compile; nhưng trong
+  **cùng file** với contract thì `extends` vẫn hợp lệ — analyzer không
+  cứu được. Impl của project nằm chung file với contract, nên senior
+  giữ `implements` bằng convention chứ không nhờ compiler bắt.
 - **Gọi `create()` không `await`** — `create()` trả
   `Future<Impl>`; bỏ `await` là cầm Future chứ không phải Impl.
 
@@ -216,7 +223,9 @@ abstract interface class StopwatchRepository {
 
 1. Viết một `InMemoryStopwatchRepository implements` nó — tối thiểu
    đủ member.
-2. Thử `extends` thay `implements` — analyzer nói gì?
+2. Thử `extends` thay `implements` trong cùng file — analyzer có báo
+   không? Vì sao (không)? — *Cấm `extends` chỉ áp dụng khi file khác
+   dùng contract; trong cùng file vẫn hợp lệ.*
 3. Vì sao `dispose()` nằm *trong contract* chứ không chỉ ở impl? —
    *Ai giữ kiểu contract (VM/test teardown) vẫn cần gọi được; member
    không khai trong contract thì consumer không thấy.*
@@ -224,8 +233,9 @@ abstract interface class StopwatchRepository {
 ## Tự kiểm tra
 
 1. `abstract interface class` khác `abstract class` chỗ nào? —
-   *Interface thuần chữ ký, không body/ctor; impl `implements` cam
-   kết đủ member chứ không thừa hưởng code.*
+   *Interface cấm `extends` từ file khác (chỉ `implements` được);
+   body/ctor vẫn khai được nhưng impl `implements` không thừa hưởng —
+   phải tự viết đủ member.*
 2. Vì sao `create()` là `static Future` thay vì ctor thường? —
    *`SharedPreferences.getInstance()` là Future; ctor không await
    được nên construction async gói trong factory static.*

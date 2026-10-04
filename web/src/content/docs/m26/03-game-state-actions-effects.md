@@ -58,7 +58,7 @@ contract phải compile sạch trước khi ai dùng.
 - `DreAction`/`DreEffect`/`DreAsyncOp` markers + `DreResult`
  (Bài 2).
 
-## Mental model mới — "token trong state; effect là ý định" (+, CORE)
+## Mental model mới — "token trong state; effect là ý định" (CORE)
 
 ```text
 BẢN TRUNG GIAN (M19–M25):
@@ -93,7 +93,7 @@ con số; không có "field VM" và "state" lệch nhau được nữa.
 | `sealed class GameAction implements DreAction` | sealed family gắn marker — + |
 | `final class GameAnswerRevealElapsed extends GameAction { final int flowToken; }` | action mang payload — token là *data đi cùng intent* |
 | `List.unmodifiable(...)`/`Map.unmodifiable`/`Set.unmodifiable` trong ctor | defensive view — state không bị sửa từ ngoài |
-| `copyWith({…, bool clearSelectedAnswer = false, bool clearAudiencePercentiles = false})` | cờ clear cho field nullable — |
+| `copyWith({…, bool clearSelectedAnswer = false, bool clearAudiencePercentiles = false})` | cờ clear cho field nullable |
 | `factory GameState.initial({required timePerQuestion})` | named ctor — điểm khởi đầu duy nhất của session |
 | `export 'game_dre_*.dart'` | barrel — một import cho cả contract |
 

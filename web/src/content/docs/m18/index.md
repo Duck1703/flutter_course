@@ -55,7 +55,7 @@ Trả lời được năm câu này là đủ:
    trong Stack"; M27 permission thật thay simulated grant;
    M28 visual parity.
 
-## Còn lại sau M18 (đã register)
+## Còn lại sau M18
 
 - Nút "Bật thông báo" mô phỏng granted — permission
   thật + lịch hẹn → M27.

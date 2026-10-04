@@ -47,7 +47,7 @@ rồi render theo variant. Lợi ích thật, thấy ngay trong bài 4:
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | `enum` dispatch key | `SettingType.sound` | gắn "loại hàng" vào data — switch biết toggle cái gì |
 | `sealed class` + `final class` | `final class SettingSwitchItemData extends SettingItemData` | hàng switch mang thêm `isEnabled` |
 | collection-`if` | `if (effective) SettingTimePickerItemData(...)` | hàng chỉ tồn tại khi điều kiện đúng |
@@ -251,7 +251,7 @@ List<SettingItemData> buildSettingItems({
       text: 'Thông báo',
       subtitle: 'Mỗi ngày một lần',
       settingType: SettingType.notifications,
-      // Switch theo giá trị EFFECTIVE — FR-27: senior AND thêm quyền
+      // Switch theo giá trị EFFECTIVE — senior AND thêm quyền
       // OS (`&& _hasNotificationPermission`) ở M27; giờ bằng flag.
       isEnabled: effectiveNotificationEnabled,
     ),
@@ -370,7 +370,7 @@ này.
 
 </details>
 
-## Kiểm tra hiểu biết3. **Đặt time row NGOÀI `if`** — hàng giờ hiển thị cả khi thông báo
+3. **Đặt time row NGOÀI `if`** — hàng giờ hiển thị cả khi thông báo
    tắt; learner nhìn "giờ" của một tính năng đang tắt.
 
 ## Kiểm tra hiểu biết

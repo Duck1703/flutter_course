@@ -87,7 +87,7 @@ từ caller giữ scope rõ ràng và độc lập với thứ tự provider ph�
 ## Dart cần dùng / Flutter cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | `StreamController<T>.broadcast()` | `_events = StreamController.broadcast()` | event một-lần: listener đến trễ không nhận lại |
 | `late final` | `late final StreamSubscription _settingsSubscription;` | first-use: khai báo trước, gán sau — bắt buộc vì subscription chỉ tạo được *trong thân* ctor (sau khi field khác sẵn sàng) |
 | `unawaited(future)` | `unawaited(viewModel.loadSettings())` | "cố ý không chờ" — bỏ lint dangling future |
@@ -152,7 +152,7 @@ Cùng một VM, hai lifetime khác nhau — chỉ đổi *chỗ đặt provider*
 ```dart
 /// Event một-lần của settings dialog — sealed để switch kiệt hợp
 /// (M15). Senior có thêm `notificationPermissionRequired` — chưa cần
-/// vì quyền thông báo là M27 (FR-27).
+/// vì quyền thông báo là M27.
 sealed class SettingsUiEvent {
   const SettingsUiEvent();
 }
@@ -202,7 +202,7 @@ class SettingsViewModel extends ChangeNotifier {
     effectiveNotificationEnabled: effectiveNotificationEnabled,
   );
 
-  /// FR-27 → M27: senior = `notificationEnabled && hasPermission`.
+  /// M27: senior = `notificationEnabled && hasPermission`.
   bool get effectiveNotificationEnabled => _settings.notificationEnabled;
 ```
 
@@ -513,10 +513,10 @@ dispose**, và state sống **bao lâu**. Viết đáp án ra *trước* khi m�
 gợi ý — đây là bài tập thiết kế, không phải nhận diện.
 
 | Nhu cầu | Tầng của bạn? |
-|---|---|
-| (a) `ConfirmResetViewModel` — dialog "Xoá toàn bộ dữ liệu local?" với trạng thái đang-xử-lý + đã-tick-checkbox | |
-| (b) `MenuTabState` — tab nào của menu đang được chọn (persist giữa các lần đẩy dialog, mất khi rời menu) | |
-| (c) `AppLocaleController` — quyết định `MaterialApp.locale`, sống suốt app | |
+| --- | --- |
+| (a) `ConfirmResetViewModel` — dialog "Xoá toàn bộ dữ liệu local?" với trạng thái đang-xử-lý + đã-tick-checkbox |  |
+| (b) `MenuTabState` — tab nào của menu đang được chọn (persist giữa các lần đẩy dialog, mất khi rời menu) |  |
+| (c) `AppLocaleController` — quyết định `MaterialApp.locale`, sống suốt app |  |
 
 Kèm câu hỏi bắt buộc cho mỗi hàng: *nếu đặt sai một tầng CAO hơn,
 hậu quả nhìn thấy là gì? nếu đặt THẤP hơn?*
@@ -542,7 +542,7 @@ hơn thứ hiển thị nó không?"** — không thì đặt đúng tầng củ
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. Vì sao `timePickerVisible` nằm trong VM thay vì `setState` của
    dialog?

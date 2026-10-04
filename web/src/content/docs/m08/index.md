@@ -41,17 +41,17 @@ với nó như người dùng.
 - Quiz 4 câu chơi trọn vẹn: chọn → chốt → feedback → tiếp → kết quả.
 - Đáp án đúng luôn hiện xanh sau chốt; sai thì ô sai đỏ + ô đúng xanh.
 - `flutter test` xanh gồm cả `test/widgets/game_screen_test.dart`
-  (6 widget test mới) và test integrity của bank.
+  (5 widget test mới) và test integrity của bank.
 - Vẫn chưa có Timer/dialog — đó là M09.
 
 ## Tổng kết M08 — tự kiểm tổng hợp
 
 - **Tôi học được gì?** `testWidgets`/`WidgetTester`, `find.byType/
-  byText`, `tap`+`pump`, model `QuizQuestion`/`GameResult`.
+  byText`, `tap`+`pump`, model `QuizQuestion`.
 - **Tôi giải thích được gì?** Widget test không chạy device —
   `pump()` điều khiển frame tay; `findsOneWidget` assert cây render.
-- **Tôi viết được gì không copy?** Một widget test tap CHƠI và assert
-  route mới xuất hiện qua `NavigatorObserver` (bài Tự làm).
+- **Tôi viết được gì không copy?** Một widget test tap nút chơi và assert
+  route mới xuất hiện qua `find.text` trên màn đích (bài Tự làm).
 - **Nếu X đổi thì sao?** `onPressed: null` — `tester.tap` có throw
   không? (Không — gesture dispatch nhưng callback null; assert kết
   quả mới là chỗ bắt.)

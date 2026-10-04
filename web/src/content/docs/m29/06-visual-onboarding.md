@@ -56,10 +56,10 @@ senior:
        overlay_scope (3-builder chain verbatim)
 ```
 
- trong register: *"Onboarding visuals — port
+ trong danh sách khác-biệt còn lại: *"Onboarding visuals — port
 `OnboardingTokens`/card/button/indicator/actions/overlay"*.
-Và một residual `MenuTokens`→`AppTokens` retirement ghi tại
-brief: *"course-invented, no senior counterpart"* — đợt xoá
+Và một residual `MenuTokens`→`AppTokens` retirement đã ghi nhận
+từ đợt phân tích: *"course-invented, no senior counterpart"* — đợt xoá
 được hẹn ngay khi consumer cuối port.
 
 ## Vì sao việc này quan trọng ngay bây giờ
@@ -131,7 +131,7 @@ rất cố ý.
 | `AnimatedSwitcher` + `ScaleTransition` + `FadeTransition` | lớp-3 actions | |
 | `AnimatedContainer(duration, curve)` | indicator width 8↔24 | |
 | `BackdropFilter` + `ClipRect` + `ColoredBox` | haze-overlay | |
-| `FutureBuilder` + `StreamBuilder` lồng | scope-gate: future-1-lần rồi stream |, |
+| `FutureBuilder` + `StreamBuilder` lồng | scope-gate: future-1-lần rồi stream | reuse |
 | `ChangeNotifierProvider(create: … ..load())` | VM-scoped | |
 | `SvgPicture.asset(badgeAsset)` | icon-trong-badge | |
 

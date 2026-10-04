@@ -96,7 +96,7 @@ Ba kênh ra của một transition:
  mapper y như cũ.
 - **`effects`** — *ý định* nằm ngoài reducer: bật/dừng timer, hẹn
  delay, điều hướng. Là **data**, không phải `Timer` thật.
-- **`asyncOp`** — tối đa MỘT việc async per reduce : game có
+- **`asyncOp`** — tối đa MỘT việc async per reduce: game có
   đúng một op — `GameSaveResult`.
 
 Giới hạn của model: reducer không nhận kết quả-IO (save xong không
@@ -107,7 +107,7 @@ báo lại reducer); không rollback; và "DRE" chỉ là tên — repo không
 
 | Construct | Vai trò |
 |---|---|
-| `sealed class` + `final class` variant | tập đóng action/effect — / reuse |
+| `sealed class` + `final class` variant | tập đóng action/effect — reuse |
 | `switch` expression exhaustive | reduce = bảng tra; Dart bắt đủ case |
 | `implements` vs `extends` | reducer *implement* contract — không kế thừa code |
 
@@ -247,7 +247,7 @@ chuỗi `[Increment, Increment, Reset]` in gì?
 ## Lỗi hay gặp
 
 1. **Bịa expansion cho "DRE"** — repo không định nghĩa; viết "DRE
-   = …" trong code/comment/brief là sai quy ước project.
+   = …" trong code/comment/ghi chú là sai quy ước project.
 2. **Cho rằng reducer chạy effect** — gọi `Timer`/`Future` trong
    `reduce` phá purity và không test được thuần.
 3. **Đợi asyncOp "xong" trong reduce** — reduce đồng bộ; op chạy

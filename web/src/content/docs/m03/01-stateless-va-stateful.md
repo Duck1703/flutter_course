@@ -184,7 +184,7 @@ dạy học** — tồn tại để cho `setState` có thứ gì đó để đ�
 không có toggle âm thanh trần trên menu cũng không đếm số lần bấm CHƠI:
 âm thanh là switch trong settings dialog (M16, repo-backed), nút CHƠI
 mở game ngay. Chúng sẽ **retire ở M13** khi event bridge + repo stream
-thay thế (xem `SENIOR_FIDELITY_REGISTER` FR-20/FR-21). Học cú pháp,
+thay thế (senior dùng cơ chế đó thật). Học cú pháp,
 đừng học nó như feature của sản phẩm.
 :::
 

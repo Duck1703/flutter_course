@@ -32,7 +32,7 @@ vẫn còn*. Một vài quyết định nhỏ ở đây là bản chất của p
 - **Reset = `reset()` ghi profile mặc định** — đúng semantics senior:
   `resetUserProfile()` trong `user_profile_repository.dart` là
   `saveUserProfile(const UserProfileData())`, tức GHI default đè lên
-  key chứ không xoá key. Learner làm y hệt từ remediation trở đi.
+  key chứ không xoá key. Course làm y hệt từ đây trở đi.
 
 ## Bạn đã biết gì
 
@@ -301,9 +301,9 @@ Widget test "VỀ MENU → …" đã cập nhật để đọc thẳng prefs và
   một push = một result = một lần áp, dễ kiểm chứng bằng đếm trên disk.
 - **`reset()` ghi default đè key, không `remove()`** — đó là đúng
   semantics của senior (`resetUserProfile()` = `saveUserProfile(
-  const UserProfileData())`). Ban đầu course dùng `clear()` (xoá key)
-  như một biến thể; remediation đã chỉnh lại — "chưa từng lưu" và
-  "đã reset" giờ là hai trạng thái disk khác nhau, giống senior.
+  const UserProfileData())`). Đừng nhầm với `clear()` (xoá hẳn key) —
+  ở đây "chưa từng lưu" và "đã reset" là hai trạng thái disk khác nhau,
+  giống senior.
 
 ## Chạy và quan sát
 
@@ -346,42 +346,46 @@ Widget test "VỀ MENU → …" đã cập nhật để đọc thẳng prefs và
 **Tự viết test — không copy.** `ProfileStore` đã có `load/save/reset`.
 Viết **hai** test mới trong `test/` kiểm chứng `reset()` và corrupt data:
 
-1. `reset()` xóa profile: save một profile → `await store.reset()` →
-   `await store.load()` trả `null`.
-2. Corrupt: ghi thẳng `prefs.setString(key, '{bad json')` (bypass
-   `save`) → `load()` không throw — trả `null` hay `PlayerProfile`?
-   Đọc `fromMap`/try-catch trước, dự đoán, rồi test.
-3. `SharedPreferences.setMockInitialValues({})` ở `setUp` — nếu quên,
-   test nào fail?
+1. `reset()` ghi profile mặc định: save một profile → `await
+   store.reset()` → `await store.load()` trả gì — `null`, exception,
+   hay `UserProfileData` mặc định? Đọc `reset()` trong `ProfileStore`
+   trước, dự đoán, rồi test.
+2. Corrupt: ghi thẳng `'user_profile'` = `'[1,2,3]'` — JSON *hợp lệ*
+   nhưng không phải Map (bypass `save`) → `load()` trả gì? Đọc nhánh
+   `decoded is Map` và `on FormatException` trong `load()` trước, dự
+   đoán, rồi test.
+3. `makeStore` bọc `SharedPreferences.setMockInitialValues` — nếu bỏ
+   sót lệnh đó, test nào fail và vì sao?
 
 :::note[Gợi ý]
-`SharedPreferences.setMockInitialValues` tạo prefs in-memory cho test —
-không cần device. `fromMap` có `try/catch` → corrupt JSON → `null` chứ
-không throw.
+`makeStore` (Bước 5) đã bọc `SharedPreferences.setMockInitialValues` —
+prefs in-memory cho test, không cần device. `try/on FormatException`
+nằm trong `load()`, không phải `fromMap`: mọi nhánh xấu (chưa có key,
+chuỗi không phải JSON, JSON không phải Map) đều trả `UserProfileData`
+mặc định — `load()` **không bao giờ** trả `null`.
 :::
 
 <details><summary><strong>Đáp án</strong></summary>
 
 ```dart
-setUp(() => SharedPreferences.setMockInitialValues({}));
-
-test('reset clears saved profile', () async {
-  final store = ProfileStore();
-  await store.save(const PlayerProfile(displayName: 'Lan'));
+test('reset ghi profile mặc định đè lên key (không xoá key)', () async {
+  final store = await makeStore(const {});
+  await store.save(const UserProfileData(
+      username: 'Lan', totalMoneyWon: 200000, gamesJoined: 3));
   await store.reset();
-  expect(await store.load(), isNull);
+  // `reset()` = `save(const UserProfileData())` — load trả mặc định.
+  expect(await store.load(), equals(const UserProfileData()));
 });
 
-test('load returns null on corrupt json', () async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('player_profile', '{bad json');
-  expect(await ProfileStore().load(), isNull);
+test('JSON hợp lệ nhưng không phải Map → load trả mặc định', () async {
+  final store = await makeStore(const {'user_profile': '[1,2,3]'});
+  expect(await store.load(), equals(const UserProfileData()));
 });
 ```
 
-Nếu quên `setMockInitialValues`: `SharedPreferences.getInstance` trong
-test không có platform channel → `MissingPluginException` hoặc prefs
-rỗng nhưng persist xuyên test → test flaky.
+Nếu `setMockInitialValues` bị bỏ sót: `SharedPreferences.getInstance`
+trong test không có platform channel → `MissingPluginException` — cả
+hai test đều fail ngay tại `makeStore`.
 
 </details>
 
@@ -390,7 +394,7 @@ rỗng nhưng persist xuyên test → test flaky.
 - Cập nhật profile *live khi đang chơi* — cần repository stream (M14).
 - Confirm-dialog cho reset — UI dialog layer là M21; senior không có
   nút reset trên menu (reset đi qua sign-out dialog, M24) — nút này là
-  scaffold đã đăng ký trong fidelity register, retire M24.
+  scaffold tạm thời của course, sẽ tháo ra ở M24.
 - Skeleton trạng thái "đang lưu" — đủ nhỏ để chưa cần.
 
 ## Checkpoint hoàn thành

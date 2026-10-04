@@ -1,6 +1,6 @@
 ---
 title: "Bài 4 · Seal hoá event bridge — MenuUiEvent → MenuScreenUiEvent"
-description: "Áp dụng sealed + exhaustive switch vào event family của M13; FR-15 converge. File đổi tên theo senior; `is`-chain → switch kiệt hợp."
+description: "Áp dụng sealed + exhaustive switch vào event family của M13 — converge với senior. File đổi tên theo senior; `is`-chain → switch kiệt hợp."
 sidebar:
   label: "Bài 4 · seal event bridge"
   order: 4
@@ -19,7 +19,7 @@ vào một event family thật: đổi `abstract class MenuUiEvent` thành
 - Vào bài: `MenuUiEvent` là `abstract class` (M13); `_handleUiEvent`
   dùng `if (event is …) else if`.
 - Ra bài: event family sealed + bridge là `switch` kiệt hợp — hợp
-  senior 1:1 (đây là đóng register **FR-15**).
+  senior 1:1.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -31,7 +31,7 @@ không phải sửa lỗi; M13 dùng `abstract` là cố ý đơn giản cho lú
 
 ## Bạn đã biết gì
 
-- UI event một-lần + broadcast stream + bridge (M13 — `A-05`).
+- UI event một-lần + broadcast stream + bridge (M13).
 - `sealed class` + object pattern (bài 2–3 của milestone này).
 - `unawaited` (M11): đánh dấu discard-async chủ đích.
 
@@ -42,7 +42,7 @@ M13 giữ nguyên: `MenuScreenUiEvent` vẫn là "việc vừa xảy ra" (bấm 
 → điều hướng/snackbar), không phải "UI đang hiển thị gì". Sealed chỉ
 đóng *tập loại event* — tương tự state đóng nhưng dùng cho sự kiện.
 
-Điểm này là reinforcement quan trọng của A-05: **cả event lẫn state
+Điểm này là reinforcement quan trọng của M13: **cả event lẫn state
 đều có thể là sealed hierarchy** — sealed là tính chất *của tập kiểu*,
 không phải của vai trò state/event.
 

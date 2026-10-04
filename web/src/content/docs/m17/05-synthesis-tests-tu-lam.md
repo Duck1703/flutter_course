@@ -42,7 +42,7 @@ chạy được". Unit test whitelist khoá cửa sau cho dữ kiện bẩn từ
 
 | Cú pháp | Ví dụ | Ý nghĩa |
 |---|---|---|
-| `group(name, () { … })` | `group('FR-26 — whitelist', …)` | gom test liên quan, tên group xuất hiện trong output |
+| `group(name, () { … })` | `group('languageCode whitelist', …)` | gom test liên quan, tên group xuất hiện trong output |
 | `addTearDown(fn)` | `addTearDown(repo.dispose)` | dọn fake sau mỗi test — stream không rò |
 | `const {'k': v}` map literal | `fromMap(const {'languageCode': 'fr'})` | test `fromMap` phòng thủ bằng map giả |
 
@@ -88,11 +88,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/fake_user_settings_repository.dart';
 
-/// M17 — locale follows persisted settings: FR-26 whitelist unit tests
+/// M17 — locale follows persisted settings: whitelist unit tests
 /// + widget test đúng shape senior `widget_test.dart`
 /// ("app locale follows persisted language settings").
 void main() {
-  group('FR-26 — languageCode whitelist (senior _supportedLanguageCode)', () {
+  group('languageCode whitelist (senior _supportedLanguageCode)', () {
     test('mã hỗ trợ giữ nguyên: en / vi', () {
       expect(
         UserSettingsData.fromMap(const {'languageCode': 'en'}).languageCode,

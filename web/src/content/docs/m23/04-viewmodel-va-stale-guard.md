@@ -195,7 +195,7 @@ profile-backed, `_formatScore`, `_isLatestRequest`, `_setState`,
 leaderboard_dialog_view_model_test.dart`: 9 test —
 
 | # | Test | Chứng minh |
-|---|---|---|
+| --- | --- | --- |
 | 1 | state khởi đầu `LeaderboardPopupLoading` | ctor không auto-load |
 | 2 | success → entries + currentEntry + `lastCurrentUserId == null` + `loadCallCount == 1` | guest seam |
 | 3 | snapshot rỗng cả hai → `LeaderboardPopupEmpty` | nhánh ⑤ |
@@ -305,7 +305,7 @@ leaderboard_dialog_view_model_test.dart` kiểm chứng.
 ## Ta cố ý chưa thêm
 
 - `AuthRepository` trên ctor + `switch(authState)` trả uid —
- **M24** (guest seam, register đã ghi).
+ **M24** (guest seam — khác-biệt có chủ đích).
 - `DreChangeNotifier`/`asyncOp` + huỷ request thật của senior bản
  DRE — **M26**; `_requestId` đã đủ cho pull-to-refresh race.
 - Taxonomy lỗi (network vs 4xx/5xx) — senior cũng chỉ `catch →

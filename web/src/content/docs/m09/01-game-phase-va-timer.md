@@ -117,7 +117,7 @@ Ba điều cần thấy:
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `Timer.periodic` | `Timer.periodic(const Duration(seconds: 1), _onTick)` | Từ `dart:async`; gọi callback mỗi chu kỳ — **không** phải Stream, không `listen` |
 | `timer.cancel()` | `_timer?.cancel();` | Dừng hẳn; `?.` vì timer có thể chưa được tạo |
 | `Timer?` field | `Timer? _timer;` | Nullable: "chưa có/đã hủy" là trạng thái hợp lệ |
@@ -368,7 +368,7 @@ Ba quy tắc sống còn của timer — giờ **phá từng cái một** trên 
 dự đoán triệu chứng *nhìn thấy được*:
 
 | Phá quy tắc | Dự đoán triệu chứng trên UI/console |
-|---|---|
+| --- | --- |
 | 1. Không `cancel` timer cũ trong `_startTimer` (chuyển câu tạo timer mới) | ? |
 | 2. Không `cancel` trong `dispose` (back về menu giữa đếm ngược) | ? |
 | 3. Không guard `_phase != answering` trong `_onTick` | ? |

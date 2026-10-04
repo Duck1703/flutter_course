@@ -101,7 +101,7 @@ bí mật thật, chỉ sống trên server/dashboard, tuyệt đối không đ�
 vào client. Rule ngắn: **publishable key ship cùng app; service-role
 không bao giờ rời máy chủ.**
 
-`public.leaderboard` là VIEW, không phải bảng : nó là "câu
+`public.leaderboard` là VIEW, không phải bảng: nó là "câu
 query được đặt tên" chạy với quyền owner — đọc toàn bộ `users` để
 xếp hạng, rồi chỉ lộ các cột public. Client đọc view; không ai đọc
 bảng gốc trừ chủ nhân từng dòng.
@@ -109,7 +109,7 @@ bảng gốc trừ chủ nhân từng dòng.
 ## Dart mới — `String.fromEnvironment`
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `const String.fromEnvironment('KEY')` | hằng biên dịch: giá trị truyền qua `--dart-define=KEY=...`; thiếu → `''` |
 | `defaultValue: 'x'` | tham số tuỳ chọn — thiếu key → `'x'` thay vì `''` |
 | `--dart-define=KEY=value` (flutter) / `--define=KEY=value` / `-D` (dart CLI) | cách truyền lúc build/run |
@@ -176,7 +176,7 @@ DO NOT ASSUME:        nó KHÔNG giống SharedPreferences/Remote Config:
 ## Senior project connection
 
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
-|---|---|
+| --- | --- |
 | `lib/core/supabase_environment.dart` | learner port nguyên văn — cùng 4 key, cùng predicates, cùng chuỗi lỗi |
 | `supabase/student-setup/01-setup-database.sql` | schema thật: `public.users` + RLS owner policies + view `security_barrier` — copy byte-identical vào learner repo (bên dưới) |
 | `lib/main.dart` | `SupabaseEnvironment.fromEnvironment()` là bước bootstrap đầu tiên (Bài 2 port) |
@@ -423,7 +423,7 @@ Không sửa app. Cho từng tổ hợp khởi chạy, viết ra giấy ba giá 
 `isSupabaseConfigured` / `isGoogleConfigured` / `configurationError`:
 
 | # | dart-define truyền vào |
-|---|---|
+| --- | --- |
 | a | *(không truyền gì)* |
 | b | `--dart-define=SUPABASE_URL=<your-project-url>` (chỉ url) |
 | c | `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY` đủ, không Google |

@@ -96,7 +96,7 @@ UI). Ba khâu bắt buộc:
   attach guard `if (_viewModel == viewModel) return;` →
   `_eventSubscription?.cancel()` → gắn sub mới; `dispose` → cancel.
   Learner dùng **đúng ba khâu** này.
-- Khác biệt cấu trúc (đã ghi trong brief): senior đặt bridge là widget
+- Khác biệt cấu trúc (đã phân tích ở trên): senior đặt bridge là widget
   wrapper riêng `_MenuScreenEventBridge`; learner gộp vào
   `_MenuScreenViewState` vì State đó đã tồn tại — ít một lớp widget
   cho người mới, semantics y hệt.

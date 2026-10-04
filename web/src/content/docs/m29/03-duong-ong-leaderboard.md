@@ -84,7 +84,7 @@ là verbatim gần như tuyệt đối, chỉ thêm đúng **một seam**
 
 ```text
 DB row (snake_case, nullable, kiểu lỏng)
-   │  _LeaderboardRecord.fromMap   ← parse phòng-thủ (D-41)
+   │  _LeaderboardRecord.fromMap   ← parse phòng-thủ
    ▼
 _LeaderboardRecord (typed, đã-clean)
    │  .toEntry() — 3 mapper deterministic
@@ -291,7 +291,7 @@ Future<LeaderboardSnapshot> loadLeaderboard({String? currentUserId}) async {
 // → row của bạn dù KHÔNG trong top-10; null → guest/no-row
 ```
 
-`maybeSingle()` là chi tiết quan trọng : "0 hoặc 1 hàng"
+`maybeSingle()` là chi tiết quan trọng: "0 hoặc 1 hàng"
 — guest (uid null) hoặc user chưa có row đều trả `null` thay
 vì throw. VM nhận `null` → tự build entry-pin từ profile local.
 
@@ -390,8 +390,8 @@ static LeaderboardEntryData entryFromRow(
 Đây là ví dụ mẫu của "documented deviation" trong sweep: senior
 không có seam này, nhưng thêm nó cho phép test
 `_intValue`/`_stringValue`/mapper mà không mock Supabase.
-Logic bên trong vẫn verbatim — chỉ cửa vào là mới. Register
-ghi rõ `TEST_SEAM` thay vì `CONVERGED`-mập mờ.
+Logic bên trong vẫn verbatim — chỉ cửa vào là mới. Đây là seam
+phục vụ test, không phải hội tụ đầy đủ — ghi nhận rõ vậy.
 
 ## Hiểu code — 6 chi tiết dễ trượt
 
@@ -549,9 +549,9 @@ enum). Success mang data; Empty/Error/Loading mang message —
 phân tầng "trạng thái" vs "chi tiết trạng thái".
 
 **H: Seam `entryFromRow` có phải divergence không?** — Có, và
-được *documented đúng* trong register (`TEST_SEAM`): nó bóc
+được ghi nhận đúng: nó bóc
 private-mapper ra test không đổi logic; senior không cần vì
-senior test qua mock client. cho phép deviation kiểu này
+senior test qua mock client. Course cho phép deviation kiểu này
 — miễn là ghi rõ, không improve lén.
 
 ## Ta cố ý chưa thêm

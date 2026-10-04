@@ -60,14 +60,13 @@ không phải feature.
 ## Tổng kết M12 — tự kiểm tổng hợp
 
 - **Tôi học được gì?** `Provider.value` vs `create:`,
-  `context.read`/`watch`/`select`, `ChangeNotifierProvider` tự dispose,
+  `context.read`/`watch`, `ChangeNotifierProvider` tự dispose,
   `AppDependencyScope` là service-locator qua widget tree.
 - **Tôi giải thích được gì?** Provider tra theo *kiểu đăng ký* —
   `read<A>` không thấy `Provider<B>` dù B subtype A (nền cho DI theo
   contract M14); `watch` trong build, `read` trong callback.
-- **Tôi viết được gì không copy?** Wire một `FakeClock` qua
-  `MultiProvider`/provider lồng và dùng `read`/`watch` đúng chỗ (bài
-  Tự làm).
+- **Tôi viết được gì không copy?** Wire một `FakeClock` qua hai
+  provider lồng nhau và dùng `read`/`watch` đúng chỗ (bài Tự làm).
 - **Nếu X đổi thì sao?** Ba Provider lồng nhau vs một `MultiProvider`
   — semantics khác không? (Không — MultiProvider chỉ gom list.)
 - **Concept cần lại sau:** `context.read<T>()` — M13 bridge, M14 DI;

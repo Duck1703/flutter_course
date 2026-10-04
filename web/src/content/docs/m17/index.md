@@ -39,7 +39,7 @@ Trả lời được năm câu này là đủ:
 2. **Giải thích được?** Vì sao en là template; vì sao `of(context)`
    cần delegates phía trên; vì sao đổi ngôn ngữ không cần restart;
    vì sao VM lấy chữ qua tham số chứ không tự `of(context)`.
-3. **Viết lại không copy?** Tự làm: thêm key mới `settingsFooterHint`
+3. **Viết lại không copy?** Tự làm: thêm key mới `appTagline`
    en+vi, regenerate, hiển thị trong dialog.
 4. **Nếu … thì sao?** Lưu `'fr'` vào settings → whitelist → `null`
    → MaterialApp fallback; thiếu key ở vi → rớt về en; thiếu
@@ -47,10 +47,10 @@ Trả lời được năm câu này là đủ:
 5. **Cần ở đâu sau?** M18 gắn onboarding strings; M22+ mở rộng auth
    surface (các key còn thiếu so với senior đến theo từng feature).
 
-## Còn lại sau M17 (đã register)
+## Còn lại sau M17
 
-- `languageCode` whitelist — **xong** (đóng tại M17).
-- Độ phủ l10n: 48/119 keys senior; casing bake sẵn;
-  snackbar reset hồ sơ là literal) → các key mới theo từng surface
+- `languageCode` whitelist — **xong** tại M17.
+- Độ phủ l10n: 48/119 keys senior; casing bake sẵn (snackbar
+  reset hồ sơ vẫn là literal) → các key mới theo từng surface
   ở M18/M22/M23+; đổi casing chỉ khi cần parity pass.
 - Permission/account/dialog-entry/icon: không đổi (M27/M22+/M21/M24).

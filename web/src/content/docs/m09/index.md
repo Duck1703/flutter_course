@@ -57,7 +57,7 @@ lý do **M11+ (ViewModel)** tồn tại; ta cố ý chưa tách để bạn cả
 ## Tổng kết M09 — tự kiểm tổng hợp
 
 - **Tôi học được gì?** `Timer`/`Timer.periodic`, `showDialog`,
-  `Navigator.pop(context, result)` trả kết quả, reset session.
+  `Navigator.pop` đóng route/dialog, reset session.
 - **Tôi giải thích được gì?** Chủ sở hữu hủy `Timer` trong `dispose`
   (bài Tự làm — `setState() after dispose`); dialog là route → pop
   trả value về caller.

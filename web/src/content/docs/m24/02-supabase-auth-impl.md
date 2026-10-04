@@ -128,18 +128,13 @@ Chạy với project riêng là OPTIONAL — Bài 5.
  + 
 `isClosed`;
  
-`StreamSubscription`
-/
-`listen`
-/
-`onError`
-/
+`StreamSubscription`/
+`listen`/
+`onError`/
 `cancel`; 
 `unawaited`; 
-`try`
-/
-`on`
-/
+`try`/
+`on`/
 `catch`
  phân loại exception.
 - 
@@ -185,61 +180,17 @@ bằng chứng sống — xem dưới).
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
-|---|---|
-| 
-`GoogleSignIn.instance.initialize(clientId:, serverClientId:)`
- | **v7** (guided): khởi tạo singleton một lần — 
-`clientId`
- = iOS client id, 
-`serverClientId`
- = **Web client id** mà Supabase verify idToken bằng |
-| 
-`GoogleSignIn.instance.authenticate(scopeHint:)`
- | **v7**: mở flow chọn tài khoản → 
-`GoogleSignInAccount`
- |
-| 
-`account.authentication.idToken`
- | idToken cho Supabase (nullable — check trước khi dùng) |
-| 
-`account.authorizationClient.authorizationForScopes(scopes)`
- / 
-`authorizeScopes`
- | lấy accessToken cho scope đã xin — best-effort |
-| 
-`GoogleSignInException`
- + 
-`GoogleSignInExceptionCode.canceled`
- | package ném typed exception — repo map 
-`canceled`
- → message |
-| 
-`client.auth.signInWithIdToken(provider:, idToken:, accessToken:, nonce:)`
- | Supabase đổi idToken provider → session (guided) |
-| 
-`client.auth.signInWithPassword(email:, password:)`
- / 
-`signUp`
- / 
-`signOut`
- | email auth trực tiếp |
-| 
-`client.auth.onAuthStateChange`
- | 
-`Stream<AuthState>`
- — mọi đổi auth server-side emit về (applied) |
-| 
-`AuthException`
- / 
-`AuthResponse`
- / 
-`User.userMetadata`
- | type của 
-`supabase_flutter`
- cho auth |
-| 
-`typedef Name = ReturnType Function(params)`
- | đặt tên cho chữ ký hàm — seam inject hàm vào ctor (dùng ở appendix) |
+| --- | --- |
+| `GoogleSignIn.instance.initialize(clientId:, serverClientId:)` | **v7** (guided): khởi tạo singleton một lần — `clientId` = iOS client id, `serverClientId` = **Web client id** mà Supabase verify idToken bằng |
+| `GoogleSignIn.instance.authenticate(scopeHint:)` | **v7**: mở flow chọn tài khoản → `GoogleSignInAccount` |
+| `account.authentication.idToken` | idToken cho Supabase (nullable — check trước khi dùng) |
+| `account.authorizationClient.authorizationForScopes(scopes)` / `authorizeScopes` | lấy accessToken cho scope đã xin — best-effort |
+| `GoogleSignInException` + `GoogleSignInExceptionCode.canceled` | package ném typed exception — repo map `canceled` → message |
+| `client.auth.signInWithIdToken(provider:, idToken:, accessToken:, nonce:)` | Supabase đổi idToken provider → session (guided) |
+| `client.auth.signInWithPassword(email:, password:)` / `signUp` / `signOut` | email auth trực tiếp |
+| `client.auth.onAuthStateChange` | `Stream<AuthState>` — mọi đổi auth server-side emit về (applied) |
+| `AuthException` / `AuthResponse` / `User.userMetadata` | type của `supabase_flutter` cho auth |
+| `typedef Name = ReturnType Function(params)` | đặt tên cho chữ ký hàm — seam inject hàm vào ctor (dùng ở appendix) |
 
 **V7 khác v6 ra sao** (quan trọng — đừng Google rồi chép code cũ):
 v6 dùng 
@@ -610,8 +561,7 @@ không phải học sâu**: trên web/Android nút không tồn tại theo thi�
 `authSessionFromAppleAuthResponse(response, tokens, {fallbackUser})`
 
  — enrich session bằng 
-`tokens.email`
-/
+`tokens.email`/
 `tokens.displayName`
  khi
  Supabase thiếu (lần đầu); đồng thời lưu 
@@ -693,8 +643,7 @@ class GoogleAuthServiceImpl implements GoogleAuthService {
 
 (`signIn`
  trên contract trả 
-`GoogleAuthTokens?`
- — 
+`GoogleAuthTokens?` —
 `null`
  khi user
 cancel; impl ném exception cho lỗi thật. 
@@ -707,8 +656,7 @@ thành
  — env chưa set → không truyền clientId rỗng.)
 
 **Bước 3 — 
-`lib/repositories/auth/supabase_auth_repository.dart`
-**
+`lib/repositories/auth/supabase_auth_repository.dart`**
 (317 dòng, verbatim — đã mổ ở trên). Bao gồm 
 `AuthRepositoryImpl`
  +
@@ -769,9 +717,7 @@ leaderboard ternary, trước
         );
 ```
 
-Cùng một dấu 
-`?:`
- của : thiếu config → Disabled (guest + failure
+Cùng một dấu `?:` của conditional DI: thiếu config → Disabled (guest + failure
 messages); đủ config → impl Supabase bọc hai service OAuth.
 
 **Bước 8 — 
@@ -789,8 +735,7 @@ khi result success — mô phỏng "repo thật emit sau sign-in") /
 
 `…CallCount`
  + 
-`lastEmail`
-/
+`lastEmail`/
 `lastPassword`
  cho assert. 
 `initialSession`
@@ -871,8 +816,7 @@ metadata** (ưu tiên) —
 `photoUrl`
  avatar của Supabase chứ không phải của Apple. Chỉ dùng
 
-`AuthResponse`
-/
+`AuthResponse`/
 `User`
  data class — không 
 `SupabaseClient`, không
@@ -1035,19 +979,10 @@ giấy: impl nào
  khi app vừa mở:
 
 | # | dart-define |
-|---|---|
+| --- | --- |
 | a | *(không truyền)* |
-| b | 
-`SUPABASE_URL`
- + 
-`SUPABASE_PUBLISHABLE_KEY`, không 
-`GOOGLE_*`
- |
-| c | đủ cả bốn 
-`SUPABASE_*`
- + 
-`GOOGLE_*`
- |
+| b | `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY`, không `GOOGLE_*` |
+| c | đủ cả bốn `SUPABASE_*` + `GOOGLE_*` |
 
 <details>
 <summary>Đáp án</summary>
@@ -1057,8 +992,7 @@ giấy: impl nào
  → seed 
 `AuthSessionGuest`.
 - b → 
-`AuthRepositoryImpl`
- — 
+`AuthRepositoryImpl` —
 `isSupabaseConfigured`
  true nên client
  tồn tại; impl vẫn tạo được dù thiếu Google (service chỉ đọc env khi
@@ -1120,8 +1054,7 @@ giấy: impl nào
 - 
 `UserProfileSyncRepository`
  + coordinator gọi 
-`syncUserProfile`
- —
+`syncUserProfile` —
  **Bài 3** (call-site đã sẵn trong impl: coordinator sẽ gọi).
 - Dialog VMs dùng repo này — **Bài 4**; nút/UI — **Bài 5**.
 - 

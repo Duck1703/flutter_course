@@ -98,7 +98,7 @@ Future<void> applyGameResult(GameResult result) async {
 VM chỉ **save qua repo**. Repo emit → `_handleUserProfile` cập nhật
 `_userData` + notify. Stream là nguồn truth duy nhất — writer nào
 save cũng vậy. (Ở senior, *game* VM save; learner giữ áp kết quả ở
-menu tới M19/M22 — FR-04 — cơ chế stream đã là của senior.)
+menu tới M19/M22 — cơ chế stream đã là của senior.)
 
 `resetProfile()` tương tự: `resetUserProfile()` → stream cập nhật →
 `MenuSnackBarRequested` vẫn bắn. `loadUserProfile()` chỉ delegate:
@@ -125,7 +125,7 @@ Vì sao dám xoá? Vì senior không có surface này — repo seeded bằng
 `BehaviorSubject` nên *luôn* có giá trị để render; `loadUserProfile()`
 chỉ nạp bản lưu vào stream chứ không phải điều kiện hiển thị. Menu
 giờ render `userData` trực tiếp — frame đầu thấy seed, emit sau tự
-cập nhật. (FR-08 → CONVERGED: abstraction tạm M11 đã được thay bằng
+cập nhật. (Abstraction tạm M11 giờ đã được thay bằng
 cơ chế thật của senior.)
 
 ## `menu_screen.dart` đổi tương ứng
@@ -147,7 +147,7 @@ format sẵn — bài 5). Xoá nhánh `loadState` switch khỏi `build`.
 xoá `lib/data/profile/profile_store.dart` và
 `test/profile_store_test.dart`. Đây là thứ tự đúng: migrate → rút
 bridge → xoá. (Bài 1 của chuỗi cũ xoá file đầu tiên — đó là lỗi
-sequencing mà remediation sửa: checkpoint "analyze sạch" chỉ có
+sequencing đã sửa: checkpoint "analyze sạch" chỉ có
 nghĩa khi không còn ai dùng file bị xoá.)
 
 ## Test chứng minh stream propagation
@@ -262,7 +262,7 @@ testWidgets('menu shows saved profile on first frame', (t) async {
 ## Ta cố ý chưa thêm
 
 - **`sealed` cho event/state** — M15; `MenuUiEvent` vẫn `abstract` +
-  `is`-check (FR-15).
+  `is`-check.
 - **Load settings/onboarding vào VM** — consumer của hai repo đó là
   M16/M18.
 - **`authRepository` trong `loadUserProfile`** — senior gọi cả hai

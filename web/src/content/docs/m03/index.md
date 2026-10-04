@@ -45,7 +45,7 @@ nhưng bị reset bởi Hot Restart — và giải thích được vì sao.
 - **Tôi học được gì?** `StatefulWidget` = Widget + `State<T>` tách
   rời; `setState`; data-down/events-up; callback `VoidCallback`.
 - **Tôi giải thích được gì?** Vì sao Widget immutable nhưng app vẫn
-  đổi; ai sở hữu `_soundOn`; `initState`/`dispose`/`didChangeDependencies`.
+  đổi; ai sở hữu `_soundOn`; `initState`/`dispose`.
 - **Tôi viết được gì không copy?** Một widget con nhận value +
   callback (bài Tự làm `_MuteDot`) — không nhìn `_ProfileHeader`.
 - **Nếu X đổi thì sao?** Nếu `_toggleMuted` đổi field không qua

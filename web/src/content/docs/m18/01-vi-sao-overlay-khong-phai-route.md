@@ -88,8 +88,8 @@ Không `push`, không `pop`, không barrier của `showDialog`.
   phần hiệu ứng (visual parity đến M28).
 - Gating chain senior `FutureBuilder → StreamBuilder → Provider`:
   learner giữ `FutureBuilder` + `Provider`, bỏ `StreamBuilder` trong
-  vì VM tự subscribe stream (EXPLAIN_ONLY — giải thích, chủ động
-  rút gọn, đã register).
+  vì VM tự subscribe stream (đơn giản hoá chủ đích: chỉ giải thích
+  khác biệt, không port StreamBuilder thứ hai).
 
 ## Chạy và quan sát
 

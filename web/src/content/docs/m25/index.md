@@ -55,79 +55,12 @@ lên
 ## Bản đồ bài học
 
 | Bài | Nội dung | Checkpoint |
-|-----|----------|-----------|
-| [01](m25/01-app-user-data-va-schema) | 
-`AppUserData`
- — DTO biên 8 field: 
-`fromMap`
-/
-`fromProfile`
-/
-`toUpsertMap`
-/
-`toProfile`
- + parse phòng thủ; bảng 
-`public.users`
- (11 cột, 
-`auth_uuid`
- unique FK → 
-`auth.users`, CHECK ≥0/level 1–100, RLS own-row); ba thứ remote không có (`email`, 
-`gamesWon`, 
-`totalEarnings`
--chuỗi); 
-`02-verify-database.sql`
- byte-identical | **226/226** (+2 schema) |
-| [02](m25/02-merge-user-profile-for-sync) | 
-`mergeUserProfileForSync`
- + 5 helper: identity session-wins (username session→remote→leader; avatar session→local→remote), progression leader level→exp-tiebreak nguyên khối, totals max từng field, 
-`gamesWon`
- local-only, 
-`_withoutDemoProgression`
- chặn tiến trình fake 
-`'TÀU HỦ ĐI CHILL'`
- lên remote | **233/233** (+7 merge) |
-| [03](m25/03-sync-repository-impl) | 
-`UserProfileSyncRepositoryImpl`
- cùng file Disabled: 
-`_isSyncing`
- re-entrancy (≠ 
-`_requestId`) → 
-`InProgress`
- → load local → 
-`_fetchRemoteProfile`
- 
-`maybeSingle`
- → merge → save local → 
-`_upsertRemoteProfile`
- 
-`upsert(onConflict:'auth_uuid')`
- + 
-`[sync]`
- log → 
-`Idle`; catch → 
-`Failed`
-+rethrow; 
-`_emit`
- dedupe/isClosed | **233/233** (+0 — impl cần SupabaseClient, coverage đến Bài 5) |
-| [04](m25/04-main-di-va-game-vm) | 
-`main()`
- ternary lần ba : 
-`supabaseClient == null ? Disabled : Impl(client, userProfileRepository)`; game VM ctor 
-`profile→auth→sync`
- + 
-`_syncSavedGameResult`
- thật (loadAuthState→authed→sync; guest skip; lỗi nuốt+log — "save là bổn phận, sync là best-effort"); 
-`game_screen.dart`
- create + mọi call-site test compile-forced; comment "LUÔN Disabled" retire | **233/233** (+0 — coverage Bài 5) |
-| [05](m25/05-sync-tests-va-tong-ket) | Group 
-`result profile sync (M25, FR-36)`
-: authed→
-`syncCallCount==1`
-+uid; guest→0+save intact; 
-`syncError`
-→nuốt+save 
-`==1`; ba tầng bằng chứng deterministic vs 
-`LIVE_PROFILE_SYNC: NOT_PERFORMED`; → CONVERGED | **236/236** (+3) |
+| ----- | ---------- | ----------- |
+| [01](m25/01-app-user-data-va-schema) | `AppUserData` — DTO biên 8 field: `fromMap` / `fromProfile` / `toUpsertMap` / `toProfile` + parse phòng thủ; bảng `public.users` (11 cột, `auth_uuid` unique FK → `auth.users`, CHECK ≥0/level 1–100, RLS own-row); ba thứ remote không có (`email`, `gamesWon`, `totalEarnings`-chuỗi); `02-verify-database.sql` byte-identical | **226/226** (+2 schema) |
+| [02](m25/02-merge-user-profile-for-sync) | `mergeUserProfileForSync` + 5 helper: identity session-wins (username session→remote→leader; avatar session→local→remote), progression leader level→exp-tiebreak nguyên khối, totals max từng field, `gamesWon` local-only, `_withoutDemoProgression` chặn tiến trình fake `'TÀU HỦ ĐI CHILL'` lên remote | **233/233** (+7 merge) |
+| [03](m25/03-sync-repository-impl) | `UserProfileSyncRepositoryImpl` cùng file Disabled: `_isSyncing` re-entrancy (≠ `_requestId`) → `InProgress` → load local → `_fetchRemoteProfile` `maybeSingle` → merge → save local → `_upsertRemoteProfile` `upsert(onConflict:'auth_uuid')` + `[sync]` log → `Idle`; catch → `Failed` +rethrow; `_emit` dedupe/isClosed | **233/233** (+0 — impl cần SupabaseClient, coverage đến Bài 5) |
+| [04](m25/04-main-di-va-game-vm) | `main()` ternary lần ba: `supabaseClient == null ? Disabled : Impl(client, userProfileRepository)`; game VM ctor `profile→auth→sync` + `_syncSavedGameResult` thật (loadAuthState→authed→sync; guest skip; lỗi nuốt+log — "save là bổn phận, sync là best-effort"); `game_screen.dart` create + mọi call-site test compile-forced; comment "LUÔN Disabled" retire | **233/233** (+0 — coverage Bài 5) |
+| [05](m25/05-sync-tests-va-tong-ket) | Group `result profile sync (M25, FR-36)`: authed→ `syncCallCount==1` +uid; guest→0+save intact; `syncError` →nuốt+save `==1`; ba tầng bằng chứng deterministic vs `LIVE_PROFILE_SYNC: NOT_PERFORMED`; → khớp senior | **236/236** (+3) |
 
 ## Kết quả cuối milestone
 
@@ -164,7 +97,7 @@ lên
 `[sync] upserting public.users …`); mỗi ván xong →
  
 `[game] result profile sync started/completed`.
-- FR đóng: — seam Disabled → impl thật + conditional DI +
+- Khớp cuối: seam Disabled → impl thật + conditional DI +
  result-sync branch; call-site coordinator/dialog VM đã đúng từ M24
  (verified, không rewire).
 - SQL: 
@@ -178,55 +111,15 @@ lên
 ## Điều milestone này cố ý chưa làm
 
 | Chưa làm | Milestone sở hữu | Vì sao |
-|---|---|---|
-| 
-`DreChangeNotifier`
-/
-`asyncOp`
- + cancel cho đường save→sync | **M26** | 
-`try/catch`
- + 
-`unawaited`
- + 
-`_isSyncing`
- tay đủ; DRE là lớp chung sau — 
-`_syncSavedGameResult`
- sẽ là op đầu tiên |
-| 
-`MenuDialogLayer`
- + 
-`MenuDialogAuth`
-/
-`MenuDialogSignOut`
- state thay event+
-`showDialog`
- | **M29** | : transport 
-`showDialog`
- giữ — cùng scaffold settings/leaderboard |
-| 
-`SettingsDialogShell`
-/
-`OnboardingGameButton`
-/icon-asset/
-`LevelProgressCard`
- visual parity | **M28** | chrome hiện tại đủ cho behavior; polish gộp đợt visual (32/34) |
-| Version text 
-`v$appVersion`
- + notification permission/scheduling | **M27** | residual + — package_info/permission chưa vào scope M25 |
-| Unit test trực tiếp cho 
-`UserProfileSyncRepositoryImpl`
- | — | 
-`SupabaseClient`
- concrete không fake in-process; merge/schema/call-path tests + senior-verbatim gánh verify (senior cũng không có repo-level test) |
-| UI consumer 
-`syncStateStream`
- (badge/spinner "đang đồng bộ") | — | senior không render; stream là observability channel — consumer thật nếu cần là việc sau |
-| Retry/backoff có policy cho 
-`ProfileSyncFailed`
- | — | senior không có; lần sync kế (sign-in / ván sau) là retry tự nhiên, merge idempotent |
-| Verify provider/database sống | — | 
-`LIVE_PROFILE_SYNC: NOT_PERFORMED`
- — không credential trong môi trường; merge+schema+call-path là đường PASS |
+| --- | --- | --- |
+| `DreChangeNotifier` / `asyncOp` + cancel cho đường save→sync | **M26** | `try/catch` + `unawaited` + `_isSyncing` tay đủ; DRE là lớp chung sau — `_syncSavedGameResult` sẽ là op đầu tiên |
+| `MenuDialogLayer` + `MenuDialogAuth` / `MenuDialogSignOut` state thay event+ `showDialog` | **M29** | transport `showDialog` giữ — cùng scaffold settings/leaderboard |
+| `SettingsDialogShell` / `OnboardingGameButton` /icon-asset/ `LevelProgressCard` visual parity | **M28** | chrome hiện tại đủ cho behavior; polish gộp đợt visual (32/34) |
+| Version text `v$appVersion` + notification permission/scheduling | **M27** | residual + — package_info/permission chưa vào scope M25 |
+| Unit test trực tiếp cho `UserProfileSyncRepositoryImpl` | — | `SupabaseClient` concrete không fake in-process; merge/schema/call-path tests + senior-verbatim gánh verify (senior cũng không có repo-level test) |
+| UI consumer `syncStateStream` (badge/spinner "đang đồng bộ") | — | senior không render; stream là observability channel — consumer thật nếu cần là việc sau |
+| Retry/backoff có policy cho `ProfileSyncFailed` | — | senior không có; lần sync kế (sign-in / ván sau) là retry tự nhiên, merge idempotent |
+| Verify provider/database sống | — | `LIVE_PROFILE_SYNC: NOT_PERFORMED` — không credential trong môi trường; merge+schema+call-path là đường PASS |
 
 ## Checkpoint tổng kết
 
@@ -312,8 +205,7 @@ Trả lời được năm câu này là đủ:
 `_requestId`
  (loại
  kết quả cũ); vì sao 
-`gamesWon`
-/
+`gamesWon`/
 `email`
  không lên 
 `public.users`;
@@ -326,8 +218,7 @@ Trả lời được năm câu này là đủ:
  Actual
  12 (Bài 2) + PRODUCE scratch authed→sync VM test (Bài 4) +
  PREDICT 
-`fromMap`
-/
+`fromMap`/
 `toUpsertMap`
  outputs (Bài 1), emit sequence
  (Bài 3), failing-assert map (Bài 5).
@@ -349,8 +240,7 @@ Trả lời được năm câu này là đủ:
 5. **Cần ở đâu sau?** M26 đưa DRE/
 `asyncOp`
  vào 
-`_saveGameResult`
-/
+`_saveGameResult`/
  
 `_syncSavedGameResult`; M27 version + notification; M28 visual
  parity; M29 

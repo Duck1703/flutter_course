@@ -73,7 +73,7 @@ có kết quả chạy được trong learner app — không có milestone thu�
 
 | # | Milestone | Bạn học được | Kết quả nhìn thấy | Trạng thái |
 |---|-----------|--------------|-------------------|-----------|
-| M29 | Senior alignment pass | Menu dialog layer, audit cấu trúc, fidelity sweep | Parity checklist hoàn chỉnh | <span class="status status-available">AVAILABLE</span> |
+| M29 | Senior alignment pass | Menu dialog layer, audit cấu trúc, khớp-senior sweep | Parity checklist hoàn chỉnh | <span class="status status-available">AVAILABLE</span> |
 
 :::note[Vì sao thứ tự này?]
 Mỗi milestone chỉ phụ thuộc vào khái niệm đã dạy trước đó — đồ thị phụ thuộc được

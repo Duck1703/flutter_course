@@ -172,11 +172,11 @@ sẽ biến mọi failure thành "sync im lặng không chạy".
 
 | Construct | Vai trò |
 |---|---|
-| `.upsert(map, onConflict: 'auth_uuid')` | insert-or-update keyed unique column — ** mới** |
-| `var _isSyncing = false` + `finally { _isSyncing = false }` | re-entrancy guard — ** mới** |
-| `_emit(state)` `!isClosed && value != state` | dedupe + dispose-safe emit — / reuse |
+| `.upsert(map, onConflict: 'auth_uuid')` | insert-or-update keyed unique column — **mới** |
+| `var _isSyncing = false` + `finally { _isSyncing = false }` | re-entrancy guard — **mới** |
+| `_emit(state)` `!isClosed && value != state` | dedupe + dispose-safe emit — reuse |
 | `maybeSingle()` → `Map?` → `AppUserData.fromMap` | 0-or-1 row → DTO — reuse |
-| `rethrow` (không `throw error`) | giữ nguyên stack trace gốc — |
+| `rethrow` (không `throw error`) | giữ nguyên stack trace gốc |
 | `// ignore_for_file: prefer_initializing_formals` | senior giữ ctor gán tay — verbatim |
 
 ## Ví dụ độc lập

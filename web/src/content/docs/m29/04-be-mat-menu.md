@@ -174,6 +174,13 @@ Trước khi xem re-port verbatim, tự phân mảnh:
 3. **re-port.** Auth dialogs từng bị *adapted* ở era `MenuTokens` —
    dự đoán diff lớn nhất giữa bản adapted và bản verbatim sẽ nằm ở
    đâu: số, token, hay structure?
+4. **Layout contract trước khi thấy code.** Nhớ lại ví dụ độc lập
+   "màn thấp scroll, màn cao giữa" — với 4 card + CTA, tự phát biểu
+   rule layout của senior: gap giữa các card *cố định* hay *co giãn*?
+   Margin trên/dưới thế nào? Widget nào chịu trách nhiệm căn giữa?
+   Viết rule của bạn ra, rồi đọc doc-comment `MenuScreenContent` ở
+   Bước 1 như spec đối chiếu — đoạn code `LayoutBuilder`/`minHeight`/
+   `panelGap` sẽ tự giải thích chính nó.
 :::
 ## Build it step by step
 
@@ -345,7 +352,7 @@ Text(l10n.menuLeaderboardEntrySubtitle, …),  // key mới Bài 01
 `onboarding_game_button` **đã tồn tại** ở learner — nhưng là
 bản *adapted* thời MenuTokens (literal thay token, bỏ sót
 chi tiết). Sweep thay chúng bằng verbatim — quy trình 
-không hỏi "đã có chưa" mà hỏi "khớp chưa". Đây là chỗ hai residual âm thầm converge.
+không hỏi "đã có chưa" mà hỏi "khớp chưa". Đây là chỗ hai khác biệt còn sót được sửa luôn.
 :::
 
 ## Hiểu code — 6 chi tiết dễ trượt

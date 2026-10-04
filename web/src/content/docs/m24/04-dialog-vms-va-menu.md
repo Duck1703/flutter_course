@@ -1,6 +1,6 @@
 ---
 title: "Bài 4 · Dialog VMs, single-flight & MenuViewModel nhận auth"
-description: "Hai dialog-scoped VM với sealed UiEvent (Dismiss/SnackBar — snackbar dời từ menu VM xuống dialog VM), _isLoading chặn double-tap, _isDisposed guard. MenuViewModel +AuthRepository (seed/sub/isAuthenticated/loadUserProfile dual). : LeaderboardDialogViewModel nhận AuthRepository + switch(authState) → uid. +18 test → 219."
+description: "Hai dialog-scoped VM với sealed UiEvent (Dismiss/SnackBar — snackbar dời từ menu VM xuống dialog VM), _isLoading chặn double-tap, _isDisposed guard. MenuViewModel +AuthRepository (seed/sub/isAuthenticated/loadUserProfile dual); LeaderboardDialogViewModel nhận AuthRepository + switch(authState) → uid. +18 test → 219."
 sidebar:
  label: "Bài 4 · dialog VMs + menu auth"
  order: 4
@@ -103,8 +103,8 @@ Scaffold, dialog vẫn mở — ").
 |---|---|
 | `StreamController<T>.broadcast()` | event một lần — listener đến trễ không nhận event cũ (đúng bản chất event; đối lập `BehaviorSubject` replay của state) |
 | `_events.isClosed` | check controller đã close trước `add` — emit vào controller đã close ném `StateError` |
-| named-param closure `action: _authActions.signInWithGoogle` | tear-off method làm `Future<AuthActionResult> Function()` — |
-| `case Variant(final field)` trong `switch(event)` | object pattern bóc `message` của `SnackBarRequested` — |
+| named-param closure `action: _authActions.signInWithGoogle` | tear-off method làm `Future<AuthActionResult> Function()` |
+| `case Variant(final field)` trong `switch(event)` | object pattern bóc `message` của `SnackBarRequested` |
 
 ## Ví dụ độc lập — single-flight trong 20 dòng
 
@@ -158,7 +158,7 @@ cần "giá trị mới nhất" thì dùng state stream, đừng dùng broadcast
 | `view_models/menu/menu_auth_dialog_view_model.dart` | verbatim — `_runAuthAction(label, failurePrefix, action)`, `continueAsGuest`, hai cờ guard |
 | `view_models/menu/menu_sign_out_dialog_view_model.dart` | verbatim — `signOut()` cùng skeleton, `'Sign out failed: $error'` |
 | `view_models/menu/menu_screen_view_model.dart` | `MenuViewModel` port: auth seed+sub + `isAuthenticated` + `loadUserProfile` gọi cả hai repo + `requestAuthAction` (Bài 5 nối event) |
-| `view_models/leaderboard/leaderboard_dialog_view_model.dart` | ctor +`AuthRepository`, `_currentLeaderboardUserId` switch — |
+| `view_models/leaderboard/leaderboard_dialog_view_model.dart` | ctor +`AuthRepository`, `_currentLeaderboardUserId` switch |
 | `test/menu_auth_dialog_view_model_test.dart` | 10 ca verbatim + 1 ca learner-add (guard test) |
 
 ## Build it step by step
@@ -243,7 +243,7 @@ chỉ snackbar, dialog mở lại cho thử lần nữa.
   StreamSubscription<AuthSessionData>? _authStateSubscription;
   AuthSessionData _authState;
 
-  /// M24 (FR-28): true khi phiên authenticated — lái pill Bài 5.
+  /// True khi phiên authenticated — lái pill Bài 5.
   bool get isAuthenticated => _authState.isAuthenticated;
 
   Future<void> loadUserProfile() async {

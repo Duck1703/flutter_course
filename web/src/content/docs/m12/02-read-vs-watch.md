@@ -10,13 +10,13 @@ sidebar:
 
 Phân biệt rành mạch `context.read<T>()` và `context.watch<T>()` —
 hai API tra provider nghe giống nhau nhưng semantics hoàn toàn khác —
-và áp dụng đúng chỗ trong `_MenuScreenView`.
+và đọc hiểu trước code bài 3 sẽ áp dụng trong `_MenuScreenView`.
 
 ## Bạn đang ở đâu
 
 - Milestone: **M12** (bài 2/3)
 - App hiện tại: `AppDependencyScope` đã cung cấp `ProfileStore` trong
-  cây (bài 1). `MenuScreen` chưa đổi — vẫn là StatefulWidget tự tạo VM.
+  cây (bài 1). `MenuScreen` chưa đổi kiến trúc — vẫn là StatefulWidget tự tạo VM (bài 1 chỉ đổi nguồn store).
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -59,7 +59,7 @@ dependency thay đổi, cũng là chỗ watch/read hợp lệ).
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `context.watch<T>()` | `final vm = context.watch<MenuViewModel>();` đầu `build` | Subscribe + đọc — mỗi notify là một rebuild |
 | `context.read<T>()` | `final vm = context.read<MenuViewModel>();` trong `_onPlayTap` | Đọc một lần, không rebuild |
 | `Provider.of<T>(ctx)` | `Provider.of<MenuViewModel>(ctx)` | API gốc; `read`/`watch` là cú pháp mới khuyên dùng |
@@ -95,10 +95,20 @@ từ `package:provider`.
 
 ## Build it step by step
 
-### Bước 1 — `watch` trong build của view
+:::caution[ĐỌC TRƯỚC — CHƯA GÕ]
+Hai đoạn dưới là **code của bài 3**, đưa ra để bạn đọc hiểu `read`/
+`watch` trong ngữ cảnh thật. Đừng gõ bây giờ: `ChangeNotifierProvider<
+MenuViewModel>` chưa tồn tại (bài 3 mới tạo) nên `context.watch/
+read<MenuViewModel>()` sẽ ném `ProviderNotFoundException`, và
+`_MenuScreenView` chưa được tách. Bài này **không đổi file nào** —
+`MenuScreen` vẫn giữ `_viewModel` + `ListenableBuilder` của M11
+  (initState đã đổi sang `context.read<ProfileStore>()` ở bài 1).
+:::
+
+### Bước 1 — `watch` trong build của view *(xem trước — bài 3 áp dụng)*
 
 ```dart
-// lib/screens/menu_screen.dart — _MenuScreenViewState.build:
+// lib/screens/menu_screen.dart — _MenuScreenViewState.build (BÀI 3):
 @override
 Widget build(BuildContext context) {
   // watch = subscribe MenuViewModel: mỗi notifyListeners → build chạy
@@ -132,12 +142,13 @@ Widget build(BuildContext context) {
 }
 ```
 
-Không còn `ListenableBuilder`, không còn field `_viewModel` —
-`watch` trả VM và lo luôn subscribe/unsubscribe.
+Bài 3 sẽ bỏ `ListenableBuilder` và field `_viewModel` — `watch` trả
+VM và lo luôn subscribe/unsubscribe. Giờ cứ giữ nguyên code hiện tại.
 
-### Bước 2 — `read` trong event handler
+### Bước 2 — `read` trong event handler *(xem trước — bài 3 áp dụng)*
 
 ```dart
+// _MenuScreenViewState (BÀI 3):
 Future<void> _onPlayTap() async {
   setState(() {
     _playTapCount++;
@@ -172,10 +183,12 @@ Future<void> _onPlayTap() async {
 
 ## Chạy và quan sát
 
-- `flutter analyze`/`flutter test` — xanh.
-- Thí nghiệm đáng thử một lần: đổi `context.watch` trong build thành
-  `context.read` → chạy app → đổi stats (chơi một ván) → menu **không
-  cập nhật** dù state đổi — cảm nhận trực tiếp "read không subscribe".
+- `flutter analyze`/`flutter test` — vẫn xanh (bài này không đổi file
+  nào; `MenuScreen` vẫn chạy VM trong `initState` như bài 1).
+- Đánh dấu thí nghiệm cho **sau bài 3**: khi `ChangeNotifierProvider`
+  đã có, đổi `context.watch` trong build thành `context.read` → chạy
+  app → đổi stats (chơi một ván) → menu **không cập nhật** dù state
+  đổi — cảm nhận trực tiếp "read không subscribe".
 
 ## Lỗi hay gặp
 
@@ -206,12 +219,12 @@ Future<void> _onPlayTap() async {
 ## Tự làm (RECOGNIZE + PREDICT)
 
 **Phần 1 — chọn `read` hay `watch`** cho 5 chỗ gọi dưới đây trong
-`_MenuScreenViewState`, và nêu tiêu chí quyết định:
+`_MenuScreenView` (state bài 3 sẽ tách), và nêu tiêu chí quyết định:
 
 | Chỗ gọi | Cần VM để | `read` hay `watch`? |
-|---|---|---|
-| 1. `build` — hiển thị `vm.profile.displayName` | vẽ text | ? |
-| 2. `onPressed` nút CHƠI | `vm.requestGame()` | ? |
+| --- | --- | --- |
+| 1. `build` — hiển thị `vm.profile.username` | vẽ text | ? |
+| 2. `_onPlayTap` — sau `await Navigator.push` | `vm.applyGameResult(result)` | ? |
 | 3. `didChangeDependencies` — attach event bridge | giữ reference VM | ? |
 | 4. `build` — `switch (vm.loadState)` chọn widget | vẽ theo state | ? |
 | 5. callback retry | `vm.load()` | ? |
@@ -230,9 +243,9 @@ như không bao giờ (nó chỉ *gọi* hành vi). Phần 2: nghĩ về lúc n�
 <details><summary>Đáp án</summary>
 
 | # | Chọn | Vì sao |
-|---|------|--------|
+| --- | ------ | -------- |
 | 1 | `watch` | đang hiển thị giá trị VM — notify → phải vẽ lại |
-| 2 | `read` | callback chỉ gọi `requestGame()`; không cần rebuild |
+| 2 | `read` | callback chỉ gọi `applyGameResult`; không cần rebuild |
 | 3 | `read` | lấy instance để subscribe events — `watch` không hợp lệ/ không cần ở hook này; `read` hợp lệ trong `didChangeDependencies` |
 | 4 | `watch` | switch theo `loadState` phải chạy lại mỗi notify |
 | 5 | `read` | giống (2) — gọi hành vi, không subscribe |
@@ -260,9 +273,10 @@ là *lệnh build-time*, không phải "cách lấy VM khác".
 
 ## Checkpoint hoàn thành
 
-- [ ] `build` của `_MenuScreenView` mở đầu bằng
-  `context.watch<MenuViewModel>()`.
-- [ ] `_onPlayTap` dùng `context.read<MenuViewModel>()`; không `watch`
-  nào nằm trong callback.
-- [ ] Giải thích được: điểm khác biệt duy nhất giữa read và watch;
-  hai chỗ `watch` hợp lệ.
+- [ ] Giải thích được điểm khác biệt duy nhất giữa `read` và `watch`,
+  và hai chỗ `watch` hợp lệ.
+- [ ] Đọc hiểu code bài 3: vì sao `build` của `_MenuScreenView` mở đầu
+  bằng `context.watch` còn `_onPlayTap` dùng `context.read`.
+- [ ] Biết trước: gõ `context.watch<MenuViewModel>()` *bây giờ* sẽ lỗi
+  — provider của VM chỉ tồn tại từ bài 3.
+- [ ] `flutter analyze`/`flutter test` vẫn xanh (không đổi file nào).

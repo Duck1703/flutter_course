@@ -67,7 +67,7 @@ vẫn xanh — nên test thứ nhất kiểm **VM emit event** (không qua UI)
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `stream.first` | `final emitted = vm.events.first;` | Future hoàn thành bằng event kế tiếp — bắt event trong test |
 | `isA<T>()` | `expect(event, isA<MenuGameRequested>())` | Matcher kiểu của flutter_test |
 | `expect(await f, …)` | `expect(await emitted, …)` | Await Future-event rồi assert |
@@ -75,14 +75,14 @@ vẫn xanh — nên test thứ nhất kiểm **VM emit event** (không qua UI)
 ## Flutter cần dùng
 
 | API | Chỗ dùng | Vì sao |
-|-----|----------|--------|
+| ----- | ---------- | -------- |
 | `ScaffoldMessenger.of(ctx).showSnackBar` | bridge handler | SnackBar qua messenger app-level — không cần Scaffold ancestor của widget gọi |
 | `tester.ensureVisible(finder)` | trước `tap` | cuộn nút offscreen vào vùng chạm được |
 | `tester.pump(dur)` | chờ animation | route push/SnackBar cần frame để render |
 
 **Ghi chú pump:** ta pump tay theo đúng thời lượng animation route
 (~300–400ms) để kiểm soát từng bước thay vì `pumpAndSettle` hô mọi
-thứ một lần. (Trước remediation M06 còn có `menuSessionTicker` — một
+thứ một lần. (M06 từng có `menuSessionTicker` — một
 Timer vô hạn khiến `pumpAndSettle` không bao giờ xong; ticker đó đã
 retire, nhưng pump tay vẫn là kiểu test rõ ràng hơn ở đây.)
 
@@ -104,7 +104,7 @@ retire, nhưng pump tay vẫn là kiểu test rõ ràng hơn ở đây.)
   `_handleUiEvent` nhánh `MenuSnackBarRequested(:final message)` →
   `ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:
   Text(message)))`. Learner dùng đúng dòng đó qua `is`-check.
-- **Sắc thái cần nói thẳng (FD-09):** senior *khai báo* type
+- **Sắc thái cần nói thẳng:** senior *khai báo* type
   `MenuSnackBarRequested` trong `menu_screen_ui_event.dart` — event
   type và cơ chế channel là senior-derived — nhưng senior **không**
   emit nó từ `resetProfile` trong menu VM; snackbar của senior được
@@ -251,7 +251,7 @@ $ flutter test    → 52/52 xanh
 $ flutter analyze → No issues found!
 ```
 
-*(Con số giảm từ 57 → 52 sau fidelity-remediation: 5 test của hai
+*(Con số giảm từ 57 → 52: 5 test của hai
 scaffold `demo_profile_loader` + `menu_session_ticker` đã retire cùng
 code của chúng — xem mục "Scaffold đã retire" dưới.)*
 
@@ -335,9 +335,9 @@ settings) và broadcast cho *event* (snackbar) — hai nhu cầu khác nhau.
 - **Widget test đếm push hai lần** — guard `==` đảm bảo ở code; test
   cấu trúc này dễ flaky hơn là giá trị mang lại ở M13.
 
-## Scaffold đã retire (ghi chú fidelity-remediation)
+## Scaffold đã retire
 
-Trong đợt strict-fidelity cleanup sau M13, ba scaffold chỉ-của-course
+Trong đợt chuẩn hoá khớp-senior sau M13, ba scaffold chỉ-của-course
 đã được gỡ khỏi `menu_screen.dart` vì mục đích dạy của chúng đã xong
 và senior không có chúng: **sound toggle** (`_soundOn`, M03 — bản thật
 là switch persist trong settings dialog, M16), **tap counter**

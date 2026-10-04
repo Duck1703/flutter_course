@@ -1,6 +1,6 @@
 ---
 title: "Bài 01 — Nền móng đủ: 50 asset, `AppAssets`/`OnboardingTokens` verbatim, l10n đồng bộ"
-description: "Trước khi sửa bất kỳ pixel nào, sweep cuối bắt đầu bằng nền móng: ship đủ 50 file `assets/images/` của senior; `app_assets.dart` verbatim 45 const (kể cả ~10 const senior ship nhưng không reference — byte-parity); `onboarding_design_tokens.dart` verbatim (`OnboardingTokens` delegate→`AppTokens`, không redeclare literal); +11 ARB key senior, −2 dead key learner; `gen-l10n` regen. Mental model mới : quy trình đối chiếu senior — đọc → diff → port → verify. +0 test: 309/309."
+description: "Trước khi sửa bất kỳ pixel nào, sweep cuối bắt đầu bằng nền móng: ship đủ 50 file `assets/images/` của senior; `app_assets.dart` verbatim 45 const (kể cả ~10 const senior ship nhưng không reference — byte-parity); `onboarding_design_tokens.dart` verbatim (`OnboardingTokens` delegate→`AppTokens`, không redeclare literal); +11 ARB key senior, −2 dead key learner; `gen-l10n` regen. Mental model mới: quy trình đối chiếu senior — đọc → diff → port → verify. +0 test: 309/309."
 sidebar:
   order: 1
   label: Nền móng assets/tokens/l10n
@@ -560,9 +560,8 @@ documented.
 
 - **Không dùng asset mới ở bất kỳ widget nào** — catalogue và
   file chỉ *chuẩn bị*; người tiêu thụ đến ở Bài 02–06.
-- **Không đóng ** — bài này thêm key và trừ 2 dead key;
-  3 key-rename còn lại (`leaderboardSubtitle`→`menuLeaderboard
-  EntrySubtitle`, `menuExpProgress`→`menuExpToNextLevel`,
+- **Không đóng file nào** — bài này thêm key và trừ 2 dead key;
+  3 key-rename còn lại (`leaderboardSubtitle`→`menuLeaderboardEntrySubtitle`, `menuExpProgress`→`menuExpToNextLevel`,
   `notificationTimeTitle`→`notificationTimeSetting`) được xử
   cùng call-site ở Bài 03/04/07 khi widget tương ứng port.
 - **Không port preview catalogs** — previews là appendix của

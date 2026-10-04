@@ -208,8 +208,7 @@ mẫu — guard `phase != playing → return`, stop timer, emit
   }
 ```
 
-`startNewGame` cũng thế — nhưng chú ý một chi tiết đã làm Argus bắt
-được bug ở implementation-qa r1:
+`startNewGame` cũng thế — nhưng chú ý một chi tiết dễ sai khi port:
 
 ```dart
   void startNewGame() {

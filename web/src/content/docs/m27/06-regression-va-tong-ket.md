@@ -13,7 +13,7 @@ sidebar:
 - Giải thích được vai trò của fake counters như "OS thay thế
   deterministic" — vì sao 12 test settings VM không import plugin
   vẫn cover được permission/schedule/rollback.
-- Đọc bảng FR convergence: notification flow, version-text
+- Đọc bảng convergence: notification flow, version-text
   residual và share chain đều → CONVERGED.
 - Chấp nhận và nói được thành phần honesty:
   `REAL_DEVICE_PLATFORM_CHECK: NOT_PERFORMED` — những đường nào
@@ -53,24 +53,24 @@ tổng hợp có cấu trúc.
           │                  │                      │
           ▼                  ▼                      ▼
    SettingsViewModel   Onboarding scope       viewModel.shareResult
-   (AND-gate A-37,     requestPermission()         │ dispatch
+   (AND-gate,     requestPermission()         │ dispatch
     Future.wait×3)     → VM.onNotification-        ▼
           │            PermissionResult        GameShareRequested
           ▼                                     (action)
    SettingsNotificationCoordinator                 │
-   (A-36: order + best-effort rollback)            ▼
+   (order + best-effort rollback)            ▼
           │                              reducer → GameShareResult
           ▼                              (effect — state giữ nguyên)
-   LocalNotificationService (A-35)               │
+   LocalNotificationService               │
    contract 5 method                              ▼
           │                              bridge → GameShareResultEvent
           ▼                                     (ui event)
    LocalNotificationServiceImpl                  │
    (plugin + timezone + resolve<T> +             ▼
-    !kIsWeb fallback — D-47/F-36)         screen: SharePlus.share(
+    !kIsWeb fallback)         screen: SharePlus.share(
           │                                ShareParams(origin))
           ▼                                     │ lỗi → Clipboard +
-   OS (alarm/permission prompt)                  snackbar (F-35)
+   OS (alarm/permission prompt)                  snackbar
 ```
 
 Một đường nữa ngoài sơ đồ: `loadSettingsAppVersion` →
@@ -82,14 +82,12 @@ Không construct mới — recap checklist:
 
 - [ ] `abstract interface class` contract 
 - [ ] `resolvePlatformSpecificImplementation<T>()` + `kIsWeb`
- 
 - [ ] `tz.TZDateTime`/`setLocalLocation`/`initializeTimeZones`
  + `DateTimeComponents.time` + `inexactAllowWhileIdle` 
 - [ ] Coordinator callback `Future<void> Function(X)` + tear-off
  rollback 
 - [ ] `Future.wait` 3-việc + `as` unwrap results 
 - [ ] `PackageInfo.fromPlatform().version` + `Function()` seam
- 
 - [ ] `RenderBox`/`localToGlobal`/`&` Rect + `ShareParams` +
  `Clipboard` 
 
@@ -147,14 +145,14 @@ vờ đã làm.
 ## Senior project connection — bảng convergence
 
 | Feature | Trước M27 | Sau M27 | Trạng thái |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | notifications | switch chỉ persist flag; onboarding giả `true`; không service | contract+impl verbatim; coordinator rollback; permission AND-gate; `Future.wait`×3; onboarding `requestPermission` thật; snackbar `notificationPermissionRequired` | **CONVERGED** |
 | version text (residual) | dialog không có `v…` | `loadSettingsAppVersion` seam + `_appVersion` + `v…` bottom-right `isNotEmpty`-gated | **CONVERGED** (phần version; account-row visual → M28) |
 | share | không action/effect/event share; 2 nút kết thúc | `GameShareRequested`→`GameShareResult`→`GameShareResultEvent`→`SharePlus`+`Clipboard`; SHARE trên cả Ended+Victory | **CONVERGED** |
 
 Deferred còn lại: (`MenuDialogLayer` transport) → M29;
-/32/34 visuals (`SettingsDialogShell`, `GameDialogButton`,
-`shareColor`, icon assets…) → M28; /31 → milestone khác.
+phần visual (`SettingsDialogShell`, `GameDialogButton`,
+`shareColor`, icon assets…) → M28; phần còn lại → milestone khác.
 
 ## Build it step by step — regression cuối milestone
 
@@ -190,7 +188,7 @@ là đủ; *không* yêu cầu device thật (ghi rõ phần chưa verify).
 ## Chạy và quan sát — thành phần verification thật
 
 | Đường | Verify bởi |
-|---|---|
+| --- | --- |
 | schedule/cancel/rollback order | fake counters — `scheduleCount`, `cancelCount`, `lastHour`/`lastMinute`, `throwOn*` |
 | permission grant/deny/AND-gate | `requestResult`/`permissionGranted` trên fake + `repo.value` + snackbar events |
 | version load | seam `() async => '9.9.9'` → `vm.appVersion` |
@@ -267,9 +265,10 @@ vô hạn.
   **Đáp:** `updateTime` catch → `_restoreSchedule(previousSettings)`
   (giờ cũ) best-effort → rethrow → VM → snackbar `notification
   TimeUpdateFailed`; `notificationHour` không đổi.
-- **Hỏi:** FR nào đóng, phần nào còn? — **Đáp:**, 
- (version), đóng; account-visual + /32/34 →
- M28; → M29.
+- **Hỏi:** phần nào đã hội tụ, phần nào còn? — **Đáp:**
+  notification flow + version text + share chain đã converge;
+  account visual + onboarding/settings visuals → M28; menu
+  dialog layer + asset parity → M29.
 - **Hỏi:** phần nào suite *không* chứng minh? — **Đáp:** prompt
   OS thật, notification bắn thật, share sheet thật, iPad anchor —
   `NOT_PERFORMED`.
@@ -277,7 +276,7 @@ vô hạn.
 ## Ta cố ý chưa thêm — tổng milestone
 
 | Chưa | Milestone |
-|---|---|
+| --- | --- |
 | `GameDialogButton`/`shareColor` gradient + toàn bộ dialog/menu visual parity (`SettingsDialogShell`, `OnboardingGameButton`, `MenuDialogBackdrop`, `LevelProgressCard`, icon assets, account-row auth visual) | **M28** |
 | `MenuDialogLayer` + `MenuDialogSettings`/`Auth`/`SignOut` state transport | **M29** |
 | Exact alarms, nhiều channel, notification actions, tap-handler payload, foreground presentation | — (senior cũng không) |

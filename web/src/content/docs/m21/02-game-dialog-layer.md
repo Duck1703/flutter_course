@@ -42,7 +42,7 @@ trong cây. Nếu nội dung đổi cùng lúc cơ chế đổi, bug sẽ không
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `BackdropFilter` + `ImageFilter.blur(σ)` (`dart:ui`) | làm mờ nội dung phía sau — "haze" của senior |
 | `ClipRect` | giới hạn vùng blur trong bounds — thiếu nó blur "tràn" lệch layer |
 | `GestureDetector(behavior: HitTestBehavior.opaque)` | vùng nền vô hình vẫn nhận tap — chặn tap xuyên |
@@ -89,7 +89,7 @@ DO NOT ASSUME:        `HitTestBehavior.opaque` không phải "đục màu"
 ## Senior project connection
 
 | Senior (đọc được ở) | Learner port |
-|---|---|
+| --- | --- |
 | `dialogs/game_dialog_layer.dart` → `_DialogBackdrop` | `ClipRect`+`BackdropFilter(σ=16)`+`ColoredBox(scrim)`+`Stack[Positioned.fill(GestureDetector opaque), SafeArea→Center→ConstrainedBox(375)]` — verbatim |
 | `dialogs/game_dialog_shell.dart` | `_GameDialogCard` tối giản (title+body+actions) — gradient/sheen/SVG → **M28** |
 | `dialogs/game_{confirm,help,result}_dialogs.dart` + `money/game_money_ladder_dialog.dart` | 9 view `Game*DialogView` — nội dung port từ `_GameDialogHost` M20, callback đổi sang tên senior |
@@ -122,7 +122,7 @@ callback-style. File hoàn chỉnh — tạo mới với đúng nội dung sau:
 /// Nội dung giữ nguyên bản M19–M20 (message/option/progress/amount),
 /// chỉ đổi "vỏ": `AlertDialog` trong route `showDialog` → card trong
 /// cây widget (senior `GameDialogShell` có thêm gradient/sheen/SVG —
-/// visual depth đó là M28, xem FR-32/FR-34).
+/// visual depth đó là M28).
 ///
 /// Mỗi view nhận callback ĐÚNG tên senior (`onDismiss`/`onConfirm`/
 /// `onCancel`/`onPlayAgain`/`onBackToMenu`) thay vì trả
@@ -329,7 +329,7 @@ Hai view confirm/walk-away/explanation/poll/AI/ended/victory còn lại
 `_GameDialogHost`, actions map callback:
 
 | View | Body (giữ nguyên) | Actions |
-|---|---|---|
+| --- | --- | --- |
 | `GameConfirmWalkAwayDialogView` | `_ConfirmMessage(message: walkAwayMessage, amount: data.currentAmount)` | `keepPlayingButton`→`onCancel`, `confirmWalkAwayButton` đỏ→`onConfirm` |
 | `GameExplanationDialogView` | cột: `data.question` + Row(bolt+`data.correctAnswer`) + Divider + `data.explanation` | `understandButton`→`onDismiss` |
 | `GameAudiencePollDialogView` | `SizedBox(width:280)` + per-item Row(label 24w + `LinearProgressIndicator` + `item.percentage`) | `understandButton`→`onDismiss` |

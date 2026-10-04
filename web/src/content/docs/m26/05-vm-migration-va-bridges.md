@@ -19,7 +19,7 @@ sidebar:
  `_stopTimer`/`_schedule*`/`_events.add`) và
   `game_screen_view_model_result_persistence.dart`
   (`_saveGameResult`/`_syncSavedGameResult`/`_applyLevelProgression`/
- `_normalizedLevel` verbatim — / giữ).
+ `_normalizedLevel` verbatim — giữ).
 - Xoá `GameSessionState` khỏi `data/game/
   game_session_state_data.dart` (+ unused import) — senior giữ
   session-model trong `dre/`.
@@ -76,7 +76,7 @@ UI tap ──→ public method ──→ dispatch(GameAction)
         ▼                         ▼                          ▼
      result.state             result.effects            result.asyncOp
   notifyListeners → UI    _effects stream ──→ _handleEffect   executeAsyncOp
-  redraw (mapper A-20)      │  GameStartTimer  → _startTimer  │ GameSaveResult
+  redraw (mapper)             │  GameStartTimer  → _startTimer  │ GameSaveResult
                             │  GameSchedule*   → Future.delayed→ _saveGameResult
                             │    → dispatch(*Elapsed)         │  (snapshot post-reduce)
                             │  GameNavigateToMenu→ _events.add│
@@ -94,8 +94,8 @@ do bridge sống ở VM.
 |---|---|
 | `part 'bridge/game_screen_view_model_effects.dart'` | part lần ba trong course (sau M24 dialog, Bài 4 reducer) — VM-side bridges (reuse) |
 | `super(reducer: …, initialState: …)` | base ctor named args — wire reducer + state khởi đầu |
-| `effects.listen(_handleEffect)` trong ctor + `late final StreamSubscription` | subscribe ngay khi tạo; cancel ở dispose — |
-| `case GameSaveResult(final earnedAmount, :final isWin, :final questionCount)` | object pattern destructure op — |
+| `effects.listen(_handleEffect)` trong ctor + `late final StreamSubscription` | subscribe ngay khi tạo; cancel ở dispose |
+| `case GameSaveResult(final earnedAmount, :final isWin, :final questionCount)` | object pattern destructure op |
 | `void _dispatchGameAction(GameAction a) => dispatch(a)` | private helper: bridge re-dispatch `*Elapsed`/`GameTimerTicked` (dispatch là `@protected`) |
 | `switch (effect)` / `switch (asyncOp)` | exhaustive trên sealed family — Dart bắt đủ case |
 

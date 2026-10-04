@@ -147,7 +147,7 @@ final class GameSessionState {
 Chín field, chia ba nhóm:
 
 | Nhóm | Field | Vai trò |
-|------|-------|---------|
+| ------ | ------- | --------- |
 | máy trạng thái | `phase`, `dialogState` | "đang ở đâu" trong ván + dialog nào mở |
 | tiến trình | `questionIndex`, `moneyEarned`, `guaranteedAmount`, `selectedAnswer` | câu nào, tiền đang có, mốc an toàn đã qua, đáp án đã bấm |
 | hạ tầng | `remainingTime`, `moneyAnimationTrigger`, `flowToken` | đồng hồ; key phát lại animation tiền; token vô hiệu callback delay cũ |
@@ -488,7 +488,7 @@ final next = s.copyWith(
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. Vì sao `copyWith` cần `clearSelectedAnswer` thay vì cho phép
    `selectedAnswer: null`?

@@ -35,7 +35,7 @@ bộ tương tự cho feature tiếp theo.
 ## Bản đồ test M20
 
 | Tầng | File | Chứng minh | Không chứng minh |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Helper thuần | `game_lifeline_helper_test.dart` (5) | toán 50:50/poll đúng, không mutate bank | UI, timing |
 | VM | `game_screen_view_model_test.dart` (+10 → 27) | guard, single-use, percentiles, AI 700ms + guard hủy, walk-away gating + `resolvedResult`, timer pause/resume | pixel render |
 | Mapper | `game_screen_presentation_mapper_test.dart` (+2 → 6) | `featureButtons` set + `isEnabled`, blank→idle, percentile lookup | VM transition |
@@ -159,7 +159,7 @@ kết quả về profile).
 ## Tổng kết M20 — ván game đã "đủ trợ giúp"
 
 | Trước M20 | Sau M20 |
-|---|---|
+| --- | --- |
 | Không lifeline | 3 nút bar (50:50, poll, AI) + walk-away có điều kiện + exit |
 | `options` render trực tiếp | `visibleOptionTexts` = state riêng, 50:50 ghi đè |
 | Kết quả suy từ phase | `resolvedResult` chốt tại transition — walk-away `won:false` đúng |

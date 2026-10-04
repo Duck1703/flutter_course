@@ -48,7 +48,7 @@ learner (trước bài này) — mô hình ROUTE:
        + SettingsRequested/LeaderboardRequested/
          AuthRequested/SignOutRequested  (4 cái "xin mở dialog")
 
-senior — mô hình IN-TREE (A-21):
+senior — mô hình IN-TREE:
   viewModel.dialogState: MenuDialogState  (persistent)
   view Stack: … → Positioned.fill(MenuDialogLayer)
   PopScope(canPop: !dialogState.isVisible)

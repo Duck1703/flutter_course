@@ -19,9 +19,9 @@ SVG trên nền gradient xoay + ripple, dialog là card trắng viền
 gradient với sheen. Milestone này **không thêm tính năng** — nó
 xây lại lớp da: port `AppTokens`/`AppAssets`, hai dependency mới
 (`flutter_svg`, `google_fonts`), painter + animation thật, và cuối
-cùng thay nguyên `GameScreen` bằng bản senior — đóng 
-(design tokens + countdown timer), (phần bề mặt game),
- (lifeline visual + iconAsset pipeline).
+cùng thay nguyên `GameScreen` bằng bản senior — đóng ba cụm
+parity: design tokens + countdown timer; phần bề mặt game;
+lifeline visual + iconAsset pipeline.
 
 :::note[Triết lý milestone: "port visual, không cải tiến"]
 - Mọi file UI mới là **port verbatim senior** (sau rename
@@ -47,7 +47,7 @@ cùng thay nguyên `GameScreen` bằng bản senior — đóng
 
 | Bài | Nội dung | Checkpoint |
 |-----|----------|-----------|
-| [01](/m28/01-nen-mong-tokens-assets/) | 2 dep đúng pin senior (`flutter_svg ^2.3.0`, `google_fonts ^8.1.0`) + 2 asset-dir + 7 SVG + 1 PNG; `AppAssets` **subset** 8 const (còn lại → M29, tránh dangling refs); `surfaceGlow` + `AppTokens` (375 design-width, motion/typography `GoogleFonts.beVietnamPro`) + `DesignFrame` (CORE** — tokens là nguồn đúng duy nhất); 6 ARB key semantics mới + regen | **259/259** (+0) |
+| [01](/m28/01-nen-mong-tokens-assets/) | 2 dep đúng pin senior (`flutter_svg ^2.3.0`, `google_fonts ^8.1.0`) + 2 asset-dir + 7 SVG + 1 PNG; `AppAssets` **subset** 8 const (còn lại → M29, tránh dangling refs); `surfaceGlow` + `AppTokens` (375 design-width, motion/typography `GoogleFonts.beVietnamPro`) + `DesignFrame` (CORE — tokens là nguồn đúng duy nhất); 6 ARB key semantics mới + regen | **259/259** (+0) |
 | [02](/m28/02-chrome-chung-pill-kinh-nen/) | `QzdsGameButton` (pill gradient + `if (icon case final iconData?)` — mới) + `GlassIconButton` (`SvgPicture.asset` + `ColorFilter.mode(srcIn)` — mới) + `GameScreenBackground` (ảnh cover + overlay gradient); test `qzds_game_button_test` 4 case | **263/263** (+4) |
 | [03](/m28/03-custompainter-animationcontroller-dong-ho/) | `AnimationController`×2 + `vsync`/`TickerProviderStateMixin` (CORE) — pulse 1↔1.08 ở ≤20%, progress tween 1s; `CustomPainter` stadium `Path` + `computeMetrics`+`extractPath` + gradient `Paint` + `shouldRepaint` (CORE); `didUpdateWidget` sync; `GameScreenTopBar` host đầu tiên | **270/270** (+7) |
 | [04](/m28/04-trigger-motion-so-tien-nhay/) | `animationTrigger` int-gate — animation chỉ chạy khi trigger *tăng*; money motion: interpolated digits + `Curves.easeOutCubic.transform` + glitch `ShaderMask`/`Transform`; `MediaQuery.disableAnimations` → `Duration.zero` (reuse); ladder CTA + ladder dialog support | **276/276** (+6) |
@@ -70,9 +70,9 @@ cùng thay nguyên `GameScreen` bằng bản senior — đóng
   app nhìn pixel thật trên thiết bị. **`REAL_DEVICE_PLATFORM_CHECK:
   NOT_PERFORMED`** kế thừa từ M27 — hai dòng này ghi verbatim ở
   Bài 6 + manifest, không claim đã làm.
-- FR **CONVERGED**: (AppTokens + countdown), -phần game
-  (bề mặt game + dialog game — phần onboarding/settings/menu
- visual vẫn M29), (lifeline SVG + painter + iconAsset).
+- **Khớp senior**: AppTokens + countdown; phần bề mặt game
+  (game + dialog game — phần onboarding/settings/menu visual
+  vẫn M29); lifeline SVG + painter + iconAsset.
 
 ## Bảng còn nợ (deferred)
 
@@ -80,7 +80,7 @@ cùng thay nguyên `GameScreen` bằng bản senior — đóng
 |---|---|
 | `AppAssets` constants còn lại (~58 const: avatars, decorations, leaderboard, settings icons) + asset files tương ứng | **M29** — thêm cùng widget dùng chúng, tránh dangling refs (chính sách subset ở Bài 1) |
 | `MenuTokens` → `AppTokens` migration ở menu/onboarding/settings/leaderboard widgets | **M29** — phạm vi phần còn lại |
-| `SettingsDialogShell`/`OnboardingGameButton`/`MenuDialogBackdrop`/account-row auth visual/`LevelProgressCard` | **M29** (-visual) |
+| `SettingsDialogShell`/`OnboardingGameButton`/`MenuDialogBackdrop`/account-row auth visual/`LevelProgressCard` | **M29** (visual) |
 | `SettingItemData.icon: IconData` → `iconAsset` | **M29** — pipeline `SvgPicture` đã sẵn từ M28 |
 | `MenuDialogLayer` + `MenuDialogSettings/Auth/SignOut` state transport | **M29** |
 | `game_dialog_shell_header_test.dart`, `game_pill_button_glow_test.dart` (senior có, learner chưa port) | — declared gap: senior coverage nhỏ hơn ở hai file này; hành vi header/glow đã được cover gián tiếp qua `game_dialog_layer_test` + `game_screen_test` |

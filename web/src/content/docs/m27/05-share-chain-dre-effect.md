@@ -222,7 +222,7 @@ final class GameShareResult extends GameEffect {
 
 ```dart
 // game_session_state_data.dart
-/// Xin mở share sheet với nội dung đã build — M27 (FR-33 converge):
+/// Xin mở share sheet với nội dung đã build — converge với senior:
 /// screen thực hiện `SharePlus.instance.share`, lỗi → clipboard.
 final class GameShareResultEvent extends GameScreenUiEvent {
   final String text;
@@ -324,7 +324,7 @@ style có sẵn của learner để wire được chuỗi share *ngay* mà khôn
 kéo `GameDialogButton` của senior (gradient + glow + icon slot +
 `shareColor` `#325DFA`/`green500`) vào milestone này. Ngữ nghĩa
 đã đúng senior — icon share + label uppercase + `onTap` — còn
-visual parity là **/ → M28**. Đừng "làm đẹp" nút này
+visual parity là việc của M28. Đừng "làm đẹp" nút này
 ở đây: giữ scaffold, tập trung vào chuỗi.
 :::
 
@@ -353,7 +353,7 @@ Hai dialog wire (verbatim — chú ý color per variant):
 layer (verbatim — l10n ở layer, view nhận chuỗi):
 
 ```dart
-/// M27 (FR-33 converge): `onShareResult` nhận chuỗi share đã build
+/// M27: `onShareResult` nhận chuỗi share đã build
 /// (l10n + số tiền) và đẩy lên screen → `viewModel.shareResult`.
 class GameDialogLayer extends StatelessWidget {
   ...

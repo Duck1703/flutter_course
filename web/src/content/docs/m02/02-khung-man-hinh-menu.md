@@ -65,9 +65,11 @@ cùng quy ước với app senior.
 | `MediaQuery`/`paddingOf` | *(nhắc tới)* — đọc thông tin thiết bị như inset; `SafeArea` đã wrap nó |
 
 :::caution[ĐỪNG NHẦM]
-`ConstrainedBox` **không** phải widget `const` được (constructor có `assert` —
-khác đa số widget cơ bản). Đó là lý do `const` trong skeleton chỉ đặt ở
-`BoxConstraints` và `Column`, không bao trọn `SafeArea`.
+`ConstrainedBox` **không** phải widget `const` được — constructor của nó
+không được khai báo `const` trong Flutter SDK (phần kiểm tra bên trong gọi
+hàm không đánh giá được lúc compile-time, nên Dart không thể làm nó const).
+Đó là lý do `const` trong skeleton chỉ đặt ở `BoxConstraints` và `Column`,
+không bao trọn `SafeArea`.
 :::
 
 ## Cầu nối Android / Compose
@@ -316,9 +318,9 @@ Column                         → full size khung; chia trục dọc:
 
 ## Lỗi thường gặp
 
-1. **`const` trước `ConstrainedBox`** — compile error: constructor có assert,
-   không const được. Đặt `const` vào `BoxConstraints`/`Column` thay vì bọc cả
-   `ConstrainedBox`/`SafeArea`.
+1. **`const` trước `ConstrainedBox`** — compile error: constructor của
+   `ConstrainedBox` không được khai báo `const`. Đặt `const` vào
+   `BoxConstraints`/`Column` thay vì bọc cả `ConstrainedBox`/`SafeArea`.
 2. **`Expanded` không trong Flex** — `Expanded` chỉ hợp lệ khi cha trực tiếp
    là `Column`/`Row`/`Flex`; bọc trong `Container`/`Padding` sẽ lỗi runtime.
 3. **Quên `flutter pub get` sau khi đổi pubspec ở M01** — analyzer nhìn dep

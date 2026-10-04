@@ -47,7 +47,7 @@ ba hạng mục còn lại (notification, phần version, share).
 | [03](/m27/03-settings-coordinator-permission-state/) | `SettingsNotificationCoordinator` — enable/disable/updateTime + best-effort rollback giữ lỗi gốc; `_hasNotificationPermission` trong VM state + `effectiveNotificationEnabled` = flag AND permission; `loadSettings` `Future.wait`×3; `_toggleNotifications` 2 nhánh; scope `notificationService` param + `context.read` (compile-forced); +5 test qua counters | **259/259** (+5) |
 | [04](/m27/04-settings-wiring-version-onboarding/) | `main()` tạo `LocalNotificationServiceImpl()` vô điều kiện (khác conditional — service tự guard, không cần dart-define) + `Provider<LocalNotificationService>.value`; onboarding đổi simulated grant → `requestPermission` thật + `FlutterError.reportError`; `v$appVersion` + `loadAppVersion` seam; widget-test hosts thêm `notificationService:` | **259/259** (+0) |
 | [05](/m27/05-share-chain-dre-effect/) | Share cưỡi effects-stream (reuse): `GameShareRequested{text}` → reducer arm → `GameShareResult` → bridge → `GameShareResultEvent` → `RenderBox`/`sharePositionOrigin` → `SharePlus.instance.share(ShareParams)` → catch → `Clipboard` + snackbar; `_DialogShareButton` = TEACHING SCAFFOLD (senior `GameDialogButton`/`shareColor` → M28); ARB +4 key | **259/259** (+0) |
-| [06](/m27/06-regression-va-tong-ket/) | Recap boundary→coordinator→effect→platform; vì sao fake counters thay OS trong test; residual → CONVERGED; `REAL_DEVICE_PLATFORM_CHECK: NOT_PERFORMED` honesty; còn lại M28 (visual parity)/M29 (`MenuDialogLayer`) | **259/259** (+0) |
+| [06](/m27/06-regression-va-tong-ket/) | Recap boundary→coordinator→effect→platform; vì sao fake counters thay OS trong test; residual → khớp senior; `REAL_DEVICE_PLATFORM_CHECK: NOT_PERFORMED` honesty; còn lại M28 (visual parity)/M29 (`MenuDialogLayer`) | **259/259** (+0) |
 
 ## Kết quả cuối milestone
 
@@ -74,7 +74,7 @@ ba hạng mục còn lại (notification, phần version, share).
 | Chưa làm | Milestone sở hữu | Vì sao |
 |---|---|---|
 | `GameDialogButton`/`shareColor` + `GameDialogShell` chrome (gradient/glow nút share) | **M28** | nút `_DialogShareButton` là scaffold — ngữ nghĩa (icon share + label uppercase + tap) đúng, visual senior thuộc đợt visual parity |
-| `SettingsDialogShell`/`OnboardingGameButton`/`MenuDialogBackdrop`/icon-assets/`LevelProgressCard`; account-row auth button visual | **M28** (visual, /32) | chrome hiện tại đủ cho behavior; polish gộp đợt visual |
+| `SettingsDialogShell`/`OnboardingGameButton`/`MenuDialogBackdrop`/icon-assets/`LevelProgressCard`; account-row auth button visual | **M28** (visual) | chrome hiện tại đủ cho behavior; polish gộp đợt visual |
 | `MenuDialogLayer` + `MenuDialogSettings`/`Auth`/`SignOut` state | **M29** | transport `showDialog` giữ — cùng scaffold đã chấp nhận từ M16 |
 | Xử lý tap vào notification (payload `'daily_quiz'` deep-link) | — | senior cũng không có handler — payload chỉ là data đi kèm; đừng bịa tính năng senior không có |
 | Exact-alarm (`exactAllowWhileIdle`), nhiều channel, custom actions, notification lúc app đang mở | — | roadmap loại trừ; senior dùng `inexactAllowWhileIdle` một channel duy nhất |

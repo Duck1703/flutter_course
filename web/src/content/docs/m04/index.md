@@ -11,8 +11,9 @@ sidebar:
 Màn hình menu không còn "rải" giá trị hard-code trong từng widget nữa — một
 đối tượng **`UserProfileData`** duy nhất cung cấp tên, cấp độ, EXP, tiền
 thưởng và thống kê cho cả màn hình. Bấm nút chơi giờ còn **cộng 10 EXP** vào
-profile: thanh tiến trình lấp đầy và người chơi lên cấp — tất cả qua cơ chế
-"tạo object mới" thay vì sửa object cũ.
+profile: thanh tiến trình nhích lên từng chút — tất cả qua cơ chế
+"tạo object mới" thay vì sửa object cũ (mỗi tap +10 EXP; với mốc
+35000 EXP một cấp thì "lên cấp" còn là chuyện sau — cơ chế đã sẵn sàng).
 
 Và quan trọng không kém: `flutter test` chạy **10 test xanh** đầu tiên của
 project — chúng kiểm chứng hành vi model mà không cần chạy app.
@@ -51,7 +52,7 @@ project — chúng kiểm chứng hành vi model mà không cần chạy app.
 ## Tổng kết M04 — tự kiểm tổng hợp
 
 - **Tôi học được gì?** Model bất biến (`final` + `copyWith`), `==`/
-  `hashCode`, `test()`/`expect()`/`group`/`setUp` đầu tiên.
+  `hashCode`, `test()`/`expect()`/`group` đầu tiên.
 - **Tôi giải thích được gì?** Vì sao `copyWith` cần `?? this.field`;
   vì sao `==` so giá trị mà không phải identity — và nó mở đường cho
   `_emitUserProfile` `value !=` ở M14.

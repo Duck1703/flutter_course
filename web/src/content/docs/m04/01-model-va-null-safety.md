@@ -64,7 +64,7 @@ Model không import Flutter, không chứa widget — thuần Dart. Đó là lý
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `final T field;` | `final int level;` | Field gán một lần trong ctor, sau đó bất biến |
 | Named param + default | `this.level = 1` | Tham số không bắt buộc, mặc định `1` |
 | `required` | `required this.username` | Named param bắt buộc — như các widget đã viết |
@@ -82,7 +82,7 @@ việc tải bất đồng bộ trong `initState`. Giờ chỉ cần nhận ra n
 Dart phân biệt **hai loại kiểu**:
 
 | Kiểu | Chứa được | Hậu quả |
-|------|-----------|---------|
+| ------ | ----------- | --------- |
 | `String` | chỉ `String` | Không bao giờ `null` — compiler bảo đảm |
 | `String?` | `String` **hoặc `null`** | Compiler bắt bạn xử lý cả hai khả năng |
 
@@ -178,7 +178,7 @@ model cùng tên trong app senior, để khi đối chiếu senior (M14+) bạn 
   giữ `expForNextLevel` như một field cho đơn giản — *field này không tồn
   tại trong senior model*: senior suy cap từ `LevelConfig.getExpRequiredForLevel`.
   Đây là simplification đã đăng ký; `expForNextLevel` sẽ bị xoá ở M22.
-- **Defaults của learner BẰNG defaults senior** (đã chỉnh từ remediation):
+- **Defaults của learner BẰNG defaults senior**:
   `username='0XFF'` (`UserProfileData.defaultUsername`), `currentExp=0`.
   `expForNextLevel=35000` là hardcode của `LevelConfig.
   getExpRequiredForLevel(1)` = `30000 + 1×5000` — con số senior thật,

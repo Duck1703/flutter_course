@@ -47,7 +47,7 @@ cũ và mất vị trí cuộn. Đây là lý do `_TimeWheel` là `StatefulWidge
 ## Flutter cần dùng
 
 | API | Ví dụ | Nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | `ListWheelScrollView.useDelegate` | bánh xe cuộn item cố định | picker kiểu iOS: mỗi item cao `itemExtent` |
 | `FixedExtentScrollController` | `initialItem: hour` | controller sở hữu vị trí cuộn — PHẢI dispose |
 | `FixedExtentScrollPhysics` | `physics:` | snap vào từng item thay vì cuộn tự do |
@@ -240,7 +240,7 @@ void main() {
     expect(find.text('English'), findsOneWidget);
     expect(find.text('Tiếng Việt'), findsOneWidget);
     expect(find.text('XONG'), findsOneWidget);
-    // FR-28: hàng tài khoản hiển thị-only (chưa auth — M22+).
+    // Hàng tài khoản hiển thị-only (chưa auth — M22+).
     expect(find.text('TestPlayer'), findsOneWidget);
     // Thông báo tắt → chưa có hàng giờ.
     expect(find.text('Giờ thông báo'), findsNothing);
@@ -345,7 +345,7 @@ với thêm hàng giờ tràn viewport — tap vào phần tử off-screen khôn
 ## Hiểu code — ai sở hữu cái gì (bản đồ đầy đủ)
 
 | Cái | Chủ | Lifetime |
-|---|---|---|
+| --- | --- | --- |
 | `UserSettingsData` | repository (BehaviorSubject) | app |
 | `SettingsViewModel` | `ChangeNotifierProvider` trong dialog | dialog |
 | `timePickerVisible`, `timePickerHour/Minute` | VM | dialog |

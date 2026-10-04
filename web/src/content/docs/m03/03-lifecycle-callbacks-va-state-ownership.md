@@ -273,7 +273,8 @@ class _MenuScreenState extends State<MenuScreen> {
    tạo/dọn đúng → lỗi tinh vi. Convention: super đầu ở init, super cuối ở
    dispose.
 2. **`setState` trong `initState`** — không cần (build đầu chưa chạy, gán
-   thẳng được); và gọi `setState` trong `initState` là lỗi.
+   thẳng được). `setState` ở đây **không lỗi** — chỉ *thừa*: nó vẫn lên
+   lịch rebuild cho một frame sẽ build từ đầu.
 3. **Đặt state sai tầng** — `_soundOn` trong `_IconBadge` thì caption header
    không đọc được; nguyên tắc: tổ tiên chung thấp nhất của *reader + writer*.
 4. **"Nhớ" trong biến local của `build`** — `var count = 0` trong build: mỗi

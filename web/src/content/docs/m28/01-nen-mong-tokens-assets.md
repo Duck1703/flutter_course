@@ -80,7 +80,7 @@ sidebar:
 
 ## Mental model mới — "tokens là nguồn đúng duy nhất" (CORE)
 
-> ** — Design tokens as single source of truth.** Mọi giá
+> **Design tokens as single source of truth.** Mọi giá
 > trị visual dùng lại (màu, spacing, radius, icon-size, motion
 > duration, typography, design-width) sống trong *một* class
 > `static const` / `static get` — `AppTokens`. Widget *đọc*;
@@ -114,7 +114,7 @@ Một cặp song hành:
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `export 'app_assets.dart';` | re-export — consumer của `app_design_tokens.dart` thấy luôn `AppAssets` + `surfaceGlow` mà không import thêm (barrel `export` — chưa có registry row). File tokens có 2 export ở dòng 4–5 |
 | `static const double/Color/Duration` | token constants — compile-time, không instance (reuse) |
 | `static TextStyle get body3 => GoogleFonts.beVietnamPro(…)` | getter thay const — `TextStyle` không const được vì `GoogleFonts.*` là factory runtime (biến thể) |
@@ -126,7 +126,7 @@ Một cặp song hành:
 ## Flutter cần dùng
 
 | API | Vai trò |
-|---|---|
+| --- | --- |
 | `pubspec.yaml` `dependencies:` | `flutter_svg: ^2.3.0` — render SVG (`SvgPicture.asset`, Bài 2); `google_fonts: ^8.1.0` — `GoogleFonts.beVietnamPro` type ramp (fetch runtime, không bundle) |
 | `pubspec.yaml` `flutter.assets:` | khai báo **thư mục** asset — `assets/images/icons/` + `assets/images/backgrounds/`; thiếu dir → `Image.asset`/`SvgPicture.asset` throw lúc *runtime* (analyze không bắt) |
 | `ConstrainedBox(BoxConstraints(maxWidth: …))` | giới trên chiều rộng — `DesignFrame` bọc nó trong `Center` |
@@ -138,7 +138,7 @@ Một cặp song hành:
 ## Ví dụ độc lập — token class + một consumer (DartPad)
 
 ```dart
-// ISOLATED EXAMPLE — not in project. A-38 thu nhỏ: một class
+// ISOLATED EXAMPLE — not in project. Thu nhỏ từ senior: một class
 // const, widget chỉ đọc — đổi token đổi cả app.
 class MiniTokens {
   static const spacing = 12.0;
@@ -194,7 +194,7 @@ viết, gõ sai là lỗi runtime.
 ## Senior project connection
 
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
-|---|---|
+| --- | --- |
 | `pubspec.yaml` — `flutter_svg: ^2.3.0`, `google_fonts: ^8.1.0` + `assets:` 2 dir | learner pin + khai báo y hệt |
 | `lib/core/app_design_tokens.dart` (318 dòng) | **verbatim-port** — diff 0 sau rename; mọi const/getter + `QzdsButtonScale` + 2 `export` giữ nguyên |
 | `lib/core/surface_glow_gradient.dart` (72 dòng) | **verbatim-port** — `FillBoxGradientTransform` + `surfaceGlow` + `headerSheen` |
@@ -244,7 +244,7 @@ Trong block `flutter:` (sau `uses-material-design: true`):
 rồi `flutter pub get`. Vai trò từng dep:
 
 | Dep | Việc |
-|---|---|
+| --- | --- |
 | `flutter_svg` | `SvgPicture.asset` render SVG — pipeline icon lifeline/back/lightning/money (Bài 2, 5, 6) |
 | `google_fonts` | `GoogleFonts.beVietnamPro` → `TextStyle` cho toàn bộ type ramp của `AppTokens` — fetch font qua mạng lần đầu (senior cũng vậy — parity cố ý, không bundle) |
 
@@ -444,8 +444,8 @@ từ locale template `en`):
 
 Chạy `flutter gen-l10n` (hoặc `flutter pub get` — gen chạy tự
 động theo `generate: true`) để regenerate `app_localizations*.dart`.
-`correctStateLabel` tiếng Việt phải là `"Đúng"` đầy đủ — Argus
-từng bắt bản gõ tắt `"Đú"` ở bước này.
+`correctStateLabel` tiếng Việt phải là `"Đúng"` đầy đủ — bản
+gõ tắt `"Đú"` là bug thật từng lọt ở bước này.
 
 **Bước 8 — `flutter analyze` + `flutter test`** → **259/259**
 giữ nguyên: chưa widget nào import `AppTokens`/`AppAssets` —
@@ -468,7 +468,7 @@ bài này chỉ đặt nền.
    responsive.** Nó *không* đo màn hình — là số cố định của
    design system senior. `DesignFrame` + `ConstrainedBox` nghĩa
    là "màn rộng → cột giữa 375; màn hẹp → full-bleed". (Manifest
-   ghi discrepancy: brief nhắc "390pt convention" — **disk là
+   ghi discrepancy: tài liệu course nhắc "390pt convention" — **disk là
    nguồn đúng: 375**.)
 
 ## Chạy và quan sát

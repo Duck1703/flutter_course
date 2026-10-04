@@ -1,6 +1,6 @@
 ---
 title: "Bài 1 · Ranh giới platform — UI không chạm plugin trực tiếp"
-description: "Felt problem: app chưa nói chuyện được với OS — switch thông báo chỉ ghi flag, onboarding giả vờ granted, không share, không version. Mental model 'UI không chạm plugin trực tiếp' : widget→VM→contract→impl→plugin→OS. +5 dep đúng pin senior; manifest 2 uses-permission + 2 receiver verbatim; `kIsWeb` fallback + `resolvePlatformSpecificImplementation`. +0 test → 254."
+description: "Felt problem: app chưa nói chuyện được với OS — switch thông báo chỉ ghi flag, onboarding giả vờ granted, không share, không version. Mental model 'UI không chạm plugin trực tiếp': widget→VM→contract→impl→plugin→OS. +5 dep đúng pin senior; manifest 2 uses-permission + 2 receiver verbatim; `kIsWeb` fallback + `resolvePlatformSpecificImplementation`. +0 test → 254."
 sidebar:
   label: "Bài 1 · ranh giới platform"
   order: 1
@@ -108,7 +108,7 @@ plugin tồn tại.
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `kIsWeb` (`package:flutter/foundation.dart`) | **hằng `const` biên dịch** — compiler thế giá trị *trước khi* build (trong `if (kIsWeb)` nhánh chết bị xoá hẳn). Trong service này nó xuất hiện dạng **giá trị**: `return !kIsWeb` = "không platform impl nào resolve được → granted, *trừ* web → denied" (mới). Khác `Platform.isAndroid` của `dart:io`: runtime check, và `dart:io` không tồn tại trên web |
 | `?` nullable + `!= null` gate | `resolvePlatformSpecificImplementation<T>()` trả `null` trên platform không khớp generic — mẫu "hỏi plugin có impl Android không" (chi tiết Bài 2) |
 | `Future<bool>` trả `?? true` | plugin trả `null` (platform cũ không cần quyền) → mặc định granted |
@@ -117,7 +117,7 @@ plugin tồn tại.
 ## Flutter cần dùng
 
 | API | Vai trò |
-|---|---|
+| --- | --- |
 | `pubspec.yaml` + `flutter pub get` | năm pin mới — đúng version senior |
 | `AndroidManifest.xml` `<uses-permission>` | khai báo ý định với OS — POST_NOTIFICATIONS chỉ *cho phép app xin*; prompt thật do code chạy (Bài 2–3) |
 | `AndroidManifest.xml` `<receiver>` | receiver của plugin — không phải code mình viết; manifest chỉ *đăng ký* class của `flutter_local_notifications` |
@@ -125,7 +125,7 @@ plugin tồn tại.
 ## Ví dụ độc lập — contract ở biên, impl đổi chỗ (DartPad)
 
 ```dart
-// Ranh giới A-35 ở quy mô tối thiểu — KHÔNG đụng app.
+// Ranh giới platform ở quy mô tối thiểu — KHÔNG đụng app.
 abstract interface class ReminderService {
   Future<bool> requestPermission();
   Future<void> schedule({required int hour});
@@ -199,7 +199,7 @@ thiếu Notification API), còn `zonedSchedule` trên web throw
 ## Senior project connection
 
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
-|---|---|
+| --- | --- |
 | `pubspec.yaml` — 5 pin `flutter_local_notifications`/`package_info_plus`/`timezone`/`flutter_timezone`/`share_plus` | learner pin y hệt version |
 | `lib/services/local_notification_service.dart` | contract + impl — ranh giới nguyên mẫu (Bài 2 port verbatim) |
 | `lib/core/app_dependency_scope.dart` — `Provider<LocalNotificationService>.value` | service đăng ký theo *kiểu contract* như mọi repo (Bài 4) |
@@ -225,7 +225,7 @@ rồi `flutter pub get`.
 Vai trò từng dep:
 
 | Dep | Việc |
-|---|---|
+| --- | --- |
 | `flutter_local_notifications` | plugin lên/huỷ lịch notification, permission per-platform |
 | `timezone` | database múi giờ + `TZDateTime`/`setLocalLocation` (bắt buộc cho `zonedSchedule`) |
 | `flutter_timezone` | đọc múi giờ thật của thiết bị (`getLocalTimezone`) |

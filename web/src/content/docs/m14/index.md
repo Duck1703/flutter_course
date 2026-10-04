@@ -39,7 +39,7 @@ gọi "reload" nữa.
 | 2 | [Contract: abstract interface class, implements, factory create()](/m14/02-contract-abstract-interface-implements/) | Cú pháp contract Dart 3; async factory; viết contract thật | 2 Dart concepts — ví dụ độc lập trước |
 | 3 | [Stream cho state: BehaviorSubject & ValueStream](/m14/03-stream-state-behavior-subject-value-stream/) | `.seeded`/`.value`/`isClosed`/`close`, replay, state vs event | 1 concept-family — ví dụ độc lập |
 | 4 | [UserProfileRepositoryImpl](/m14/04-user-profile-repository-impl/) | Impl đầu tiên + repo test riêng (additive, app vẫn ProfileStore) | Vận dụng — không concept mới |
-| 5 | [Hai repo còn lại + model parity](/m14/05-hai-repo-con-lai-va-model-parity/) | Settings/onboarding repo (lặp pattern); `UserSettingsData`; `UserProfileData` FR-19 | Lặp pattern + data model |
+| 5 | [Hai repo còn lại + model parity](/m14/05-hai-repo-con-lai-va-model-parity/) | Settings/onboarding repo (lặp pattern); `UserSettingsData`; `UserProfileData` đạt field set senior | Lặp pattern + data model |
 | 6 | [DI theo contract: MultiProvider & fake](/m14/06-di-theo-contract-multiprovider-va-fake/) | `Provider<Contract>.value`, `MultiProvider`, bootstrap, fake repo | 1 lớn (DI) + fake |
 | 7 | [MenuViewModel nối stream & retire](/m14/07-menuviewmodel-noi-vao-stream/) | `.value`+`listen` ctor, retire `MenuLoadState`, xoá `profile_store.dart` CUỐI | Vận dụng + tích hợp |
 

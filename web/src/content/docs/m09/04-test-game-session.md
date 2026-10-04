@@ -16,7 +16,7 @@ thời nhìn thấy widget test **bắt được một lỗi layout thật**.
 
 - Milestone: **M09** (bài 4/4 — cuối milestone)
 - App hiện tại: ván game hoàn chỉnh (bài 1–3); file test M08 đã có 6
-  test, cần thêm 5 test M09 và một helper reset.
+  test, cần thêm 4 test M09 và hai helper mới.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -145,6 +145,23 @@ nhất: nó chứng minh `Timer` thật sự được nối vào phase machine.
 
 ### Bước 4 — Test victory qua helper `answerCorrectly`
 
+Trước test victory, thêm **một helper nữa** vào `main()` — chuỗi "tap
+đáp án đúng + CHỐT" lặp lại mọi câu nên tách ra cho gọn:
+
+```dart
+// test/widgets/game_screen_test.dart — trong main(), THÊM:
+/// Tap đáp án đúng của câu `i` rồi CHỐT — đọc đáp án từ bank
+/// (`correctIndex`), không hard-code text: đổi nội dung câu hỏi
+/// vẫn chạy đúng.
+Future<void> answerCorrectly(WidgetTester tester, int i) async {
+  final q = quizQuestions[i];
+  await tester.tap(find.text(q.options[q.correctIndex]));
+  await tester.pump();
+  await tester.tap(find.text('CHỐT ĐÁP ÁN'));
+  await tester.pump();
+}
+```
+
 ```dart
 testWidgets('trả lời đúng hết → dialog CHIẾN THẮNG!', (tester) async {
   await pumpGameScreen(tester);
@@ -169,8 +186,8 @@ testWidgets('trả lời đúng hết → dialog CHIẾN THẮNG!', (tester) asy
 });
 ```
 
-Helper `answerCorrectly` (đã có từ M08 — đọc đáp án đúng từ bank, không
-hard-code text) làm test chịu được đổi nội dung câu hỏi.
+Helper `answerCorrectly` đọc đáp án đúng từ bank qua `correctIndex`
+thay vì hard-code text — test chịu được đổi nội dung câu hỏi.
 
 ### Bước 5 — Test VỀ MENU pop hai route
 
@@ -264,7 +281,7 @@ gặp liên tục: **header cố định — body cuộn — footer ghim**.
 
 ## Chạy và quan sát
 
-- `flutter test` — 29 test xanh (M04–M09): unit test bank + profile +
+- `flutter test` — 28 test xanh (M04–M09): unit test bank + profile +
   ticker, widget test menu flow + toàn phiên game.
 - Nếu một test timer báo `A Timer is still pending` — tìm chỗ quên
   `unmount` (hoặc `dispose` thiếu `cancel()`).
@@ -356,4 +373,4 @@ tồn tại. Chủ sở hữu phải hủy.
   select/submit feedback, next-question, menu↔game route, game-over,
   restart, victory, timeout, back-to-menu.
 - [ ] Mọi test đều `unmount` cuối cùng.
-- [ ] `flutter test` — 29/29 xanh; `flutter analyze` sạch.
+- [ ] `flutter test` — 28/28 xanh; `flutter analyze` sạch.

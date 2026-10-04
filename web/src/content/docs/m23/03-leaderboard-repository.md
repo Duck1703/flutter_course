@@ -68,7 +68,7 @@ chính là cơ sở cho `refresh()` ở Bài 4.
 ## Dart/Backend mới — query builder + `maybeSingle` 
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `.from('leaderboard')` | chọn VIEW `public.leaderboard` — Bài 1 |
 | `.select('rank,name,avatar_url,level,total_money_won')` | chỉ lấy các cột liệt kê — không `select *` |
 | `.order('total_money_won', ascending: false)` | sort giảm dần theo tiền thắng |
@@ -202,7 +202,7 @@ Cùng file `leaderboard_entry_data.dart` còn chứa **sealed class
 quả" mà VM (Bài 4) emit và UI (Bài 5) switch lên:
 
 | Variant | Mang | Nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | `LeaderboardPopupSuccess` | `entries` + `currentEntry?` + `isRefreshing` | có dữ liệu; `isRefreshing` = đang pull lại, giữ list cũ |
 | `LeaderboardPopupEmpty` | `message` (`LeaderboardPopupMessage.empty`) | snapshot rỗng cả hai phía |
 | `LeaderboardPopupError` | `message` (`loadError`) | repo throw — render nút THỬ LẠI |

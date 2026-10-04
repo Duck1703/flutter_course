@@ -69,7 +69,7 @@ một lần duy nhất nhờ cờ `hasSavedResult`.
 Trả lời được năm câu này là đủ:
 
 1. **Học gì?** Save-ownership trong VM + `hasSavedResult`;
-   `LevelConfig` bảng milestone-multiplier ; `MenuLevelProgress`
+   `LevelConfig` bảng milestone-multiplier; `MenuLevelProgress`
    derived view-model; `unawaited` fire-and-forget tại
    boundary; `copyWith(clear*)` cho flag nhất-thời.
 2. **Giải thích được?** Vì sao `GameResult` route-pop sai ownership;

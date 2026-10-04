@@ -369,8 +369,9 @@ class _EarningsCard extends StatelessWidget {
 ```
 
 - Cùng một pattern `Container + padding + decoration` — khác bài trước chỉ là
-  `gradient:` thay `color:` (hai cái **không dùng đồng thời** trong một
-  `BoxDecoration` — gradient ghi đè nền; nếu cần viền hãy thêm `border:`).
+  `gradient:` thay `color:` (về ý đồ nên chọn **một nền**: dùng cả hai vẫn
+  hợp lệ nhưng `gradient` vẽ đè `color` — chi tiết ở mục lỗi hay gặp; nếu
+  cần viền hãy thêm `border:`).
 - `letterSpacing` trong `TextStyle` — giãn cách chữ cho nhãn dạng "label".
 - `const Column(...)` — con chữ toàn const được → `const` trọn cột.
 
@@ -407,8 +408,10 @@ bề ngang khả dụng → mỗi card tự cao, rộng 343.
    badge đứng ngay sau chữ thay vì sát phải, và text dài tràn ra ngoài.
    `Expanded`/`Flexible` là cách "xin phần còn lại" — bắt buộc khi muốn chống
    overflow.
-2. **`color:` và `gradient:` cùng trong một `BoxDecoration`** — analyzer/
-   assert: chỉ một nền. Chọn một.
+2. **`color:` và `gradient:` cùng trong một `BoxDecoration`** — hợp lệ,
+   không lỗi: `gradient` được vẽ **đè lên** `color` (color là nền bên dưới).
+   Về ý đồ thiết kế nên chọn một nền; dùng cả hai chỉ hợp lý khi cố ý để
+   `color` lót dưới phần trong suốt của gradient.
 3. **`const` kẹt vì param runtime** — `Container(color: widget.x)` không const
    được khi `x` là field; bỏ `const` ở ngoài cùng đủ.
 4. **`BorderRadius.circular` không const** — nhớ pattern: `decoration:` non-const

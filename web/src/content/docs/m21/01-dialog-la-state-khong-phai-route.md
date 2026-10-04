@@ -66,7 +66,7 @@ Scaffold route hoạt động, nhưng giá của nó tăng theo số variant:
 > `PopScope(canPop:false)` bắt mọi back và hỏi VM.
 
 | Chiều | Route `showDialog` | In-tree `GameDialogLayer` |
-|-------|--------------------|---------------------------|
+| ------- | -------------------- | --------------------------- |
 | Chủ sở hữu hiển thị | `Navigator` (route stack) | Widget tree / `Stack` |
 | Ai mở? | event + `showDialog()` | `dialogState` đổi → rebuild |
 | Lifetime | Route entry tách khỏi cây | Cùng lifecycle màn chơi |
@@ -159,7 +159,7 @@ DO NOT ASSUME:        `showDialog` ≠ `Dialog()` composable. Muốn
 ## Senior project connection
 
 | Senior (đọc được ở) | Vai trò |
-|---|---|
+| --- | --- |
 | `lib/screens/game_screen.dart` — `Stack[..., GameDialogLayer]` | layer là con cuối, trên cùng |
 | `lib/widgets/game/dialogs/game_dialog_layer.dart` | `Positioned.fill` → `IgnorePointer` → `AnimatedSwitcher` → backdrop → view theo variant |
 | `lib/data/game/game_session_state_data.dart` — `GameScreenUiEvent` | chỉ `{GameNavigateToMenuEvent, GameShareResultEvent}` — **không** có event mở dialog |

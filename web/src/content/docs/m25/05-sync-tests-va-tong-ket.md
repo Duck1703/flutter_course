@@ -9,7 +9,7 @@ sidebar:
 ## Mục tiêu
 
 - Thêm group 
-`result profile sync (M25, FR-36)`
+`result profile sync`
  vào
  
 `test/game_screen_view_model_test.dart`
@@ -30,8 +30,8 @@ sidebar:
  nghĩa gì,
  cái gì gánh vai trò verify thay (merge thuần ×7, schema ×2, call-path ×3, port senior-verbatim, SQL byte-parity) — và live-run
  OPTIONAL thì nhìn vào đâu.
-- Đóng trong fidelity register: seam Disabled → impl thật
- + conditional DI + result-sync branch.
+- Seam Disabled → impl thật
+ + conditional DI + result-sync branch — đã hội tụ với senior.
 - Chỉ được divergence còn mở sau M25 (không phải của milestone này):
  DRE (M26), 
 `MenuDialogLayer`
@@ -69,16 +69,14 @@ Không có ba test này,
 stub→thật đổi bốn dòng, không test nào đỏ nếu bạn viết sai — ví dụ
 gọi sync trước khi check session, truyền nhầm session, hay nuốt cả
 nhánh authed. Ba assert 
-`syncCallCount`
-/
-`lastSyncedSession`
-/
+`syncCallCount`/
+`lastSyncedSession`/
 
 `saveCallCount`
  là bằng chứng *nhịp gọi* chứ không phải bằng chứng
 mạng — và trong môi trường không credential, đó là bằng chứng mạnh
-nhất ta có. Đây cũng là lần cuối nhìn lại toàn pipeline để khóa
- cho register.
+nhất ta có. Đây cũng là lần cuối nhìn lại toàn pipeline để
+ ghi nhận mọi khác-biệt còn lại đều là cố ý.
 
 ## Bạn đã biết gì
 
@@ -94,10 +92,8 @@ nhất ta có. Đây cũng là lần cuối nhìn lại toàn pipeline để kh�
  
 `FakeUserProfileSyncRepository`
  
-`syncCallCount`
-/
-`lastSyncedSession`
-/
+`syncCallCount`/
+`lastSyncedSession`/
  
 `syncError`
  (M24 helpers).
@@ -136,21 +132,11 @@ theo spec senior; phần duy nhất chưa chứng minh là wire thật, và đi�
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
-| 
-`group('result profile sync (M25, FR-36)', …)`
- | nhóm test theo FR — truy vết register |
-| 
-`startedVm(async, 3, repo: …, authRepo: …, syncRepo: …)`
- | helper Bài 4 trả công — param tuỳ chọn |
-| 
-`..syncError = StateError('network down')`
- | script throw trên fake — |
-| 
-`addTearDown(auth.dispose)`
-/
-`(sync.dispose)`
- | subject ownership — |
+| --- | --- |
+| `group('result profile sync', …)` | nhóm test theo hành vi sync |
+| `startedVm(async, 3, repo: …, authRepo: …, syncRepo: …)` | helper Bài 4 trả công — param tuỳ chọn |
+| `..syncError = StateError('network down')` | script throw trên fake |
+| `addTearDown(auth.dispose)` / `(sync.dispose)` | subject ownership |
 
 Không construct mới — bài này là composition + honesty.
 
@@ -218,8 +204,7 @@ test.** Chuỗi save→sync ở đây là
 `unawaited`
  microtask +
 
-`Future.delayed`
- — 
+`Future.delayed` —
 `FakeAsync`
  + 
 `flushMicrotasks()`
@@ -237,41 +222,27 @@ hành vi được khóa, không phải "không test thì cũng được".
 
 ## Senior project connection
 
-| Senior @ 
-`main@c8eb860`
- | Dùng để chứng minh |
-|---|---|
-| 
-`test/widgets/game_screen_result_flow_test.dart`
- | senior assert 
-`syncCallCount == 1`
- sau authenticated result save ở tầng widget — learner port ngữ nghĩa xuống tầng VM (`startedVm`
- + FakeAsync) |
-| 
-`test/user_profile_sync_merge_test.dart`
- + 
-`test/user_profile_sync_schema_test.dart`
- | 9 test learner port verbatim (Bài 1–2) — assert không bị làm yếu |
-| 
-`supabase/student-setup/01+02.sql`
- | byte-identical — schema/policies verify được khi có project thật |
+| Senior @ `main@c8eb860` | Dùng để chứng minh |
+| --- | --- |
+| `test/widgets/game_screen_result_flow_test.dart` | senior assert `syncCallCount == 1` sau authenticated result save ở tầng widget — learner port ngữ nghĩa xuống tầng VM (`startedVm` + FakeAsync) |
+| `test/user_profile_sync_merge_test.dart` + `test/user_profile_sync_schema_test.dart` | 9 test learner port verbatim (Bài 1–2) — assert không bị làm yếu |
+| `supabase/student-setup/01+02.sql` | byte-identical — schema/policies verify được khi có project thật |
 
 ## Build it step by step
 
 **Bước 1 — append group vào 
-`test/game_screen_view_model_test.dart`
-**
+`test/game_screen_view_model_test.dart`**
 (cuối 
 `main`, sau group result-persistence M22):
 
 ```dart
   // ------------------------------------------------------------------
-  // M25 (FR-36 converge) — result → remote sync: `_syncSavedGameResult`
+  // Result → remote sync: `_syncSavedGameResult`
   // đọc auth session sau save local; senior assert cùng điều này qua
   // `syncRepository.syncCallCount` trong
   // `test/widgets/game_screen_result_flow_test.dart` — ở đây ở tầng VM.
   // ------------------------------------------------------------------
-  group('result profile sync (M25, FR-36)', () {
+  group('result profile sync', () {
     test('authenticated → save xong gọi syncUserProfile đúng session',
         () {
       FakeAsync().run((async) {
@@ -372,8 +343,7 @@ sạch,
 `elapse`
 
  vì không 
-`Timer`
-/
+`Timer`/
 `Future.delayed`
  trong đường save.
 2. **
@@ -443,10 +413,8 @@ sau ván. Đây là hướng dẫn đường đi, không phải kết quả đã
 ## Thử nghiệm
 
 Đoán 
-`repo.saveCallCount`
- / 
-`sync.syncCallCount`
- /
+`repo.saveCallCount`/
+`sync.syncCallCount`/
 
 `sync.lastSyncedSession?.uid`
  cho bốn kịch bản 
@@ -481,8 +449,7 @@ test:
 `1 / 0 / null`
  (shipped test 2).
 - d → 
-`1 / 1 / 'user-2'`
- — 
+`1 / 1 / 'user-2'` —
 `hasSavedResult`
  trên state chặn save lần
  hai (idempotence M22): 
@@ -532,20 +499,10 @@ Không trồng bug mới — đọc kỹ
  và trả lời:
 
 | # | Nếu … | Test nào đỏ? Assert nào? |
-|---|---|---|
-| a | xoá 
-`await profileSyncRepository.syncUserProfile(session)`
- | ? |
-| b | xoá toàn bộ 
-`try/catch`
- của 
-`_syncSavedGameResult`
- (body thẳng) | ? |
-| c | đổi 
-`syncUserProfile(session)`
- thành truyền 
-`AuthSessionAuthenticated(uid: 'hardcoded')`
- | ? |
+| --- | --- | --- |
+| a | xoá `await profileSyncRepository.syncUserProfile(session)` | ? |
+| b | xoá toàn bộ `try/catch` của `_syncSavedGameResult` (body thẳng) | ? |
+| c | đổi `syncUserProfile(session)` thành truyền `AuthSessionAuthenticated(uid: 'hardcoded')` | ? |
 
 <details>
 <summary>Đáp án + giải thích</summary>
@@ -625,8 +582,7 @@ Không trồng bug mới — đọc kỹ
 ## Ta cố ý chưa thêm
 
 - 
-`DreChangeNotifier`
-/
+`DreChangeNotifier`/
 `asyncOp`
  thay 
 `try/catch`
@@ -637,16 +593,14 @@ Không trồng bug mới — đọc kỹ
 - 
 `MenuDialogLayer`
  + 
-`MenuDialogAuth`
-/
+`MenuDialogAuth`/
 `MenuDialogSignOut`
  state thay
  event+
 `showDialog`
  — **M29** (còn ACTIVE).
 - Visual parity: 
-`SettingsDialogShell`
-/
+`SettingsDialogShell`/
 `OnboardingGameButton`
 /icon
  pipeline/
@@ -668,7 +622,7 @@ Không trồng bug mới — đọc kỹ
 `test/game_screen_view_model_test.dart`
  có group
  
-`result profile sync (M25, FR-36)`
+`result profile sync`
  đủ 3 test xanh.
 - [ ] 
 `flutter analyze`
@@ -711,8 +665,7 @@ Trả lời được năm câu này là đủ:
  
 `_requestId`; vì sao username có thể remote khi local là leader;
  vì sao 
-`gamesWon`
-/
+`gamesWon`/
 `email`
  không lên 
 `public.users`.

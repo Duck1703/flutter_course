@@ -49,7 +49,7 @@ Pattern có 3 mức ta dùng trong M15:
 ## Dart cần dùng / Dart mới
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `switch` expression | `final x = switch (v) { A() => 1, … };` | switch **trả về giá trị** — mọi nhánh phải `=> expr` |
 | object pattern | `PaymentSuccess(:final transactionId)` | match type + **bóc field cùng tên** thành biến `transactionId` dùng ngay trong nhánh |
 | rename pattern | `(transactionId: final id)` | bóc field `transactionId` nhưng đặt tên biến `id` |

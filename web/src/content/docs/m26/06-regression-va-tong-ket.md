@@ -19,7 +19,7 @@ sidebar:
 - Recap ownership split của M26: reducer (transition + guard +
   scoring), VM-bridge (timer/future/repo/stream plumbing),
   repository (persistence), UI (render + notify taps).
-- Đóng trong fidelity register: bản trung gian
+- Hội tụ với senior: bản trung gian
   `ChangeNotifier`+manual-guards → `DreChangeNotifier` +
   `GameReducer` + `asyncOp`.
 
@@ -46,8 +46,8 @@ xa hơn (`_schedule*` → `Future.delayed` → `dispatch(*Elapsed)` →
 reducer) — stale phải bị loại ở *data*, không phải bằng may;
 (3) save-once giờ là reducer-guard `hasSavedResult` — hai
 `backToMenu` liên tiếp không được phát hai `GameSaveResult` op.
-Ba pin này cũng là bằng chứng cuối cùng để ghi **:
-CONVERGED**.
+Ba pin này cũng là bằng chứng cuối cùng để kết luận:
+**khớp senior**.
 
 ## Bạn đã biết gì
 
@@ -82,7 +82,7 @@ trong).
 |---|---|
 | `await Future.delayed(800ms/2600ms)` | **đồng hồ thật** — khác `FakeAsync` của file test chính; senior verbatim (đợi `_aiAssistantDelay` 700ms / reveal+explanation 2500ms) |
 | `await Future.delayed(Duration.zero)` | flush microtask cho `unawaited` op hoàn tất |
-| `setUp`/`tearDown` trên ba fake + VM | subject ownership — |
+| `setUp`/`tearDown` trên ba fake + VM | subject ownership |
 | helper `_answer`/`_answerState`/`_featureButton` | tra `screenData` theo text/label — assert qua public surface |
 
 ## Flutter cần dùng

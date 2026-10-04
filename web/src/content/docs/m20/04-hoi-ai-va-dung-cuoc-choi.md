@@ -58,7 +58,7 @@ field `GameResult?` trên state, **set ngay tại transition**.
 ## Dart cần dùng / Dart mới
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | guard `is!` | `if (dialog is! GameAIAssistantDialog) return;` | "không còn là AI dialog" → bỏ kết quả trễ |
 | staged emit | copyWith(dialogState: loading) → delay → copyWith(dialogState: result) | hai emit, một route |
 | `resolvedResult ??` | `_state.resolvedResult ?? build(...)` | đã chốt thì đọc, chưa thì suy (transport M10) |
@@ -202,7 +202,7 @@ luồng *hai emit*:
 Ba guard chồng nhau và mỗi cái che một hỏng khác nhau:
 
 | Guard | Hỏng nếu thiếu |
-|---|---|
+| --- | --- |
 | `_schedule` token (`token != _state.flowToken → return`) | `playAgain`/ván mới → AI cũ "trả lời" vào ván mới |
 | `_schedule` `_isDisposed` | callback chạy trên VM đã chết → crash |
 | `_onAIAssistantElapsed` `is! GameAIAssistantDialog` | user đã đóng dialog giữa 700ms → kết quả trễ **mở lại** dialog (senior: bỏ) |

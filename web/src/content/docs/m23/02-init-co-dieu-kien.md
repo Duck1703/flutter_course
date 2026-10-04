@@ -9,8 +9,7 @@ sidebar:
 ## Mục tiêu
 
 - Viết 
-`SupabaseClientService.initialize(env) → SupabaseClient?`
- —
+`SupabaseClientService.initialize(env) → SupabaseClient?` —
  thiếu cấu hình trả 
 `null`, đủ cấu hình 
 `Supabase.initialize`
@@ -28,8 +27,7 @@ sidebar:
 `LeaderboardPopupState`
  4 variant, hai impl
  
-`DisabledLeaderboardRepository`
-/
+`DisabledLeaderboardRepository`/
 `SupabaseLeaderboardRepository`
 
  (mổ xẻ query ở Bài 3).
@@ -96,10 +94,8 @@ phải lỗi — nó là một nhánh hợp lệ.*
 `AppDependencyScope`
  MultiProvider + 
 `Provider<CONTRACT>.value` (M14).
-- `Future`
-/
-`async`
-/
+- `Future`/
+`async`/
 `await`, 
 `try`
  quanh await; ternary 
@@ -143,40 +139,25 @@ dòng UI (conditional DI by configuration).
 
 `initialize`
  trả 
-`SupabaseClient?`
- — 
+`SupabaseClient?` —
 `null`
  chính là tín hiệu
 "chưa cấu hình". Không có class 
 `SupabaseNotConfigured`
  nào: senior
 chỉ dùng nullable + một 
-`?:`. (Brief từng ghi tên sentinel đó —
+`?:`. (Course từng ghi tên sentinel khác ở đây —
 grep repo senior: không tồn tại; nullable chính là sentinel.)
 :::
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
-|---|---|
-| 
-`Supabase.initialize(url:, publishableKey:)`
- | SDK 
-`supabase_flutter`
- (LIGHT): mở kênh REST/realtime tới project; trả 
-`Supabase`
- object |
-| 
-`supabase.client`
- → 
-`SupabaseClient`
- | object gọi query (`from(...)`) — chỉ tồn tại khi đã initialize |
-| 
-`abstract interface class LeaderboardRepository`
- | contract — áp dụng lại |
-| 
-`x == null ? implA : implB(x)`
- | chọn impl theo cấu hình tại bootstrap — pattern |
+| --- | --- |
+| `Supabase.initialize(url:, publishableKey:)` | SDK `supabase_flutter` (LIGHT): mở kênh REST/realtime tới project; trả `Supabase` object |
+| `supabase.client` → `SupabaseClient` | object gọi query (`from(...)`) — chỉ tồn tại khi đã initialize |
+| `abstract interface class LeaderboardRepository` | contract — áp dụng lại |
+| `x == null ? implA : implB(x)` | chọn impl theo cấu hình tại bootstrap — pattern |
 
 
 `Supabase.initialize`
@@ -265,8 +246,7 @@ graph: khởi tạo tay, chọn impl bằng
 root" ở đây là 10 dòng code thường, không phải annotation.
 
 **DO NOT ASSUME — đừng tìm 
-`isDebug`
-/
+`isDebug`/
 `BuildConfig.FLAVOR`.** Config
 đến từ 
 `--dart-define`
@@ -277,8 +257,7 @@ root" ở đây là 10 dòng code thường, không phải annotation.
 niệm build-variant mặc định: "flavor" ở đây là *có truyền
 dart-define hay không*, và cả hai nhánh phải chạy an toàn từ cùng một
 binary source. Cũng đừng chờ một 
-`Result`
-/
+`Result`/
 `Either`
  bọc kết quả init —
 
@@ -328,8 +307,7 @@ hướng.
 <summary>Đối chiếu sau khi tự thiết kế</summary>
 
 1. 
-`Future<SupabaseClient?> initialize(SupabaseEnvironment)`
- —
+`Future<SupabaseClient?> initialize(SupabaseEnvironment)` —
  nullable 
 `SupabaseClient?`
  là sentinel nhẹ nhất: không cần class
@@ -405,8 +383,7 @@ class SupabaseClientService {
 ```
 
 **Bước 2 — 
-`lib/repositories/leaderboard/leaderboard_repository_contract.dart`
-**
+`lib/repositories/leaderboard/leaderboard_repository_contract.dart`**
 (verbatim senior):
 
 ```dart
@@ -449,10 +426,8 @@ LeaderboardPopupState`
  với 4 variant 
 `LeaderboardPopupSuccess`
 
-(`entries`
-/
-`currentEntry`
-/
+(`entries`/
+`currentEntry`/
 `isRefreshing`), 
 `LeaderboardPopupEmpty`,
 
@@ -478,7 +453,7 @@ VM emit chúng, Bài 5 UI switch trên chúng. Tạo trọn file verbatim
 ngay từ đầu thay vì vá từng mảng.
 :::
 
-:::caution[Khác senior có chủ đích — register]
+:::caution[Khác senior có chủ đích]
 
 `LeaderboardEntryData`
  learner **không** có 
@@ -496,10 +471,8 @@ remote, không phải asset.
 **Bước 4 — 
 `lib/repositories/leaderboard/leaderboard_repository.dart`.**
 Port file đầy đủ (161 dòng): hằng 
-`_leaderboardView`
-/
-`_leaderboardColumns`
-/
+`_leaderboardView`/
+`_leaderboardColumns`/
 
 `_topEntryCount`, 
 `SupabaseLeaderboardRepository`
@@ -612,8 +585,7 @@ việc thay checklist.
 `debugPrint('[supabase] config …')`
  in hai predicate — cửa sổ
  debug đầu tiên khi "app không lên remote" (senior in 
-`[auth]`
- —
+`[auth]` —
  learner chưa có auth nên đổi tag).
 3. 
 `await SupabaseClientService.initialize(...)`
@@ -738,22 +710,12 @@ argument type ngay. Một
 
 Không chạy app. Trả lời cho HAI kịch bản khởi chạy:
 
-| | A: không dart-define | B: đủ 
-`SUPABASE_URL`
- + 
-`SUPABASE_PUBLISHABLE_KEY`
- |
-|---|---|---|
-| 
-`isSupabaseConfigured`
- | ? | ? |
-| 
-`supabaseClient`
- | ? | ? |
+|  | A: không dart-define | B: đủ `SUPABASE_URL` + `SUPABASE_PUBLISHABLE_KEY` |
+| --- | --- | --- |
+| `isSupabaseConfigured` | ? | ? |
+| `supabaseClient` | ? | ? |
 | impl trong scope | ? | ? |
-| 
-`context.read<LeaderboardRepository>()`
- trả | ? | ? |
+| `context.read<LeaderboardRepository>()` trả | ? | ? |
 
 <details>
 <summary>Đáp án</summary>
@@ -821,8 +783,7 @@ Không chạy app. Trả lời cho HAI kịch bản khởi chạy:
  dùng 4 state variant — **Bài 4**.
 - Consumer thật của repo (dialog + menu row) — **Bài 5**.
 - 
-`AuthRepository`
-/
+`AuthRepository`/
 `SupabaseAuthRepository`
  + 
 `DisabledAuthRepository`

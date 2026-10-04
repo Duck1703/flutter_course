@@ -448,7 +448,7 @@ gặp khi đồng bộ hai file.
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. `template-arb-file` nghĩa là gì — chuyện gì xảy ra nếu vi thiếu
    một key?

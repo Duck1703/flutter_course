@@ -103,7 +103,7 @@ cái stream này.
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `abstract class` | `abstract class MenuUiEvent` | Class cha không tạo instance — chỉ để các event `extends` |
 | `final class` | `final class MenuGameRequested extends MenuUiEvent` | Class không cho extend/implement nữa — event "đóng kín" |
 | `StreamController<T>.broadcast()` | `_events = StreamController<MenuUiEvent>.broadcast()` | Controller nhiều-listener, không replay |
@@ -307,7 +307,7 @@ Menu sắp có 6 "thứ thay đổi" sau. Phân loại từng cái: **state**
 trễ, có được xem/nhận lại không — và có nên không?*
 
 | # | Thứ thay đổi | State hay event? |
-|---|---|---|
+| --- | --- | --- |
 | 1 | "Đang tải profile" | ? |
 | 2 | "Vừa bấm nút CHƠI" | ? |
 | 3 | Tên hiển thị của user | ? |
@@ -324,7 +324,7 @@ Cần → state. Chỉ cần *hành động đúng lúc nó xảy ra* → event.
 <details><summary>Đáp án</summary>
 
 | # | Chọn | Vì sao |
-|---|------|--------|
+| --- | ------ | -------- |
 | 1 | **state** | UI phải vẽ đúng trạng thái mọi lúc; đến trễ vẫn phải thấy "đang load" |
 | 2 | **event** | hành động một lần (điều hướng); ai đến trễ không "được bấm lại" — mà không nên |
 | 3 | **state** | giá trị hiện tại; mọi widget đọc lại được bất cứ lúc nào |

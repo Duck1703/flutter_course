@@ -48,7 +48,7 @@ thay đổi (đang chọn gì, đã chốt chưa). Tách rõ: **dữ liệu câu
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `const List<QuizQuestion>` | `const quizQuestions = [QuizQuestion(…), …]` | Danh sách compile-time: tạo 1 lần, mọi `import` dùng chung instance |
 | Method trên model | `q.isCorrect(i)` | Logic chấm điểm sống trong model — UI không rải `== correctIndex` |
 

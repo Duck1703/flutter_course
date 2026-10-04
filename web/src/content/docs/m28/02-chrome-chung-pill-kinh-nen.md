@@ -68,16 +68,16 @@ sidebar:
 
 ## Mental model mới — "SVG là vector, colorFilter tô lúc render" 
 
-> ** — `SvgPicture.asset` + tint qua `ColorFilter.mode`.**
+> **`SvgPicture.asset` + tint qua `ColorFilter.mode`.**
 > File SVG của senior đều fill đen/trắng sẵn; widget *không* sửa
 > file — nó gắn `colorFilter: ColorFilter.mode(màu, BlendMode.srcIn)`
 > để **thay toàn bộ pixel nguồn bằng một màu** giữ nguyên alpha.
 > Một file SVG → mọi màu: trắng trên nút kính, vàng trong badge
 > câu hỏi, cyan trên lifeline — cùng asset, khác filter.
 
-Và `if-case` :
+Và `if-case`:
 
-> ** — `if (expr case final x?)` null-extract trong widget
+> **`if-case` — `if (expr case final x?)` null-extract trong widget
 > list.** Pattern `final x?` khớp *chỉ khi* expr non-null và bind
 > `x` thành non-null ngay trong nhánh — gọn hơn `if (icon != null)
 > Icon(icon!)` vì không cần `!` và không phải viết lại tên field.
@@ -90,7 +90,7 @@ answer option) — học ở file nhỏ, dùng ở file lớn.
 
 | Construct | Vai trò |
 |---|---|
-| `if (icon case final iconData?) ...[` | ** mới** — if-case với null-check pattern: khớp khi `icon != null`, bind `iconData` non-null; `...[]` spread nhiều widget vào `children:` |
+| `if (icon case final iconData?) ...[` | **mới** — if-case với null-check pattern: khớp khi `icon != null`, bind `iconData` non-null; `...[]` spread nhiều widget vào `children:` |
 | `VoidCallback? onTap` → `enabled: onTap != null` | nút disable bằng null y hệt — semantics `enabled` đọc cùng một nguồn sự thật |
 | `this.icon`/`this.scale` optional trong ctor | `QzdsGameButton` 6 field — `icon`/`scale`/`textGlow`/`lightShadow` có default, `text`/`color`/`onTap` bắt buộc |
 
@@ -98,7 +98,7 @@ answer option) — học ở file nhỏ, dùng ở file lớn.
 
 | API | Vai trò |
 |---|---|
-| `SvgPicture.asset(path, {width, height, colorFilter})` | ** mới** — render SVG từ bundle; `colorFilter` tô toàn bộ bằng một `BlendMode` |
+| `SvgPicture.asset(path, {width, height, colorFilter})` | **mới** — render SVG từ bundle; `colorFilter` tô toàn bộ bằng một `BlendMode` |
 | `ColorFilter.mode(Colors.white, BlendMode.srcIn)` | `srcIn` = "source-in": thay pixel nguồn bằng `Colors.white`, giữ alpha → SVG mọi màu thành trắng; đổi sang `yellow600` → vàng |
 | `SizedBox.square(dimension: 44)` + `Container` tròn + `glassGradient` | nút kính 44×44: `shape: circle` + border `white10` + gradient kính từ `AppTokens.glassGradient` |
 | `surfaceGlow(color.withValues(alpha: 0.32))` | Bài 1 helper — lớp sáng elip phủ pill (DecoratedBox thứ hai bên trong DecoratedBox màu nền) |
@@ -108,7 +108,7 @@ answer option) — học ở file nhỏ, dùng ở file lớn.
 ## Ví dụ độc lập — null-extract trong list (DartPad)
 
 ```dart
-// ISOLATED EXAMPLE — not in project. D-48 thu nhỏ: optional
+// ISOLATED EXAMPLE — not in project. Thu nhỏ từ senior: optional
 // field bung trong collection-if mà không cần `!`.
 String? maybeSuffix = 'PRO';
 

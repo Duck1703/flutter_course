@@ -252,7 +252,7 @@ List<GameFeatureButtonData> _buildFeatureButtons({
   return buttons;
 }
 
-/// FR-34: `icon` là `IconData` thay `String iconAsset` của senior
+/// `icon` là `IconData` thay `String iconAsset` của senior
 /// (learner chưa có pipeline SVG) — hội tụ M28.
 GameFeatureButtonData _feature(
   GameFeatureButtonType type,
@@ -500,8 +500,8 @@ render slot nhưng `onTap: null`:
 `_GameFeatureButton` (bản phẳng — visual depth đến M28):
 
 ```dart
-/// Thanh lifeline — senior `GameFeatureButtonBar` (FR-34: flat
-/// IconData thay painter/SVG — M28 hội tụ visual). Render từ
+/// Thanh lifeline — senior `GameFeatureButtonBar` (bản learner:
+/// flat IconData thay painter/SVG — M28 hội tụ visual). Render từ
 /// `data.featureButtons`; widget không giữ trạng thái "đã dùng" —
 /// `isEnabled` đã được mapper suy ra, tap forward `handleFeatureClick`.
 class _GameFeatureBar extends StatelessWidget {
@@ -543,7 +543,7 @@ class _GameFeatureBar extends StatelessWidget {
   };
 }
 
-/// Một nút lifeline — FR-34: visual đơn giản hóa (icon Material +
+/// Một nút lifeline — visual đơn giản hóa (icon Material +
 /// AnimatedOpacity) thay painter gradient/ripple + SVG của senior
 /// (→ M28). Giữ đúng hợp đồng hành vi: `isEnabled` → opacity 0.38 +
 /// onTap null; tap forward `handleFeatureClick`.

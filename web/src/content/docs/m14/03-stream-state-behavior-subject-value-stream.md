@@ -133,8 +133,8 @@ await subject.close();
 Sang bài 7 `MenuViewModel` sẽ ôm **hai** stream — đặt bảng này vào đầu
 ngay từ bây giờ vì đây là chỗ nhầm nhất của cả milestone:
 
-| | `userProfileStream` (repo) | `events` (VM) |
-|---|---|---|
+|  | `userProfileStream` (repo) | `events` (VM) |
+| --- | --- | --- |
 | Mang | **state** — "profile hiện tại là gì" | **event** — "vừa xảy ra gì" |
 | Loại | `BehaviorSubject` → `ValueStream` | `StreamController.broadcast` |
 | Subscriber mới | nhận ngay giá trị mới nhất | bỏ lỡ mọi event đã bắn |

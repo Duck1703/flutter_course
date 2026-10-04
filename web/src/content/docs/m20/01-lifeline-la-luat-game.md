@@ -165,13 +165,16 @@ void main() {
 
 ## Thử nghiệm — đoán trước khi chạy
 
-Trong ví dụ `Wallet` ở trên, đổi guard thành kiểm tra **trước**
-khi `use` bị gọi — tức bỏ hẳn `_used.contains`, chỉ giữ
-`remaining > 0`. **Đoán:** gọi `w.use()` hai lần liên tiếp thì
-`remaining` còn bao nhiêu? *(Đáp án: 0 — không có sổ đã-dùng,
-"quyền" tái sử dụng vô hạn miễn còn tiền. Đây là toàn bộ lý do
-`usedFeatureButtons` tồn tại: sổ Set biến quyền một-lần thành
-luật không-thể-phá.)*
+Trong ví dụ `Wallet` ở trên, **bỏ guard** — sửa thân `use` thành chỉ
+`return Wallet(usedCoupons: {...usedCoupons, c});` (không còn kiểm tra
+`canUse`). **Đoán:** gọi `w.use(Coupon.freeShip)` hai lần liên tiếp thì
+`usedCoupons.length` bằng mấy — và quan trọng hơn, `use` lần hai *trả
+gì*? *(Đáp án: length vẫn 1 vì `Set` tự loại trùng — nhưng `use` lần
+hai vẫn **trả Wallet mới như thể thành công**: không còn cách nào
+phân biệt "được dùng" và "bị chặn". Nếu phía sau `use` là trừ
+tiền/cấp quyền, lần thứ hai chạy lặng lẽ. Đây là toàn bộ lý do
+`usedFeatureButtons` và guard `_canUseFeature` tồn tại: guard phải đặt
+**trước** mutation, không nhờ Set tự cứu.)*
 
 ## Ta cố ý chưa thêm
 

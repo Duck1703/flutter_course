@@ -62,7 +62,7 @@ true)` giả vờ cũ chết tại đây.
 ## Mental model mới — "hai kiểu DI: conditional vs unconditional"
 
 ```text
-   Supabase (A-24):                    Notification (M27):
+   Supabase:                           Notification:
    client == null ? Disabled : Impl    LocalNotificationServiceImpl()  ← luôn impl
 
    Điều kiện = CẤU HÌNH build          Điều kiện = PLATFORM runtime —
@@ -228,7 +228,7 @@ khi `loadSettings` chưa xong hoặc lỗi (senior cùng chính sách).
 callback + method thật (verbatim):
 
 ```dart
-      // M27 (FR-27 converge): xin quyền THẬT qua service — senior
+      // M27: xin quyền THẬT qua service — senior
       // `_requestNotificationPermission` verbatim phía dưới.
       onEnableNotifications: () =>
           unawaited(_requestNotificationPermission(context)),

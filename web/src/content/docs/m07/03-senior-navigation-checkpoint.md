@@ -192,4 +192,4 @@ tại nhưng chưa cần ở M07.
 - [ ] Đọc `app_navigation_controller.dart` không bỡ ngỡ: nhận ra
   `MaterialPageRoute`, `push`, `canPop`, `navigatorKey`.
 - [ ] `flutter analyze` sạch; `flutter test` xanh (15 test);
-  `flutter build web` build được — **M07 gate PASS**.
+  `flutter build web` build được.

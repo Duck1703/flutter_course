@@ -43,8 +43,7 @@ sidebar:
 ## Bạn đang ở đâu
 
 - Bài 4: VM đã emit 4 state + 
-`refresh`
-/
+`refresh`/
 `retry`; 
 `LeaderboardRepository`
 
@@ -53,11 +52,9 @@ sidebar:
 `_LeaderboardEntry`
  trên menu đang là card tĩnh — chưa tap được.
 - Chưa có một widget nào của dialog; 
-`LeaderboardPopupBody`
-/
+`LeaderboardPopupBody`/
  
-`LeaderboardList`
-/
+`LeaderboardList`/
 `LeaderboardRow`
  chưa tồn tại.
 
@@ -74,8 +71,7 @@ dây UI và một điểm chạm.
 - Event một lần + bridge 
 `switch`
  kiệt hợp (M13/M15); 
-`showDialog`
-/
+`showDialog`/
 `AlertDialog`
  là route (M09);
  transport settings 
@@ -86,8 +82,7 @@ dây UI và một điểm chạm.
 `ChangeNotifierProvider`
  create/auto-dispose (M12);
  dialog-scoped VM (M16); 
-`context.read`
-/
+`context.read`/
 `watch`.
 - 
 `didChangeDependencies`
@@ -110,12 +105,9 @@ dây UI và một điểm chạm.
 `profileLevel`
  key có sẵn.
 - Widget test: 
-`pumpWidget`
-/
-`pump`
-/
-`tap`
-/
+`pumpWidget`/
+`pump`/
+`tap`/
 `ensureVisible`
 /finders; 
 `localizedTestApp`
@@ -133,7 +125,7 @@ tap hàng menu
         ▼
   showDialog → MenuLeaderboardDialogScope
         │  ChangeNotifierProvider<LeaderboardDialogViewModel>
-        │    = VM sinh cùng dialog, chết cùng dialog (A-15)
+        │    = VM sinh cùng dialog, chết cùng dialog
         ▼
   _LeaderboardDialogBridge
         │  didChangeDependencies → attach VM
@@ -178,8 +170,7 @@ dialog **self-contained/pumpable trong test** — pump
 ## Build it step by step
 
 **Bước 1 — ARB: +6 key.** 
-`app_en.arb`
-/
+`app_en.arb`/
 `app_vi.arb`
  (giá trị đúng
 senior):
@@ -193,8 +184,7 @@ retryButton                "Retry" / "Thử lại"
 rankSemanticLabel          "Rank {rank}" / "Hạng {rank}"   (+ @rankSemanticLabel ICU int)
 ```
 
-(`leaderboardTitle`
-/
+(`leaderboardTitle`/
 `leaderboardSubtitle`
  đã có; 
 `profileLevel`
@@ -281,10 +271,8 @@ _contentHeight /* 380 */)`
  chứa 
 `LeaderboardPopupBody`.
 Nhận 
-`state`
-/
-`onRefresh`
-/
+`state`/
+`onRefresh`/
 `onRetry`
  — **stateless thuần**, không tự
 đọc VM (bridge truyền xuống → widget test pump được chỉ bằng state).
@@ -398,8 +386,7 @@ dòng):
 
 `entry.isCurrentUser`
  (còn lại 
-`cardBackground`
-/
+`cardBackground`/
 `cardBorder`);
 
 `Semantics(label: l10n.rankSemanticLabel(
@@ -509,40 +496,10 @@ return Semantics(
 ## Hiểu code — ba mối nối dễ lẫn
 
 | Cặp | Khác nhau ở |
-|---|---|
-| 
-`onRefresh`
- vs 
-`onRetry`
- | refresh = kéo xuống list → 
-`vm.refresh()`
- → 
-`loadLeaderboard(isRefresh: true)`
- — list cũ đứng yên; retry = nút THỬ LẠI ở Error → 
-`vm.retry()`
- → load mới từ Loading. |
-| state 
-`Success.currentEntry`
- vs 
-`entries`
- | 
-`currentEntry`
- GHIM dưới đáy ngoài scroll; 
-`entries`
- = top-10 cuộn — hàng của mình có thể trùng một hàng top (cùng data, hai chỗ hiển thị — đúng senior). |
-| 
-`MenuLeaderboardRequested`
- vs 
-`MenuDialogLeaderboard`
- | learner: event một lần → 
-`showDialog`
- (transport). Senior: 
-`requestLeaderboardDialog()`
- đặt 
-`MenuDialogLeaderboard`
- STATE → 
-`MenuDialogLayer`
- render in-Stack (M29). Cùng tên method — body đổi ở M29. |
+| --- | --- |
+| `onRefresh` vs `onRetry` | refresh = kéo xuống list → `vm.refresh()` → `loadLeaderboard(isRefresh: true)` — list cũ đứng yên; retry = nút THỬ LẠI ở Error → `vm.retry()` → load mới từ Loading. |
+| state `Success.currentEntry` vs `entries` | `currentEntry` GHIM dưới đáy ngoài scroll; `entries` = top-10 cuộn — hàng của mình có thể trùng một hàng top (cùng data, hai chỗ hiển thị — đúng senior). |
+| `MenuLeaderboardRequested` vs `MenuDialogLeaderboard` | learner: event một lần → `showDialog` (transport). Senior: `requestLeaderboardDialog()` đặt `MenuDialogLeaderboard` STATE → `MenuDialogLayer` render in-Stack (M29). Cùng tên method — body đổi ở M29. |
 
 ## Chạy và quan sát
 
@@ -610,8 +567,7 @@ Disabled trả tức thì nên race khó quan sát bằng mắt — vì vậy gu
 1. **Gọi 
 `loadLeaderboard()`
  trong 
-`initState`
-/
+`initState`/
 `build`.** Notify
  giữa build → crash "setState during build". Post-frame callback
  + cờ 
@@ -730,10 +686,8 @@ adaptive`. Trên màn hình có 6 hàng (không tràn vùng cuộn):
  VM chỉ sống khi dialog mở, Provider dispose khi dialog
  đóng — state loading/refresh của một lần mở không rò sang lần sau.
 - **Hỏi:** guest thấy gì ở hàng ghim? — **Đáp:** hàng dựng từ
- profile local (`username`
-/
-`level`
-/
+ profile local (`username`/
+`level`/
 `totalMoneyWon`
  qua
  
@@ -755,11 +709,9 @@ adaptive`. Trên màn hình có 6 hàng (không tràn vùng cuộn):
 `showDialog`
  giữ nguyên.
 - Frame painter/SVG frame/rank-badge images/
-`LeaderboardAvatar`
-/
+`LeaderboardAvatar`/
  
-`LeaderboardRowStyle`
-/
+`LeaderboardRowStyle`/
 `LeaderboardEntryCard`
  tách widget của
  senior — **M28** (visual parity); hàng hiện 

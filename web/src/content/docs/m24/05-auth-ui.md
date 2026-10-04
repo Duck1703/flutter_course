@@ -102,7 +102,7 @@ gì — nó báo intent; VM đọc session route; widget chỉ build theo
 widget trong route tạo `ChangeNotifierProvider` → VM chết cùng route.
 Khác senior chỉ ở TRANSPORT: senior đặt `MenuDialogAuth`/`MenuDialogSignOut`
 state → `MenuDialogLayer` render in-Stack + callback `onDismiss`/
-`onDismissLockChanged` (→ **M29); learner giữ
+`onDismissLockChanged` (→ **M29**); learner giữ
 event một lần + `showDialog` — cùng semantic, khác cơ chế.
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
@@ -182,7 +182,7 @@ hai variant này là learner-only transport cho `showDialog`.
 move sang `coordinator.signOut`):
 
 ```dart
-/// Ý định "người chơi bấm pill tài khoản" — M24 (FR-28). SESSION
+/// Ý định "người chơi bấm pill tài khoản". SESSION
 /// quyết dialog: authenticated → sign-out; mọi session khác → auth.
 void requestAuthAction() {
   _events.add(

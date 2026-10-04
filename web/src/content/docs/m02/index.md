@@ -46,7 +46,7 @@ constraint đi xuống, kích thước đi lên, cha đặt vị trí.
 - **Tôi học được gì?** `Column`/`Row`/`Expanded`/`SizedBox`/`Padding`;
   constraint chảy xuống — size chảy lên.
 - **Tôi giải thích được gì?** Vì sao `Expanded` trong `Row` chia đều;
-  khi nào overflow xảy ra và cách đọc banner đỏ-vàng.
+  khi nào overflow xảy ra và cách đọc lỗi `RenderFlex overflowed`.
 - **Tôi viết được gì không copy?** Một hàng stat-tile mới chia đều
   (bài Tự làm) — và nói được `SizedBox` vs `Padding` khác nhau ở đâu.
 - **Nếu X đổi thì sao?** Thêm tile thứ 5 vào `_StatsRow` — có overflow

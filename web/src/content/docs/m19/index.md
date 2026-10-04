@@ -72,7 +72,7 @@ Trả lời được năm câu này là đủ:
    `showDialog` bằng `GameDialogLayer` trong `Stack`; M26 đổi
    `ChangeNotifier` → DRE (actions/effects tách khỏi VM).
 
-## Còn lại sau M19 (đã register)
+## Còn lại sau M19
 
 - `openGame()` trả `GameResult` qua pop — VM-side save ở M22.
 - Dialog layer `showDialog` — in-`Stack` layer ở M21.

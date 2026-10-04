@@ -144,10 +144,8 @@ có source-of-truth local.
  provider lookup trong 
 `create:`.
 - Fake repos 
-`…CallCount`
-/
-`lastSyncedSession`
-/
+`…CallCount`/
+`lastSyncedSession`/
 `syncError`.
 
 ## Mental model mới — hai cái cùng lúc
@@ -204,28 +202,12 @@ fail không được kéo "save result" xuống theo — dù catch ngoài của
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
-| 
-`cond ? DisabledImpl() : RemoteImpl(client, dep)`
- | conditional DI — (reuse lần 3) |
-| 
-`required this.authRepository`
- giữa hai required khác | ctor field ordering senior: profile → auth → sync → 
-`{questions}`
- |
-| 
-`context.read<AuthRepository>()`
- trong 
-`create:`
- | lấy repo từ scope vào VM — / |
-| 
-`if (session is AuthSessionAuthenticated)`
- | type check hẹp → gọi sync — / |
-| 
-`try/catch`
- nuốt + 
-`debugPrint`
- | best-effort secondary op — |
+| --- | --- |
+| `cond ? DisabledImpl() : RemoteImpl(client, dep)` | conditional DI — (reuse lần 3) |
+| `required this.authRepository` giữa hai required khác | ctor field ordering senior: profile → auth → sync → `{questions}` |
+| `context.read<AuthRepository>()` trong `create:` | lấy repo từ scope vào VM |
+| `if (session is AuthSessionAuthenticated)` | type check hẹp → gọi sync |
+| `try/catch` nuốt + `debugPrint` | best-effort secondary op |
 
 Không construct mới — bài này là *wiring*: mọi mảnh đã học, giờ nối
 đúng chỗ. Phần "khó" là discipline: đổi ctor 
@@ -313,39 +295,12 @@ guest là session thật) — không phải failure cần snackbar.
 
 ## Senior project connection
 
-| Senior @ 
-`main@c8eb860`
- | Dùng để chứng minh |
-|---|---|
-| 
-`lib/main.dart`
- | cùng ternary 
-`supabaseClient == null ? Disabled : Impl(client, userProfileRepository)`
- — learner đổi một dòng M24 divergence → converge |
-| 
-`lib/view_models/game/bridge/game_screen_view_model_result_persistence.dart`
- | 
-`_syncSavedGameResult`
- verbatim (learner inline vào VM — learner không có bridge/part structure): 
-`loadAuthState`
- → authed → sync + started/completed; guest → 
-`skipped; session=guest`; catch → 
-`failed: $error`
- |
-| 
-`lib/view_models/game/game_screen_view_model.dart`
- ctor | thứ tự 
-`required userProfileRepository, authRepository, profileSyncRepository, {questions}`
- |
-| 
-`lib/screens/game_screen.dart`
- | 
-`create:`
- đọc 
-`context.read<AuthRepository>()`
- + 
-`context.read<UserProfileSyncRepository>()`
- |
+| Senior @ `main@c8eb860` | Dùng để chứng minh |
+| --- | --- |
+| `lib/main.dart` | cùng ternary `supabaseClient == null ? Disabled : Impl(client, userProfileRepository)` — learner đổi một dòng M24 divergence → converge |
+| `lib/view_models/game/bridge/game_screen_view_model_result_persistence.dart` | `_syncSavedGameResult` verbatim (learner inline vào VM — learner không có bridge/part structure): `loadAuthState` → authed → sync + started/completed; guest → `skipped; session=guest`; catch → `failed: $error` |
+| `lib/view_models/game/game_screen_view_model.dart` ctor | thứ tự `required userProfileRepository, authRepository, profileSyncRepository, {questions}` |
+| `lib/screens/game_screen.dart` | `create:` đọc `context.read<AuthRepository>()` + `context.read<UserProfileSyncRepository>()` |
 
 ## Build it step by step
 
@@ -354,7 +309,7 @@ guest là session thật) — không phải failure cần snackbar.
 ** — thay khối "M24: LUÔN Disabled":
 
 ```dart
-  // M25 (FR-36 converge): sync repo vào CÙNG pattern điều kiện —
+  // Sync repo vào CÙNG pattern điều kiện —
   // thiếu cấu hình → `UserProfileSyncRepositoryDisabled` (no-op);
   // đủ cấu hình → `UserProfileSyncRepositoryImpl` (fetch `public.users`
   // → merge local↔remote → lưu local → upsert `onConflict: auth_uuid`)
@@ -396,7 +351,7 @@ có cấu trúc
 `part`):
 
 ```dart
-  /// M25 (FR-36 converge) — senior `_syncSavedGameResult`: đọc auth
+  /// Senior `_syncSavedGameResult`: đọc auth
   /// session rồi chỉ sync qua `profileSyncRepository` khi
   /// `AuthSessionAuthenticated`; guest skip (log `skipped;
   /// session=guest`). Lỗi sync nuốt + log — kết quả ván đã an toàn
@@ -458,8 +413,7 @@ create: (context) => GameScreenViewModel(
  
 `{FakeAuthRepository? authRepo, FakeUserProfileSyncRepository?
   syncRepo}`
- truyền xuống ctor (`authRepo ?? FakeAuthRepository()`
- /
+ truyền xuống ctor (`authRepo ?? FakeAuthRepository()`/
  
 `syncRepo ?? FakeUserProfileSyncRepository()`); 4 chỗ
  
@@ -516,8 +470,7 @@ thiếu dart-define,
 `AuthSessionAuthenticated`
  để truyền vào
  
-`syncUserProfile(AuthSessionAuthenticated)`
- — 
+`syncUserProfile(AuthSessionAuthenticated)` —
 `is`
  vừa check vừa
  promote. 
@@ -580,8 +533,7 @@ console
 <summary>Đáp án</summary>
 
 - a → 
-`UserProfileSyncRepositoryDisabled`
- — 
+`UserProfileSyncRepositoryDisabled` —
 `supabaseClient == null`
 
  vì 
@@ -625,8 +577,7 @@ console
 3. **Để 
 `_syncSavedGameResult`
  throw.** Nó chạy trong 
-`unawaited`
- —
+`unawaited` —
  lỗi bị nuốt là *quyết định có ý thức*; throw ra sẽ thành
  unhandled-async-error, và inner catch tồn tại đúng để kể
  
@@ -790,11 +741,9 @@ tái hiện case guest của Bài 5. Xong thì **xoá file scratch**.
 `result profile sync`
  group — **Bài 5** (+3): coverage cố ý
  tách khỏi bước wiring (giống seam M24/03 → coverage M24/04).
-- DRE (`DreChangeNotifier`
-/
+- DRE (`DreChangeNotifier`/
 `asyncOp`) cho 
-`_syncSavedGameResult`
- —
+`_syncSavedGameResult` —
  **M26**; hiện 
 `try/catch`
  + 

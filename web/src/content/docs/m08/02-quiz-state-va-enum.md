@@ -92,7 +92,7 @@ Output: `red → stop`, `yellow → wait`, `green → go`. Ba điểm:
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `enum` | `enum _AnswerVisualState { idle, selected, correct, wrong, dimmed }` | Kiểu riêng chứa đúng 5 giá trị; so sánh bằng `==` |
 | `int?` field | `int? _selectedIndex;` | `null` = "chưa chọn" — null safety làm *đặc điểm* state |
 | `!` sau khi check | `_selectedIndex!` khi đã `!= null` | Khẳng định non-null — hợp lệ vì vừa kiểm tra |
@@ -296,7 +296,7 @@ này giữ giá trị câu cũ, UI câu mới bị sai ở đâu?"
 **Phần 1** — với `correctIndex = 1`, `selectedIndex = 2`, đã chốt:
 
 | Ô | State | Vì |
-|---|-------|-----|
+| --- | ------- | ----- |
 | 0 | dimmed | không phải correct (1), không phải chọn (2) |
 | 1 | correct | `index == correctIndex` |
 | 2 | wrong | `index == selectedIndex` sau khi đã chốt |

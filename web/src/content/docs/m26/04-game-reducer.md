@@ -60,7 +60,7 @@ kiểu chữ.
  `applyGameFiftyFifty`, `formatGameMoney` (M19/M20 — gia
   đình).
 
-## Mental model mới — "một library, năm file" + "guard là data" (+, CORE)
+## Mental model mới — "một library, năm file" + "guard là data" (CORE)
 
 ```text
 game_reducer.dart ── part 'game_reducer_answer_flow.dart'
@@ -95,7 +95,7 @@ _handler(state, …):
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `part 'file.dart'` / `part of 'lib.dart'` | split một library thành nhiều file — chia sẻ import + private (mới) |
 | `extension _Name on GameReducer` | method mở rộng private trong part — tên private nên không lộ ra ngoài |
 | `GameAnswerSubmitted(final answerText) =>` | object pattern destructure ngay trong switch arm — nâng |
@@ -157,7 +157,7 @@ stateless (`questions`/`timePerQuestion` là config bất biến), mọi
 ## Senior project connection
 
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
-|---|---|
+| --- | --- |
 | `lib/view_models/game/reducer/game_reducer.dart` | class + switch + `_result` + `_walkAwayAmount`/`_moneyLadderItems`/`_audiencePollItems` — verbatim |
 | `game_reducer_answer_flow.dart` | `_submitAnswer`/`_revealAnswer`/`_showExplanation` — verbatim |
 | `game_reducer_feature_flow.dart` | `_selectFeature` + lifelines + dialogs + `_canUseFeature` — verbatim |
@@ -170,7 +170,7 @@ Bài này port một reducer ~4 file `part` + 10 test — đọc một hơi sẽ
 quá tải. Đi theo pha, mỗi pha có mốc kiểm:
 
 | Pha | Bạn đã biết | Model mới | Kiểm trước khi tiếp |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **1 — transition thuần** | `copyWith`, sealed switch (Bài 2–3) | reducer = hàm thuần (state, action) → (state, effects) | DartPad mini-reducer chạy được |
 | **2 — skeleton + flow đầu** | `part`/`part of` chưa gặp | một class rải qua nhiều file cùng-library | đọc được switch kiệt hợp trên `GameAction` |
 | **3 — session flow + op** | effect là data (Bài 3) | action→effect→op→action mới | chỉ ra được op nào phát action nào |
@@ -341,7 +341,7 @@ trích `_withSaveResult` — bảng dưới map các handler còn lại):
 ```
 
 | Handler | Guard | Transition chính | Effects/asyncOp |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `_startGame` | — | `GameState.initial` + `flowToken: state.flowToken + 1` + options câu 1 + intro ladder | `[GameStopTimer]` |
 | `_dismissDialog` | 3 nhánh theo `dialogState` | intro@notStarted → playing; `GameExplanationDialog` → next/victory hoặc endGame; default → hidden | `GameStartTimer` khi `playing` |
 | `_loadNextQuestionOrVictory` | `index >= len-1` | next question (clear selected/audience, reset time) hoặc `victory`+`GameVictoryDialog` | `GameStartTimer` / `_withSaveResult`+`GameStopTimer` |

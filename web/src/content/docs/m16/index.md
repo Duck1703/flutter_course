@@ -42,7 +42,7 @@ Trả lời được năm câu này là đủ:
    đã persist; M21 thay `showDialog` bằng dialog layer; M27 nối
    permission/schedule thật cho toggle thông báo.
 
-## Còn lại sau M16 (đã register)
+## Còn lại sau M16
 
 - `languageCode` guard whitelist → M17.
 - Notification permission/schedule → M27.

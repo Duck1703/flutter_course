@@ -102,8 +102,8 @@ Senior lib/previews/          = 12 file:
 Learner port 6/12 file:
   cả 3 support + 3 catalog
   (common, menu_widget, onboarding_widget)
-  → 6 catalog còn thiếu = DECLARED GAP (brief: appendix
-    subset — không phải defect)
+  → 6 catalog còn thiếu = DECLARED GAP (appendix đã công bố —
+    không phải defect)
 ```
 
 Mỗi preview là **top-level function trả `Widget`**, đánh dấu
@@ -149,12 +149,12 @@ và course port subset.
 
 | Dart/Flutter | Vai trò ở đây | Xem lại |
 |---|---|---|
-| `await` chuỗi trong-`main()` | bootstrap ordering |, |
+| `await` chuỗi trong `main()` | bootstrap ordering | reuse |
 | `client == null ? Disabled() : Impl(client:)` | conditional DI sentinel | |
 | `MultiProvider([Provider<T>.value(value:)…])` | 8 contract expose | |
-| `StreamBuilder(stream, initialData: stream.value)` | locale-derived |, |
+| `StreamBuilder(stream, initialData: stream.value)` | locale-derived | reuse |
 | `MaterialApp(locale:, navigatorKey:, theme: ColorScheme.fromSeed(deepPurple))` | app-root verbatim | |
-| `GlobalKey<NavigatorState>` + `navigatorKey.currentState` | context-free nav |, |
+| `GlobalKey<NavigatorState>` + `navigatorKey.currentState` | context-free nav | reuse |
 | `debugPrint('[auth] …')` | bootstrap-log-prefix senior | verbatim |
 | `@Preview(name:, group:, size:, wrapper:)` | SDK widget-previews | mới |
 
@@ -379,7 +379,7 @@ ls lib/previews/
 # preview_app_dependencies.dart
 # — thiếu 6 catalog senior: game_controls/game_dialog/
 #   leaderboard/menu_auth/menu_settings/provider_shell (gap
-#   declared theo brief — appendix subset, không-defect)
+#   đã công bố — appendix subset, không-defect)
 ```
 
 `preview_app_dependencies.dart` cung cấp **fake repo thật**:
@@ -408,8 +408,8 @@ config/runtime.env   — GITIGNORED: giá-trị thật (secrets)
 ```
 
 :::caution[Vì sao không copy, không chạy]
-(1) Senior repo là tham chiếu read only — brief yêu cầu-*hiểu*,
-không-*thực thi*; (2) course không có keystore/credential —
+(1) Senior repo là tham chiếu read only — course yêu cầu *hiểu*,
+không *thực thi*; (2) course không có keystore/credential —
 và không nên có; (3) learner app dùng-`--dart-define`-trực tiếp
 (đúng pattern senior cho course scale). Doc ghi rõ: học viên
 muốn dùng thật thì-`install.sh`-vào repo-*riêng*. Và luật bất
@@ -419,7 +419,7 @@ biến: **không bao giờ commit secret**.
 ### Bước 8 — đóng + test cuối + structure-audit
 
 ```text
-FR-31 (l10n parity) — ĐÓNG:
+Localization parity — ĐÓNG:
   +11 key (Bài 01) + 3 key-rename-settled
     leaderboardSubtitle→menuLeaderboardEntrySubtitle   (Bài 04)
     menuExpProgress→menuExpToNextLevel                 (Bài 04)
@@ -453,24 +453,24 @@ dispose (leak), nhầm-`create:`-cho-app-repo = repo bị tạo mới
 mỗi lần subtree dựng.
 
 **3. `navigatorKey.currentState` có thể null** — `_navigator`
-throw-`StateError`-rõ thay vì-`!`-crash mập mờ. Lỗi-"chưa attach"
-= lỗi setup (quên gắn key vào-`MaterialApp`) — đáng bị đỏ ngay.
+throw `StateError` rõ thay vì `!` crash mập mờ. Lỗi "chưa attach"
+= lỗi setup (quên gắn key vào `MaterialApp`) — đáng bị đỏ ngay.
 
 **4. `initialData: stream.value`** — BehaviorSubject đã seed
 cho frame đầu giá trị thật; StreamBuilder vẫn theo dõi đổi
-sau (đổi ngôn ngữ trong settings → `MaterialApp.locale`-đổi →
-toàn app relocalize). Đây chính là — lặp lại ở nơi quan
-trọng nhất.
+sau (đổi ngôn ngữ trong settings → `MaterialApp.locale` đổi →
+toàn app relocalize). Đây chính là cơ chế stream-seeded đó lặp
+lại ở nơi quan trọng nhất.
 
 **5. `onGenerateTitle` không dùng-`title:`** — title cần context
 (l10n); `onGenerateTitle(context)` được gọi với context hợp lệ.
-`appTitle`-của learner là-"AI Millionaire" — *intentional*-
+`appTitle` của learner là "AI Millionaire" — intentional
 deviation (product-name), không phải chưa port.
 
-**6. `flutter test` 396 nhưng caveat-NOT_PERFORMED-vẫn đứng** —
-kiểm chứng được ghi-*đúng phạm vi*: analyze-clean + widget/unit
-pass + build-web-pass **≠** "đã chạy trên device" hay "đã gọi-
-Supabase-live". Ghi-verbatim-NOT_PERFORMED-là phần của bảo
+**6. `flutter test` 396 nhưng caveat `NOT_PERFORMED` vẫn đứng** —
+kiểm chứng được ghi đúng phạm vi: analyze clean + widget/unit
+pass + build web pass **≠** "đã chạy trên device" hay "đã gọi
+Supabase live". Ghi verbatim `NOT_PERFORMED` là phần của bảo
 đảm chất lượng: báo cáo sai phạm vi là divergence tệ hơn mọi
 deviation-code.
 
@@ -586,40 +586,40 @@ Truyền-`label`-rõ để không phụ thuộc-`startGameButton`-mặc định;
 
 ## Kiểm tra hiểu biết
 
-**H: Vì sao-`main.dart`-là file cuối được verbatim, không phải
-đầu tiên?** — Vì nó tham chiếu-*mọi*impl: repo-class/service-
-class/nav-key/theme. Port nó sớm = compile đỏ hàng loat trước
+**H: Vì sao `main.dart` là file cuối được verbatim, không phải
+đầu tiên?** — Vì nó tham chiếu mọi impl: repo class/service
+class/nav key/theme. Port nó sớm = compile đỏ hàng loạt trước
 khi các impl tồn tại; sweep đi từ lá lên gốc (leaf-widget →
 composition → scope → app-root).
 
-**H: `Provider.value`-và-`create:`-khác nhau thế nào về vòng
-đời?** — `.value`-đặt instance có sẵn vào cây-*không dispose*
-(sống cùng app); `create:`-cho-Provider sở hữu instance-*và
-dispose-khi-subtree-unmount* (dialog/overlay-scoped-VM).
+**H: `Provider.value` và `create:` khác nhau thế nào về vòng
+đời?** — `.value` đặt instance có sẵn vào cây — không dispose
+(sống cùng app); `create:` cho Provider sở hữu instance và
+dispose khi subtree unmount (dialog/overlay-scoped VM).
 
-**H: -"đóng"-nghĩa là gì cụ thể?** — ARB-parity: mọi key-
-senior tồn tại ở learner (+11), mọi key learner only đã xoá hoặc
-rename-theo-senior (−5: 2-dead ở-Bài-01 + 3-rename); value-diff-
+**H: "đóng" nghĩa là gì cụ thể?** — ARB-parity: mọi key
+senior tồn tại ở learner (+11), mọi key learner-only đã xoá hoặc
+rename theo senior (−5: 2 dead ở Bài 01 + 3 rename); value-diff-
 duy nhất còn lại là product name intentional (`AI Millionaire`
 appTitle + share-messages) — documented, không phải thiếu.
 
-**H: `NOT_PERFORMED`-có nghĩa-"chưa làm"-hay-"đã fail"?** — Chưa
-làm-*có chủ đích và được ghi*: device-real/live-Supabase nằm
-ngoài phạm vi course (không hardware/shared-backend). Claim
-đúng là-"analyze-clean+396-test+web-build-pass"; claim thêm
-là divergence báo cáo.
+**H: `NOT_PERFORMED` có nghĩa "chưa làm" hay "đã fail"?** — Chưa
+làm, có chủ đích và được ghi: real-device/live-Supabase nằm
+ngoài phạm vi course (không hardware/shared backend). Claim
+đúng là "analyze clean + 396 test + web build pass"; claim
+thêm là báo cáo sai.
 
-**H: `AppNavigationController`-vì sao không biết dialog?** — Vì-
-dialog đã là-*state trong màn* (Bài-05): back mở dialog do-
-`PopScope`+VM-lo, không route pop. Controller chỉ lo route level
+**H: `AppNavigationController` vì sao không biết dialog?** — Vì
+dialog đã là state trong màn (Bài 05): back mở dialog do
+`PopScope` + VM lo, không route pop. Controller chỉ lo route level
 (openGame, goBack) — tách bạch hai tầng điều hướng.
 
 ## Ta cố ý chưa thêm
 
 - **6-preview catalog còn thiếu** — `game_controls`/`game_dialog`/
   `leaderboard`/`menu_auth`/`menu_settings`/`provider_shell`
-  `*_widget_previews.dart`: declared-gap-theo-brief (appendix-
- subset); port tiếp khi cần bằng cùng mẫu-.
+  `*_widget_previews.dart`: gap đã khai báo chủ đích (ngoài
+  phạm vi appendix subset); port tiếp khi cần bằng cùng mẫu đó.
 - **Release kit không vendor** — chỉ walkthrough; học viên tự
   cài vào repo riêng nếu muốn.
 - **`GoogleFonts`-runtime-fetch** — parity cố ý kế thừa-M28:
@@ -641,10 +641,10 @@ dialog đã là-*state trong màn* (Bài-05): back mở dialog do-
 - [x] `lib/previews/` appendix: 3-support + 3-catalog;
       6-catalog gap được ghi declared.
 - [x] `docs/release-kit-walkthrough.md`: `scripts/kit` +
-      `.release-kit` giải thích — KHÔNG-chạy, không vendor.
-- [x] **đóng**: 119-key-parity; chỉ khác product name-
+      `.release-kit` giải thích — KHÔNG chạy, không vendor.
+- [x] ARB parity hoàn chỉnh: 119 key; chỉ khác product name —
       intentional.
-- [x] Structure-audit: **zero-learner-only-file** trong `lib/`;
+- [x] Structure-audit: **zero learner-only file** trong `lib/`;
       `test/` = senior-coverage + learner-added.
 - [x] Caveats-ghi-verbatim: `REAL_DEVICE_PLATFORM_CHECK /
       REAL_DEVICE_VISUAL_CHECK / LIVE_SUPABASE_CONNECTIVITY /

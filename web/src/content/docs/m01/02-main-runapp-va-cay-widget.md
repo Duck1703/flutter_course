@@ -50,7 +50,7 @@ Sẽ quay lại hai cây kia khi học `State` ở M03.
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ trong bài | Nghĩa |
-|---------|-----------------|-------|
+| --------- | ----------------- | ------- |
 | Hàm top-level | `void main() { ... }` | Hàm không thuộc class nào; Dart cho phép (khác Java) |
 | `class X extends Y` | `class AIMillionaireApp extends StatelessWidget` | Kế thừa, giống Kotlin `: StatelessWidget()` |
 | Constructor + `super.key` | `const AIMillionaireApp({super.key})` | Constructor nhận **tham số đặt tên** trong `{}`; `super.key` chuyển `key` lên constructor cha |
@@ -66,7 +66,7 @@ Flutter dùng named parameter *ở khắp nơi*.
 ## Flutter cần dùng
 
 | API | Vai trò |
-|-----|---------|
+| ----- | --------- |
 | `runApp(widget)` | Nhận widget gốc, inflate và gắn lên màn hình. App bắt đầu từ đây |
 | `StatelessWidget` | Widget **không có state nội tại** — chỉ mô tả UI từ constructor params |
 | `build(BuildContext)` | Hàm duy nhất bạn bắt buộc implement: trả về cây widget con |

@@ -42,7 +42,7 @@ signature). Làm theo thứ tự dưới và chỉ chạy test ở cuối.
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | `context.read<UserProfileRepository>()` trong `create:` | DI app-scope vào VM màn (đã học ở M14 — đây là điểm gắn mới) |
 | `unawaited(_saveGameResult(…))` | fire-and-forget: transition không chờ save xong |
 | `while (nextLevel < max) { … break; }` | "đốt" ngưỡng từng cấp — vòng lặp accumulation |
@@ -88,7 +88,7 @@ chất đã là nó: *flag và transition đi cùng nhau*.
 > đúng chỗ "ĐÃ" — bạn sẽ tự chứng kiến kẽ hở đó làm `saveCallCount`
 > thành 2.
 
-## Bước 1 — `GameSessionState`: `hasSavedResult` vào, `resolvedResult` ra## Bước 1 — `GameSessionState`: `hasSavedResult` vào, `resolvedResult` ra
+## Bước 1 — `GameSessionState`: `hasSavedResult` vào, `resolvedResult` ra
 
 `game_session_state_data.dart`:
 
@@ -347,7 +347,7 @@ save kịp chạy). Hai comment nhắc `GameResult` cập nhật sang M22.
 **Số lượng test — hiểu đúng nhịp −9/+8:**
 
 | Nguồn | Δ |
-|---|---|
+| --- | --- |
 | user_profile_data: 2×gainExp + 1×expPercent + 3×applyGameResult | −6 |
 | menu_view_model: applyGameResult | −1 |
 | vm test: group buildGameResult | −2 |

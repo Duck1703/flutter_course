@@ -53,8 +53,8 @@ testWidgets('…', (tester) async {
 
 Khác biệt nền tảng vs unit test:
 
-| | Unit test (M04) | Widget test (M08) |
-|---|---|---|
+|  | Unit test (M04) | Widget test (M08) |
+| --- | --- | --- |
 | Đối tượng | hàm/class Dart | cây widget Flutter |
 | Vào ra | trả về giá trị | find/tap/expect trên cây |
 | Môi trường | Dart thuần | Flutter test engine, đồng hồ ảo |
@@ -69,7 +69,7 @@ buộc*, không phải boilerplate mù.
 ## Dart/Flutter cần dùng
 
 | API | Vai trò |
-|-----|---------|
+| ----- | --------- |
 | `testWidgets('…', (tester) async {…})` | Định nghĩa widget test; `tester` = `WidgetTester` |
 | `tester.pumpWidget(widget)` | Render widget + chạy 1 frame đầu |
 | `tester.pump()` | Chạy thêm 1 frame (sau `setState`/tap/animation) |
@@ -283,6 +283,7 @@ lỗi kinh điển của người mới.
 
 ```bash
 flutter test                        # tất cả: 15 cũ + 3 bank + 6 widget
+                                    # (5 bài này + 1 bài Tự làm)
 flutter test test/widgets/          # chỉ widget tests
 ```
 
@@ -319,13 +320,16 @@ flutter test test/widgets/          # chỉ widget tests
 `test/widgets/` (file mới `menu_play_button_test.dart` hoặc thêm vào
 file hiện có):
 
-- Pump `MenuScreen` (hoặc `_PlayButton` trực tiếp nếu tách được).
-- Tap nút CHƠI bằng `tester.tap(find.byType(ElevatedButton))` (hoặc
-  `find.text('CHƠI')`) + `await tester.pump()`.
-- Assert điều gì đó **đổi** sau tap — tap-count tăng, `Navigator.push`
-  được gọi (với `NavigatorObserver` mock), hoặc route mới xuất hiện.
-- Dự đoán: nếu `onPressed` là `null`, `tester.tap` có throw không?
-  `find.byType` trả gì?
+- Pump `MenuScreen` bọc `MaterialApp`, rồi `pump(const Duration(seconds:
+  1))` để vượt delay profile 900ms — y hệt test navigation ở Bước 4.
+- Tap nút chơi bằng `tester.tap(find.text('BẮT ĐẦU CHƠI'))` + `pump()` +
+  `pump(const Duration(milliseconds: 400))` cho transition xong —
+  `pumpAndSettle` không dùng được ở đây ("Lỗi hay gặp" #4).
+- Assert thứ gì đó **đổi** sau tap — widget của GameScreen xuất hiện
+  (`'Phòng chơi'`, `'CHỐT ĐÁP ÁN'`, câu hỏi đầu…) — rồi dọn đuôi bằng
+  `pumpWidget(const SizedBox())`.
+- Dự đoán: nếu `onPressed` của nút là `null`, `tester.tap` có throw
+  không? `find.text` trả gì?
 
 :::note[Gợi ý]
 `tester.tap` trên widget disabled vẫn chạy nhưng `onPressed` không bắn —
@@ -335,24 +339,19 @@ assert phải kiểm *kết quả*, không chỉ "tap không crash".
 <details><summary><strong>Đáp án</strong></summary>
 
 ```dart
-testWidgets('tapping CHƠI pushes GameScreen', (tester) async {
-  final observer = _RecordingObserver();
-  await tester.pumpWidget(MaterialApp(
-    home: const MenuScreen(),
-    navigatorObservers: [observer],
-  ));
-  await tester.tap(find.text('CHƠI'));
-  await tester.pumpAndSettle();
-  expect(observer.pushed, isNotEmpty);
-  expect(find.byType(GameScreen), findsOneWidget);
-});
+testWidgets('tap BẮT ĐẦU CHƠI mở GameScreen', (tester) async {
+  await tester.pumpWidget(const MaterialApp(home: MenuScreen()));
+  await tester.pump(const Duration(seconds: 1));   // vượt delay profile (M05)
 
-class _RecordingObserver extends NavigatorObserver {
-  final pushed = <Route<dynamic>>[];
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previous) =>
-      pushed.add(route);
-}
+  await tester.tap(find.text('BẮT ĐẦU CHƠI'));
+  await tester.pump();                             // bắt đầu transition
+  await tester.pump(const Duration(milliseconds: 400)); // transition xong
+
+  expect(find.text('Phòng chơi'), findsOneWidget);   // AppBar của game
+  expect(find.text('CHỐT ĐÁP ÁN'), findsOneWidget);  // GameScreen đã render
+
+  await tester.pumpWidget(const SizedBox());        // huỷ ticker của menu
+});
 ```
 
 `tap` trên disabled widget: gesture vẫn dispatch nhưng callback null →
@@ -370,7 +369,8 @@ không push → `findsOneWidget` fail — đó là cách test "nút bị vô hi�
 ## Checkpoint hoàn thành
 
 - [ ] `test/widgets/game_screen_test.dart`: 6 test — render, select,
-  correct-feedback, wrong-feedback, next-question, navigation push/pop.
+  correct-feedback, next-question, navigation push/pop, và test mở
+  game của bài Tự làm.
 - [ ] `test/quiz_questions_test.dart`: 3 test integrity bank.
 - [ ] `flutter test` xanh **24/24**; `flutter analyze` sạch;
-  `flutter build web` build được — **M08 gate PASS**.
+  `flutter build web` build được.

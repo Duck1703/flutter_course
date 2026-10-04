@@ -131,7 +131,7 @@ khi quay lại app thật:
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `late` | `late Future<void> _profileLoadFuture;` | Field non-nullable nhưng **gán sau** — hợp lệ vì initState gán trước khi build đọc; nếu đọc trước khi gán → `LateInitializationError` lúc chạy |
 | `Future<void>` | kiểu của `_profileLoadFuture` | Future không mang giá trị — chỉ quan tâm *khi nào xong/lỗi* |
 | `!mounted` | `if (!mounted) return;` | Kiểm State còn sống không |
@@ -145,7 +145,7 @@ trò lách null-safety.
 ## Flutter cần dùng
 
 | API | Vai trò |
-|-----|---------|
+| ----- | --------- |
 | `FutureBuilder<T>` | Widget subscribe vào `future:`, rebuild theo trạng thái — "builder" nhận `(context, snapshot)` |
 | `AsyncSnapshot<T>` | Trạng thái hiện tại của Future/Stream: `connectionState`, `data`, `error`, `hasError`, `hasData` |
 | `ConnectionState.waiting` / `.done` | `waiting` = chưa xong; `done` = xong (kể cả lỗi — nên check `hasError` trước) |
@@ -416,7 +416,7 @@ main() → runApp → MenuScreen → createState → initState
    là field ổn định.
 2. **Quên `mounted` sau `await`** — app sẽ crash "setState after dispose"
    khi widget bị gỡ giữa chừng (M07 navigation là nơi dễ tái hiện).
-3. **`try/catch` nuốt lỗi rồi setState` xong` — `hasError` sẽ không bao giờ
+3. **`try/catch` nuốt lỗi rồi setState xong** — `hasError` sẽ không bao giờ
    true vì catch đã "xử lý" lỗi ở tầng hàm. Sai tầng: lỗi phải lan ra
    Future để FutureBuilder thấy.
 4. **Đọc `snapshot.data` như non-null** — với `FutureBuilder<T>` data là

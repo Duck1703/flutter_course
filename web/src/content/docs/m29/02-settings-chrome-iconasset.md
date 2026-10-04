@@ -13,7 +13,7 @@ sidebar:
 Sau bài này bạn sẽ:
 
 - Hiểu vì sao `SettingItemData.icon` kiểu `IconData` là một
-  **ACTIVE_TEMPORARY** — và vì sao đổi sang `String iconAsset`
+  **sai khác tạm thời** với senior — và vì sao đổi sang `String iconAsset`
   không chỉ là đổi một field mà là đổi cả *cách vẽ icon*
   (Material glyph → SVG asset trong gradient badge).
 - Biết mẫu **data-layer trước, UI-layer sau**: đổi type ở
@@ -52,7 +52,7 @@ senior lib/widgets/menu/settings/:
        time-picker×3 — mỗi file một trách nhiệm
 ```
 
- Mục fidelity tương ứng ghi đúng hai chữ "icon IconData"
+ Trong danh sách đối chiếu với senior, mục tương ứng ghi đúng hai chữ "icon IconData"
 nhưng kéo theo toàn bộ chênh lệch chrome. Và phần residual còn dở:
 trong app senior, đăng nhập/đăng xuất không chỉ nấp sau avatar
 menu — `SettingsAccountRow` đưa hành động tài khoản vào ngay
@@ -341,7 +341,7 @@ giá nhất của verbatim port.
 // learner-app/lib/widgets/menu/settings/settings_card.dart (trích)
 return SettingsDialogShell(
   key: const ValueKey('settings-card'),
-  headerText: l10n.settingsTitle.toUpperCase(),   // ← FR-31
+  headerText: l10n.settingsTitle.toUpperCase(),   // ← senior
   iconAsset: AppAssets.iconSetting,
   onClose: onSaveSettings,
   child: Column(

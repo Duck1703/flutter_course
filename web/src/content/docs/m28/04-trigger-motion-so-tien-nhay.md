@@ -1,6 +1,6 @@
 ---
 title: "Bài 4 · Trigger-based motion — số tiền đếm nhảy + reduce-motion"
-description: "`animationTrigger` int-gate : widget chỉ animate khi trigger *tăng* — amount đổi vì nhiều lý do, chỉ transition mới xứng animation. `GameMoneyAmountMotion` — `SingleTickerProviderStateMixin` + `didUpdateWidget` gate + `forward(from:0)` + interpolated digits qua `_AmountTemplate`/`_intAmount`/`_formatGrouped` + glitch cyan/magenta `ShaderMask`/`Transform.translate`. `GameMoneyAmount` gate `MediaQuery.disableAnimations` → `Duration.zero` (reuse — hành vi này honor). Ladder CTA `TextButton.styleFrom`+`shrinkWrap`+`WidgetStatePropertyAll`, ladder dialog `LayoutBuilder`+`FittedBox`+`toUpperCase`. +6 test → 276."
+description: "`animationTrigger` int-gate: widget chỉ animate khi trigger *tăng* — amount đổi vì nhiều lý do, chỉ transition mới xứng animation. `GameMoneyAmountMotion` — `SingleTickerProviderStateMixin` + `didUpdateWidget` gate + `forward(from:0)` + interpolated digits qua `_AmountTemplate`/`_intAmount`/`_formatGrouped` + glitch cyan/magenta `ShaderMask`/`Transform.translate`. `GameMoneyAmount` gate `MediaQuery.disableAnimations` → `Duration.zero` (reuse — hành vi này honor). Ladder CTA `TextButton.styleFrom`+`shrinkWrap`+`WidgetStatePropertyAll`, ladder dialog `LayoutBuilder`+`FittedBox`+`toUpperCase`. +6 test → 276."
 sidebar:
   label: "Bài 4 · trigger motion"
   order: 4
@@ -72,7 +72,7 @@ sidebar:
 - `MediaQuery` + `disableAnimations` (M21) — layer dialog
   cũ đã gate duration bằng nó; đây là cùng một API ở widget.
 - `ShaderMask` + `BlendMode.srcIn` — cùng blend với
- `ColorFilter.mode` Bài 2 : `srcIn` = giữ alpha nguồn,
+ `ColorFilter.mode` Bài 2: `srcIn` = giữ alpha nguồn,
   thay RGB — ở đây thay bằng *gradient* qua `shaderCallback`.
 - `RegExp` + `replaceAll`/`indexOf`/`lastIndexOf` + `StringBuffer`
   — string parsing (Dart core, chưa có registry row riêng).
@@ -83,7 +83,7 @@ sidebar:
 
 ## Mental model mới — "trigger tăng = tín hiệu animate" 
 
-> ** — Trigger-based animation.** Widget nhận *hai* input:
+> **Trigger-based animation.** Widget nhận *hai* input:
 > `amount` (data đích) + `animationTrigger` (int đếm đơn điệu
 > từ DTO). Animate **chỉ khi** `trigger > oldTrigger` —
 > `amount` đổi mà trigger đứng yên nghĩa là "data refresh
@@ -152,7 +152,7 @@ là nó hoạt với mọi định dạng tiền (`$`, `đ`, `K`).
 ## Ví dụ độc lập — trigger-gate thu nhỏ (DartPad)
 
 ```dart
-// ISOLATED EXAMPLE — not in project. A-39: chỉ "animate" khi
+// ISOLATED EXAMPLE — not in project. Từ senior: chỉ "animate" khi
 // trigger TĂNG — amount đổi mà trigger yên thì snap.
 class MoneyMotion {
   var countStart = 0;

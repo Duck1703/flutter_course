@@ -17,8 +17,8 @@ của M11 biến mất, và viết test kiểm chứng scope.
 
 - Milestone: **M12** (bài 3/3 — chốt milestone)
 - App hiện tại: `AppDependencyScope` cung cấp `ProfileStore` (bài 1);
-  `_MenuScreenView` đã `watch`/`read` VM (bài 2). Còn mảnh cuối: *ai
-  tạo `MenuViewModel`?*
+  bài 2 đã *đọc hiểu* code `watch`/`read` — giờ áp dụng thật. Còn mảnh
+  cuối: *ai tạo `MenuViewModel`?*
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -85,9 +85,11 @@ sắp xếp lại widget đã có.
 - IMPORTANT DIFFERENCE: auto-dispose của provider theo *widget tree
   unmount*, không theo lifecycle runtime — route pop → provider unmount
   → `dispose()` ngay. Không có keep-alive qua config change.
-- DO NOT ASSUME: provider tạo VM **eager ngay khi build** theo mặc định
-  của `ChangeNotifierProvider` — `..load()` chạy tức thì, đúng ý đồ
-  "màn mở là bắt đầu tải" (lazy create là opt-in của provider thường).
+- DO NOT ASSUME: `create:` chạy ngay khi provider build — mặc định nó
+  là **lazy**: VM chỉ sinh ra ở lần `read`/`watch` đầu tiên (muốn eager
+  thật: `lazy: false`). Ở đây `_MenuScreenView.build` gọi `watch` ngay
+  trong frame đầu nên thực tế VM tạo tức thì — `..load()` chạy đúng
+  ý đồ "màn mở là bắt đầu tải".
 
 ## Senior project connection
 
@@ -123,9 +125,18 @@ class MenuScreen extends StatelessWidget {
 }
 ```
 
-`_MenuScreenView` là `StatefulWidget` cũ của M11 đổi tên + bỏ tham số
-`profileStore` + bỏ `_viewModel`/`initState`/`dispose` — phần còn lại
-giữ nguyên (đã nối `watch`/`read` ở bài 2).
+`_MenuScreenView` là `StatefulWidget` cũ của M11 **đổi tên** + bỏ tham
+số `profileStore` + bỏ `_viewModel`/`initState`/`dispose`. Đây là lúc
+áp dụng hai đoạn đã xem trước ở bài 2 — giờ provider đã tồn tại:
+
+```dart
+// _MenuScreenViewState.build — đầu hàm, thay ListenableBuilder:
+final viewModel = context.watch<MenuViewModel>();
+
+// _onPlayTap — giữ setState đếm tap, rồi:
+final viewModel = context.read<MenuViewModel>();
+// … await Navigator.push … await viewModel.applyGameResult(result);
+```
 
 ### Bước 2 — `main.dart` đã bọc scope (bài 1)
 
@@ -251,7 +262,7 @@ callback (`onPressed`) vì callback không cần rebuild khi VM đổi.
   thuộc dep hoặc expose stream (M14 gần với điều này).
 - Navigation controller trong scope — senior có `AppNavigationController`;
   learner còn một hướng điều hướng nên chưa thêm (ghi chú trong
-  DECISIONS — cố ý, không phải thiếu sót).
+  đây là lựa chọn có chủ đích, không phải thiếu sót — ghi lại để M14+ không 'bổ sung' nhầm).
 - `GameScreen` Provider- hoá — game vẫn `setState` cố ý; M19 refactor.
 
 ## Checkpoint hoàn thành
@@ -262,4 +273,4 @@ callback (`onPressed`) vì callback không cần rebuild khi VM đổi.
   `_sessionTicker` còn lại; không còn `_viewModel`/initState/dispose.
 - [ ] `main()` bọc `AppDependencyScope`; `AIMillionaireApp` const.
 - [ ] Test: menu đọc profile seed sẵn qua scope; VM bị dispose khi
-  màn unmount. Toàn suite xanh — **M12 gate**.
+  màn unmount. Toàn suite xanh.

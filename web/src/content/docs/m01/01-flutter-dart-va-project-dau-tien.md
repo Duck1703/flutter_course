@@ -54,7 +54,7 @@ Các lệnh CLI — đây là "tooling" của Flutter, tương đương `./gradl
 Studio actions gộp lại:
 
 | Lệnh | Việc |
-|------|------|
+| ------ | ------ |
 | `flutter doctor` | Kiểm tra môi trường: toolchain nào sẵn sàng, thiếu gì |
 | `flutter create` | Sinh project mới từ template |
 | `flutter pub get` | Tải dependencies theo `pubspec.yaml` (≈ Gradle sync) |
@@ -199,11 +199,11 @@ một ví dụ. Tạo một thư mục probe trống (ví dụ `probe/`) và d�
 khi chạy** `flutter create` chấp nhận hay từ chối từng `--project-name`:
 
 | Tên thử | Dự đoán của bạn (accept/reject) | Vì sao (theo quy tắc nào) |
-|---------|----------------------------------|---------------------------|
-| `AIMillionaire` | | |
-| `ai-millionaire` | | |
-| `ai_millionaire` | | |
-| `2cool` | | |
+| --------- | ---------------------------------- | --------------------------- |
+| `AIMillionaire` |  |  |
+| `ai-millionaire` |  |  |
+| `ai_millionaire` |  |  |
+| `2cool` |  |  |
 
 Sau đó trong `probe/` chạy thử từng cái, ví dụ
 `flutter create --project-name ai_millionaire try1`, và đối chiếu thông

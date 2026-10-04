@@ -1,6 +1,6 @@
 ---
 title: "M29 — Senior-Alignment Sweep & Course Completion"
-description: "7 bài: nền móng đủ — 50 asset + `AppAssets`/`OnboardingTokens` verbatim + 11 ARB key (+0) → settings chrome `iconAsset` + `_SettingIconBadge` + shell/rows/picker (~11 file verbatim) (+4) → leaderboard pipeline `avatarAsset`/`rankAsset`/`LeaderboardRowStyle` + repo mappers + VM snapshot (+8) → bề mặt menu: 4 profile card + `GradientCtaButton` + `MenuScreenContent` + auth dialogs re-port (+24) → **trọng tâm**: `MenuDialogState` sealed 5-variant + `MenuDialogLayer` runtimeType-keyed + `PopScope` + dismiss-lock + 2-event bridge — zero `showDialog` (+24) → onboarding visual đầy đủ + `MenuTokens` DELETED (+14) → hội tụ cuối: `main.dart`/scope/nav verbatim + previews appendix + release-kit doc + 7 test file + đóng (+13) → 396/396. Mọi ACTIVE_TEMPORARY → CONVERGED/REMOVED; `lib/` = subset của senior."
+description: "7 bài: nền móng đủ — 50 asset + `AppAssets`/`OnboardingTokens` verbatim + 11 ARB key (+0) → settings chrome `iconAsset` + `_SettingIconBadge` + shell/rows/picker (~11 file verbatim) (+4) → leaderboard pipeline `avatarAsset`/`rankAsset`/`LeaderboardRowStyle` + repo mappers + VM snapshot (+8) → bề mặt menu: 4 profile card + `GradientCtaButton` + `MenuScreenContent` + auth dialogs re-port (+24) → **trọng tâm**: `MenuDialogState` sealed 5-variant + `MenuDialogLayer` runtimeType-keyed + `PopScope` + dismiss-lock + 2-event bridge — zero `showDialog` (+24) → onboarding visual đầy đủ + `MenuTokens` DELETED (+14) → hội tụ cuối: `main.dart`/scope/nav verbatim + previews appendix + release-kit doc + 7 test file + đóng (+13) → 396/396. Mọi sai khác tạm thời với senior được khép lại; `lib/` = subset của senior."
 sidebar:
   order: 0
   label: Tổng quan M29
@@ -21,8 +21,8 @@ còn lại theo đúng quy trình đối chiếu senior: đọc file
 senior → diff → port verbatim → verify bằng test + grep. Sau
 M29, `lib/` của learner là **subset của senior** (chỉ thiếu 6
 preview catalog cố ý), **zero file learner-only**, mọi hàng
-`ACTIVE_TEMPORARY` trong fidelity register sẽ → `CONVERGED`/
-`REMOVED` (flip ở canonical sync cuối milestone).
+sai khác tạm thời còn lại với senior sẽ được khép — converge
+hoặc remove (chốt ở cuối milestone).
 
 :::note[Triết lý milestone: "sweep cuối — verbatim là mặc định"]
 - Mọi file UI/data/widget port là **verbatim senior** (sau
@@ -30,7 +30,7 @@ preview catalog cố ý), **zero file learner-only**, mọi hàng
   VI). Deviation chỉ tồn tại khi *documented*: dart2js int64
   bound, `@visibleForTesting` seams, `final class` convention,
   product rename `AI Millionaire`.
-- **Dialog là state, không phải event** — trọng tâm :
+- **Dialog là state, không phải event** — trọng tâm M29:
   menu chuyển từ 4 event `*Requested` + `showDialog` sang
   `MenuDialogState` sealed render trong `Stack`, đúng pattern
  game đã có từ M21.
@@ -39,15 +39,15 @@ preview catalog cố ý), **zero file learner-only**, mọi hàng
  + `OnboardingTokens` là toàn bộ design language.
 - **Test senior đi cùng file senior** — mỗi batch port test
   verbatim; test learner viết trước retire hoặc được thay bằng
-  canonical senior.
+  bản senior đầy đủ.
 :::
 
 ## Bản đồ bài học
 
 | Bài | Nội dung | Checkpoint |
 |-----|----------|-----------|
-| [01](/m29/01-nen-mong-assets-tokens-arb/) | 50 asset senior ship đủ (5 dir); `app_assets.dart` **verbatim 45 const** — kể cả ~10 const senior ship nhưng không reference (byte-parity); `onboarding_design_tokens.dart` verbatim (`OnboardingTokens` delegate→`AppTokens`); +11 ARB key senior, −2 dead key learner; `gen-l10n` regen. ** mới**: quy trình đối chiếu senior | **309/309** (+0) |
-| [02](/m29/02-settings-chrome-iconasset/) | `SettingItemData.icon`→`iconAsset` + `_SettingIconBadge` SVG badge (enabled/disabled gradient); `SettingsDialogShell`/`SettingsCard`/`SettingsSection`/`SettingSwitchRow`/`SettingTimePickerRow`/`SettingsAccountRow`/`MenuSettingsDialog`/scope/`NotificationTimePickerDialog`/`TimePickerWheels`/`WheelPicker` verbatim; monolith `settings_dialog.dart` 461d xoá; : ARB sentence-case + `.toUpperCase()` tại render | **313/313** (+4) |
+| [01](/m29/01-nen-mong-assets-tokens-arb/) | 50 asset senior ship đủ (5 dir); `app_assets.dart` **verbatim 45 const** — kể cả ~10 const senior ship nhưng không reference (byte-parity); `onboarding_design_tokens.dart` verbatim (`OnboardingTokens` delegate→`AppTokens`); +11 ARB key senior, −2 dead key learner; `gen-l10n` regen. Mới: quy trình đối chiếu senior | **309/309** (+0) |
+| [02](/m29/02-settings-chrome-iconasset/) | `SettingItemData.icon`→`iconAsset` + `_SettingIconBadge` SVG badge (enabled/disabled gradient); `SettingsDialogShell`/`SettingsCard`/`SettingsSection`/`SettingSwitchRow`/`SettingTimePickerRow`/`SettingsAccountRow`/`MenuSettingsDialog`/scope/`NotificationTimePickerDialog`/`TimePickerWheels`/`WheelPicker` verbatim; monolith `settings_dialog.dart` 461d xoá; ARB sentence-case + `.toUpperCase()` tại render | **313/313** (+4) |
 | [03](/m29/03-duong-ong-leaderboard/) | `LeaderboardEntryData` +`avatarAsset`/`avatarUrl`/`rankAsset`/`LeaderboardRowStyle`; `_LeaderboardRecord.toEntry` + `_avatarAsset`/`_rankAsset`/`_rowStyle` mappers; VM snapshot (pinned current-user row, refresh không đổi pin); `LeaderboardAvatar` ring màu theo rank + `Image.network` http-guard; list/popup/row/dialog/scope verbatim; seam `@visibleForTesting entryFromRow` | **321/321** (+8) |
 | [04](/m29/04-be-mat-menu/) | Profile cards ×4 (`MenuProfileHeader`/`EarningsCard`/`LevelProgressCard`/`StatsCard`) + `ProfileAvatarImage`; `GradientCtaButton` (`QzdsGameButton` large + `textGlow`); `MenuScreenContent` (panelGap + LayoutBuilder center); `ScreenTop/BottomInset`; auth dialogs + `OnboardingOverlayScope` + `LanguageChipRow` **re-port verbatim** (trước là MenuTokens-era adaptations); `OnboardingGameButton` leaf dùng chung | **345/345** (+24) |
 | [05](/m29/05-lop-dialog-menu/) | **Trọng tâm** — `MenuDialogState` sealed 5-variant; `MenuDialogLayer` `AnimatedSwitcher` keyed `transitionKey`(runtimeType); `MenuDialogBackdrop` blur+scrim+`DesignFrame`; `MenuScreenView` `PopScope(canPop: !isVisible)` + `_dialogDismissLocked`; `MenuViewModel`→`MenuScreenViewModel` + `dialogState` thay 4 dialog-events; `menu_screen.dart` 87-dòng 2-event bridge (`MenuGameRequested`/`MenuSnackBarRequested`); 4 event class + 3 `showXxxDialog` fns **RETIRED** — zero `showDialog` trong `lib/` | **369/369** (+24) |
@@ -59,20 +59,20 @@ preview catalog cố ý), **zero file learner-only**, mọi hàng
 - `flutter analyze` sạch · `flutter test` **396/396**
   (309 + 0 + 4 + 8 + 24 + 24 + 14 + 13) · `flutter build web` PASS.
 - **`lib/` là subset của senior**: zero file learner-only; thiếu
-  đúng 6 preview catalog chưa port (brief-scoped). `test/` có
+  đúng 6 preview catalog chưa port (gap đã công bố). `test/` có
   đủ mọi file senior + test learner bổ sung (course-added
   coverage: `sealed_state_test`, `localization_switch_test`,
   `menu_provider_scope_test`, `repositories/*`, `helpers/`).
 - Zero `showDialog` trong `lib/` (grep sạch — chỉ còn một
   comment lịch sử), zero `MenuTokens`, zero 4 interim event
   class, zero `showXxxDialog` route fn.
-- Những phần đã **CONVERGED hết**: menu dialog layer,
+- Những phần đã **khớp senior hết**: menu dialog layer,
   `iconAsset` settings, ARB parity (119 key mỗi bên,
   chỉ khác product-name), onboarding visual + scope
   chain, residuals leaderboard/menu dialog/popup, và
   `_SettingsAccountRow` auth chrome.
-- Deviation còn lại = **documented, không phải
-  ACTIVE_TEMPORARY**: `level_config` 2⁵³−1 (dart2js), seam
+- Deviation còn lại = **documented, không phải sai khác
+  tạm**: `level_config` 2⁵³−1 (dart2js), seam
   `@visibleForTesting entryFromRow`, `final class` convention,
   doc-comment VI, `appTitle`+share-message rename, 6/12 preview
   catalogs, `lib/l10n/*.dart` generated.
@@ -88,7 +88,7 @@ preview catalog cố ý), **zero file learner-only**, mọi hàng
 
 | Còn nợ | Owner |
 |---|---|
-| 6 preview catalog senior (`game_controls`/`game_dialog`/`leaderboard`/`menu_auth`/`menu_settings`/`provider_shell` `*_widget_previews.dart`) | — declared gap theo brief: previews là appendix, port subset 6/12 file |
+| 6 preview catalog senior (`game_controls`/`game_dialog`/`leaderboard`/`menu_auth`/`menu_settings`/`provider_shell` `*_widget_previews.dart`) | gap đã công bố: previews là appendix, port subset 6/12 file |
 | `GoogleFonts` runtime-fetch (font không bundle) | — parity cố ý kế thừa M28 |
 | Pulse/sheen/ripple/auth-size không honor `disableAnimations` | — parity cố ý, verbatim senior |
 | Release-kit `scripts/kit` + `.release-kit` | — giải thích tại `docs/release-kit-walkthrough.md`; course không vendor, không chạy |
@@ -123,5 +123,5 @@ preview catalog cố ý), **zero file learner-only**, mọi hàng
    *Đọc senior → diff → port nguyên bản (sau rename + comment
    VI) → verify test + grep. Deviation chỉ được tồn tại khi
    documented có lý do (dart2js, product rename, test seam);
-   còn lại mọi khác biệt là ACTIVE_TEMPORARY phải converge
+   còn lại mọi khác biệt là sai khác tạm phải converge
    hoặc remove — không có vùng xám "hơi khác chút".*

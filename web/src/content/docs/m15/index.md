@@ -1,6 +1,6 @@
 ---
 title: "M15 — Sealed classes & state-driven UI"
-description: "Dart 3 sealed class + exhaustive switch + object patterns; seal hoá event bridge (FR-15) và dialog state game (FR-07) theo senior."
+description: "Dart 3 sealed class + exhaustive switch + object patterns; seal hoá event bridge và dialog state game theo senior."
 sidebar:
   label: Tổng quan M15
   order: 0
@@ -20,8 +20,8 @@ kiệt hợp — đúng cấu trúc senior.
 | 1 | Vì sao cần state đóng | boolean soup → finite variants; state-driven UI là gì |
 | 2 | `sealed class` | luật cùng-file, base không khởi tạo, vs abstract/enum |
 | 3 | `switch` kiệt hợp + patterns | switch expression, `Type()`, `(:final field)`, `_`, exhaustiveness |
-| 4 | Seal event bridge | `MenuScreenUiEvent` + `_handleUiEvent` switch (FR-15) |
-| 5 | `GameDialogState` | sealed dialog state → render-by-state (FR-07 partial) |
+| 4 | Seal event bridge | `MenuScreenUiEvent` + `_handleUiEvent` switch |
+| 5 | `GameDialogState` | sealed dialog state → render-by-state |
 
 ## Tổng kết milestone (synthesis)
 

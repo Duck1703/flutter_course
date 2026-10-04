@@ -55,7 +55,7 @@ listener huỷ (`cancel()`), stream ngừng phát cho listener đó.
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `Stream<T>` | `Stream<int> s = …` | Kiểu "chuỗi event T" |
 | `Stream.periodic(d, fn)` | `Stream<int>.periodic(const Duration(seconds: 1), (t) => t + 1)` | Stream phát event mỗi `d`; `fn` nhận số thứ tự tick (0,1,2…) → trả event |
 | `stream.listen(fn)` | `s.listen((v) => …)` | Subscribe: `fn` được gọi mỗi event → trả `StreamSubscription` |
@@ -150,7 +150,7 @@ Dart + test.
 thấy Stream/StreamBuilder hoạt động trước khi có stream "thật". Senior
 app không đếm giây mở menu; stream thật của menu là **repository stream**
 (`userProfileStream` — BehaviorSubject của repo, M14). Ticker sẽ retire
-khi đó (FR-22). Giá trị của nó là *concept*, không phải feature.
+khi đó. Giá trị của nó là *concept*, không phải feature.
 :::
 
 Tạo `lib/data/menu_session_ticker.dart`:

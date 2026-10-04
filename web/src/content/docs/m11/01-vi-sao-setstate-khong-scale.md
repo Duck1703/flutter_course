@@ -65,7 +65,7 @@ ListenableBuilder(listenable: vm) → builder chạy lại → UI mới
 Phân ranh giới trong milestone này:
 
 | Thuộc **VM** | Thuộc **State widget** |
-|---|---|
+| --- | --- |
 | `_profile`, `_loadState` | `_soundOn`, `_playTapCount`, `_sessionTicker` |
 | `load`, `applyGameResult`, `resetProfile` | `_onPlayTap` (điều hướng), `_toggleSound` |
 
@@ -77,7 +77,7 @@ việc widget — VM không chạm `BuildContext`.
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `extends ChangeNotifier` | `class MenuViewModel extends ChangeNotifier` | Kế thừa cơ chế listener; từ `package:flutter/foundation.dart` — không cần material |
 | `_field` + getter | `UserProfileData get profile => _profile;` | Bên ngoài đọc được, không sửa được — muốn đổi phải qua method của VM |
 | `notifyListeners()` | `notifyListeners();` | Báo mọi listener "tôi vừa đổi" — **không** tự kiểm "đổi thật chưa" |
@@ -87,7 +87,7 @@ việc widget — VM không chạm `BuildContext`.
 ## Flutter cần dùng
 
 | Widget/API | Vai trò |
-|------------|---------|
+| ------------ | --------- |
 | `ListenableBuilder` | Nghe một `Listenable` và rebuild `builder` khi nó notify — bài 2 gắn vào |
 | `State.initState` | Chỗ tạo VM và kick-off `load()` (bài 3) |
 | `State.dispose` | Chỗ `_viewModel.dispose()` — VM là tài nguyên phải huỷ (bài 3) |
@@ -133,7 +133,7 @@ import '../../data/profile/user_profile_data.dart';
 
 /// Vòng đời tải profile của menu — enum thay snapshot FutureBuilder.
 ///
-/// TEMPORARY (senior fidelity): menu senior KHÔNG có load-state —
+/// TEMPORARY (khớp senior): menu senior KHÔNG có load-state —
 /// repository của nó stream-seeded (BehaviorSubject) nên VM nhận data
 /// qua subscription và menu render ngay profile đã seed. Enum này chỉ
 /// tồn tại vì learner còn `load()` tay; nó retire ở M14 khi contract
@@ -313,7 +313,7 @@ Menu sắp có thêm tính năng. Phân loại 6 trạng thái/hành vi sau vào
 **VM** hay **State widget** — và với mỗi cái, nêu luật quyết định:
 
 | Trạng thái | VM hay State? | Vì sao |
-|---|---|---|
+| --- | --- | --- |
 | 1. Thành tựu "Chơi 10 ván" vừa mở khoá | ? | ? |
 | 2. Ô input đang focus (bàn phím mở) | ? | ? |
 | 3. Vị trí scroll của danh sách bảng xếp hạng | ? | ? |
@@ -334,7 +334,7 @@ hầu như chắc chắn không phải widget-state.
 <details><summary>Đáp án</summary>
 
 | # | Chọn | Lý do |
-|---|------|-------|
+| --- | ------ | ------- |
 | 1 | **VM** | Dữ kiện game → state màn hình, cần persist/test; nhiều widget có thể hiển thị (badge, danh sách) |
 | 2 | **State** | Tương tác cục bộ của một ô; không ai khác cần biết |
 | 3 | **State** | (thực tế ScrollController tự giữ) — vị trí scroll là chi tiết tương tác, không phải dữ liệu màn hình |

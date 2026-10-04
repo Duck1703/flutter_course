@@ -139,7 +139,7 @@ cả khi field giống — hiểu trước khi thắc mắc "notify dư".
 | `lib/core/dre/dre.dart` | 22 dòng verbatim — marker + generic bound + `DreResult` |
 | `lib/core/dre/dre_change_notifier.dart` | 75 dòng verbatim — dispatch + `executeAsyncOp` + `onAsyncOpError` + dispose |
 | `test/core/dre/dre_change_notifier_test.dart` | 5 test verbatim (đổi package import) — harness `_Test*` private |
-| `lib/view_models/menu|settings|onboarding/*.dart` | vẫn `ChangeNotifier` tay — senior chỉ áp DRE cho game VM |
+| `lib/view_models/menu\|settings\|onboarding/*.dart` | vẫn `ChangeNotifier` tay — senior chỉ áp DRE cho game VM |
 
 ## Build it step by step
 

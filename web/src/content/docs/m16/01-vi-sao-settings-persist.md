@@ -26,7 +26,7 @@ Sau bài này bạn **giải thích được**:
   từ **M14** — repository settings đã *tồn tại* nhưng **chưa có UI
   nào dùng nó**.
 - App cuối M15: menu có avatar + tên + nút chơi; chưa có icon cài đặt.
-  Công tắc âm thanh demo của M03 đã bị gỡ ở Step-10 — vì nó
+  Công tắc âm thanh demo của M03 đã bị gỡ trong đợt cleanup trước M16 — vì nó
   là `setState` giả, không persist.
 - M16 biến repository "đang ngủ" thành **feature settings thật**: mở
   dialog từ icon bánh răng, gạt switch, đóng app, mở lại — cài đặt
@@ -38,7 +38,7 @@ Tưởng tượng bạn cài settings theo cách cũ:
 
 ```dart
 class _MenuScreenState extends State<MenuScreen> {
-  bool _soundOn = false;   // ← đây là cái đã bị gỡ ở Step-10
+  bool _soundOn = false;   // ← đây là cái đã bị gỡ trong đợt cleanup trước M16
 ```
 
 Ba vấn đề chết người:

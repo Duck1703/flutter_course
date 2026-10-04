@@ -1,6 +1,6 @@
 ---
 title: "Bài 5 · `GameDialogState` — dialog render theo state (state-driven UI)"
-description: "Sealed GameDialogState 3-variant; `_endReason` enum → `_dialogState`; `_dialogTitle`/`_resultText` thành switch expression kiệt hợp; FR-07 partial."
+description: "Sealed GameDialogState 3-variant; `_endReason` enum → `_dialogState`; `_dialogTitle`/`_resultText` thành switch expression kiệt hợp; một phần của dialog-state senior."
 sidebar:
   label: "Bài 5 · GameDialogState"
   order: 5

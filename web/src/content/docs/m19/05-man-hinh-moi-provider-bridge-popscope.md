@@ -194,8 +194,8 @@ back hệ thống pop dialog trực tiếp, `PopScope` không thấy. Vì vậy
 `_showCurrentDialog` (bước 4) phải xử lý `action == null` (back
 đã pop dialog): terminal/ladder → **mở lại** dialog (senior bỏ qua
 back — state vẫn giữ variant); confirm-exit/giải thích →
-`dismissDialog`. Đây là defect Argus bắt được ở implementation-qa
-r1 — đừng bỏ nhánh `action == null`.
+`dismissDialog`. Bỏ nhánh `action == null` là defect thật — đừng
+bỏ nó.
 :::
 
 ### Bước 4 — Event bridge: event một-lần → `showDialog`/`pop`
@@ -306,7 +306,7 @@ vì VM tự lưu profile.
 ```dart
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // FR-17: khóa dọc — game chỉ thiết kế cho portrait (senior parity).
+  // Khóa dọc — game chỉ thiết kế cho portrait (y senior).
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   // ... repos ...
   final navigationController = AppNavigationController();
@@ -436,7 +436,7 @@ trúc của màn, không phải cú pháp:
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. `create: … ..startNewGame()` gọi `notifyListeners` ngay khi VM
    được tạo — vì sao không crash `!_dirty`?
@@ -463,7 +463,7 @@ trúc của màn, không phải cú pháp:
 - **`showDialog` không post-frame** — event đầu đến giữa
   `didChangeDependencies`, push route lúc đó crash.
 - **Quên `action == null` branch** — back pop dialog trực tiếp,
-  bỏ nhánh này = terminal dialog bị thoát chui (bug Argus r1).
+  bỏ nhánh này = terminal dialog bị thoát chui (bug đã từng gặp khi port).
 
 ## Ta cố ý chưa thêm
 

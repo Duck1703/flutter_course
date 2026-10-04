@@ -38,7 +38,7 @@ chỉ ghi *ý nghĩa ngắn* + *link về nơi dạy nó*. Muốn hiểu sâu, �
 | `final`/`const` field | bất biến sau construction | [M04](/m04/) | mọi model |
 | `copyWith` | "đổi" immutable = tạo object mới vài field khác | [M04](/m04/) | M10, M14 |
 | `==`/`hashCode` | so *giá trị* chứ không identity | [M04](/m04/) | M14 (`value !=` guard) |
-| `toMap`/`fromMap` | serialize model ↔ Map cho JSON | [M10/02](/m10/02-json-tomap-frommap/) | M14 (FR-19) |
+| `toMap`/`fromMap` | serialize model ↔ Map cho JSON | [M10/02](/m10/02-json-tomap-frommap/) | M14 |
 | `factory` ctor | constructor được `return` instance (có thể có sẵn / tính trước) | [M10/02](/m10/02-json-tomap-frommap/) | M14/02 (`create()`) |
 | `static Future create()` | factory static cho construction async | [M14/02](/m14/02-contract-abstract-interface-implements/) | M14/04–06 |
 | `abstract interface class` | class thuần chữ ký — contract | [M14/02](/m14/02-contract-abstract-interface-implements/) | M14/04–07 |
@@ -71,7 +71,7 @@ chỉ ghi *ý nghĩa ngắn* + *link về nơi dạy nó*. Muốn hiểu sâu, �
 | `AuthActionResult` result value-type | private ctor `._` + redirecting const ctor `.success`/`.failure` — "outcome một lần của action" tách khỏi state stream; caller đọc `isSuccess`/`message`, không try/catch | [M24/01](/m24/01-session-model/) | M24/03–04, M25 |
 | `part`/`part of` + private `extension` | tách một library thành nhiều file chia sẻ import + private members; `extension _X on Class` trong part giữ method private nhưng tách theo domain — reducer 4 flow files, VM 2 bridge files | [M26/04](/m26/04-game-reducer/), [M26/05](/m26/05-vm-migration-va-bridges/) | M27+ |
 | `abstract interface class` + generic bounds | marker interface rỗng `DreAction`/`DreEffect`/`DreAsyncOp` đóng vai "nhãn vai trò"; `DreReducer<S,A extends DreAction,E extends DreEffect,O extends DreAsyncOp>` kẹp kiểu tại generic — contract mở cho mọi domain, game chỉ là consumer đầu tiên | [M26/02](/m26/02-core-dre-primitives/) | M27+ |
-| `if-case` trong switch-exhaustive (D-48) | pattern `if (x case Type(:field))` destructure trực tiếp trong điều kiện — tránh cast tay; dùng song song `switch` expression khi cần kiểm-tra-nhanh một variant | [M28/02](/m28/02-chrome-chung-pill-kinh-nen/) | M28+ |
+| `if-case` trong switch-exhaustive | pattern `if (x case Type(:field))` destructure trực tiếp trong điều kiện — tránh cast tay; dùng song song `switch` expression khi cần kiểm-tra-nhanh một variant | [M28/02](/m28/02-chrome-chung-pill-kinh-nen/) | M28+ |
 
 
 ## Async
@@ -144,8 +144,8 @@ chỉ ghi *ý nghĩa ngắn* + *link về nơi dạy nó*. Muốn hiểu sâu, �
 | Service-contract platform boundary | widget/VM không chạm plugin trực tiếp — chuỗi widget→VM→contract→impl→plugin→OS; `Provider<Contract>.value` + `context.read<Contract>()`; impl đổi chỗ không sửa call-site | [M27/01](/m27/01-platform-boundary-va-dependencies/), [M27/02](/m27/02-local-notification-service/) | mọi platform feature sau |
 | Coordinator + best-effort rollback | `SettingsNotificationCoordinator`: việc-OS TRƯỚC (schedule/cancel), persist SAU — save hỏng thì hoàn tác việc-OS; rollback cũng hỏng → giữ lỗi gốc, không nuốt | [M27/03](/m27/03-settings-coordinator-permission-state/) | mọi chuỗi OS+persist sau |
 | Permission-as-state | `_hasNotificationPermission` là VM state được nạp qua `hasPermission()`; `effectiveNotificationEnabled` = flag AND permission — "permission là state OS sở hữu: query/request, không assume" | [M27/03](/m27/03-settings-coordinator-permission-state/) | mọi runtime-permission sau |
-| Design tokens single-source (A-38) | `AppTokens` = nguồn-đúng-duy-nhất cho màu/spacing/radius/motion/typography — widget không hardcode giá trị; token đổi → toàn app đổi; `AppAssets` chỉ khai báo const cho asset thật-ship (subset rõ ràng, không dangling ref) | [M28/01](/m28/01-nen-mong-tokens-assets/) | M29 (mọi surface còn lại) |
-| Trigger-based animation as data (A-39) | `animationTrigger: int` trong DTO — widget chỉ animate khi `trigger > oldTrigger`; đổi amount không-kèm-trigger → snap thẳng; intent-to-animate là *data* đi qua mapper, không phải diff-widget tự đoán | [M28/04](/m28/04-trigger-motion-so-tien-nhay/) | mọi "animate chỉ khi X" sau |
+| Design tokens single-source | `AppTokens` = nguồn-đúng-duy-nhất cho màu/spacing/radius/motion/typography — widget không hardcode giá trị; token đổi → toàn app đổi; `AppAssets` chỉ khai báo const cho asset thật-ship (subset rõ ràng, không dangling ref) | [M28/01](/m28/01-nen-mong-tokens-assets/) | M29 (mọi surface còn lại) |
+| Trigger-based animation as data | `animationTrigger: int` trong DTO — widget chỉ animate khi `trigger > oldTrigger`; đổi amount không-kèm-trigger → snap thẳng; intent-to-animate là *data* đi qua mapper, không phải diff-widget tự đoán | [M28/04](/m28/04-trigger-motion-so-tien-nhay/) | mọi "animate chỉ khi X" sau |
 
 ## Backend (Supabase)
 
@@ -177,12 +177,12 @@ chỉ ghi *ý nghĩa ngắn* + *link về nơi dạy nó*. Muốn hiểu sâu, �
 
 | Concept | Nghĩa một câu | Dạy ở | Củng cố ở |
 |---|---|---|---|
-| `AnimationController` + `vsync`/`TickerProviderStateMixin` (F-38) | controller là đồng-hồ-tick sống trong `State`: `forward/reverse/repeat` lái `Animation<double>`; `vsync: this` chống tick-ngầm; `dispose` bắt buộc; `SingleTicker` cho một controller, `TickerProvider` cho nhiều | [M28/03](/m28/03-custompainter-animationcontroller-dong-ho/) | M28+, mọi explicit animation sau |
-| `CustomPainter` + `Canvas`/`Paint`/`Path` + `shouldRepaint` (F-39) | painter vẽ trực tiếp không qua widget-tree — stadium `Path` + `extractPath`/`computeMetrics` cho dash/segment; `shouldRepaint` quyết re-paint theo props; `CustomPaint(painter:/foregroundPainter:)` bọc vào cây | [M28/03](/m28/03-custompainter-animationcontroller-dong-ho/) | M28+ (feature-button painter) |
-| `didUpdateWidget` prop→controller sync (F-40) | hook `State` lifecycle khi widget config đổi — quyết `forward(from:0)` vs snap giá-trị-mới; nơi trigger-based animation đọc `oldWidget` | [M28/03](/m28/03-custompainter-animationcontroller-dong-ho/), [M28/04](/m28/04-trigger-motion-so-tien-nhay/) | — |
-| Implicit-animation family (F-41) | `AnimatedOpacity`/`AnimatedScale`/`AnimatedContainer`/`AnimatedDefaultTextStyle`/`TweenAnimationBuilder`/`AnimatedSwitcher` — animation khai-báo theo prop-change, không controller tay; `CurvedAnimation`/`Interval` stagger | [M28/05](/m28/05-be-mat-game-va-lop-dialog/) | M28+ |
-| `flutter_svg` `SvgPicture.asset` + `colorFilter srcIn` (F-42) | SVG asset render như Image; `ColorFilter.mode(color, BlendMode.srcIn)` tô một màu lên toàn-bộ-alpha — icon mono-color đổi màu theo state mà không cần nhiều file | [M28/02](/m28/02-chrome-chung-pill-kinh-nen/) | mọi icon asset sau |
-| Semantics nâng: `liveRegion`/`value`/`onTap` + `getSemantics`/`matchesSemantics` (F-43, LIGHT) | `Semantics` node mang thuộc-tính động + action; test đọc node trực tiếp `tester.getSemantics(finder)` + `matchesSemantics(label:…)` thay `find.bySemanticsLabel` chỉ-tìm | [M28/05](/m28/05-be-mat-game-va-lop-dialog/) | — |
+| `AnimationController` + `vsync`/`TickerProviderStateMixin` | controller là đồng-hồ-tick sống trong `State`: `forward/reverse/repeat` lái `Animation<double>`; `vsync: this` chống tick-ngầm; `dispose` bắt buộc; `SingleTicker` cho một controller, `TickerProvider` cho nhiều | [M28/03](/m28/03-custompainter-animationcontroller-dong-ho/) | M28+, mọi explicit animation sau |
+| `CustomPainter` + `Canvas`/`Paint`/`Path` + `shouldRepaint` | painter vẽ trực tiếp không qua widget-tree — stadium `Path` + `extractPath`/`computeMetrics` cho dash/segment; `shouldRepaint` quyết re-paint theo props; `CustomPaint(painter:/foregroundPainter:)` bọc vào cây | [M28/03](/m28/03-custompainter-animationcontroller-dong-ho/) | M28+ (feature-button painter) |
+| `didUpdateWidget` prop→controller sync | hook `State` lifecycle khi widget config đổi — quyết `forward(from:0)` vs snap giá-trị-mới; nơi trigger-based animation đọc `oldWidget` | [M28/03](/m28/03-custompainter-animationcontroller-dong-ho/), [M28/04](/m28/04-trigger-motion-so-tien-nhay/) | |
+| Implicit-animation family | `AnimatedOpacity`/`AnimatedScale`/`AnimatedContainer`/`AnimatedDefaultTextStyle`/`TweenAnimationBuilder`/`AnimatedSwitcher` — animation khai-báo theo prop-change, không controller tay; `CurvedAnimation`/`Interval` stagger | [M28/05](/m28/05-be-mat-game-va-lop-dialog/) | M28+ |
+| `flutter_svg` `SvgPicture.asset` + `colorFilter srcIn` | SVG asset render như Image; `ColorFilter.mode(color, BlendMode.srcIn)` tô một màu lên toàn-bộ-alpha — icon mono-color đổi màu theo state mà không cần nhiều file | [M28/02](/m28/02-chrome-chung-pill-kinh-nen/) | mọi icon asset sau |
+| Semantics nâng: `liveRegion`/`value`/`onTap` + `getSemantics`/`matchesSemantics` | `Semantics` node mang thuộc-tính động + action; test đọc node trực tiếp `tester.getSemantics(finder)` + `matchesSemantics(label:…)` thay `find.bySemanticsLabel` chỉ-tìm | [M28/05](/m28/05-be-mat-game-va-lop-dialog/) | |
 
 ## Navigation & test
 
@@ -193,7 +193,7 @@ chỉ ghi *ý nghĩa ngắn* + *link về nơi dạy nó*. Muốn hiểu sâu, �
 | `test`/`expect`/`group` | unit test `flutter_test` | [M04/04](/m04/04-unit-test-dau-tien/) | mọi milestone |
 | `testWidgets`/`WidgetTester`/`pump` | widget test điều khiển frame tay | [M08/04](/m08/04-widget-test-dau-tien/) | M09, M13, M14 |
 | `setMockInitialValues` | prefs giả trong test | [M10](/m10/) | M14/04 |
-| `NavigatorObserver` | bắt push/pop trong widget test | [M08/04](/m08/04-widget-test-dau-tien/) (Tự làm) | — |
+| assert route mới qua `find.text` | route push → màn đích render text đặc trưng trong test | [M08/04](/m08/04-widget-test-dau-tien/) (Tự làm) | |
 | `ensureVisible` | cuộn element off-screen vào viewport trước khi tap | [M16/05](/m16/05-time-picker-synthesis/) | — |
 | `PopScope` + `onPopInvokedWithResult` | chặn pop mặc định (`canPop: false`), route ý định back về VM — thay `WillPopScope` | [M19/05](/m19/05-man-hinh-moi-provider-bridge-popscope/) | [M21/04](/m21/04-popscope-va-back-handling/) |
 | `AppNavigationController` + `GlobalKey<NavigatorState>` | điều hướng context-free: key gắn `MaterialApp.navigatorKey`, controller push/pop qua `navigatorKey.currentState` | [M19/05](/m19/05-man-hinh-moi-provider-bridge-popscope/) | M20+ |
@@ -204,8 +204,8 @@ chỉ ghi *ý nghĩa ngắn* + *link về nơi dạy nó*. Muốn hiểu sâu, �
 | `BackdropFilter` + `ClipRect` + `IgnorePointer` + `HitTestBehavior.opaque` | backdrop blur trong bounds + tap-outside rule + chặn hit theo state | [M21/02](/m21/02-game-dialog-layer/) | M28 |
 | `MediaQuery.disableAnimations` | a11y reduced-motion → duration `Duration.zero` (không bỏ hẳn animation code-path) | [M21/03](/m21/03-animated-switcher-va-keyed-transitions/) | M28 |
 
-| senior-alignment pass (A-40) — đọc→diff→port→verify, giữ documented-deviation-vs-converge | quy trình đối chiếu senior có-kỷ-luật: đọc senior trước, diff từng file, port verbatim, verify bằng test — deviation phải được GHI NHẬN | [M29](/m29/) | — |
-| `widget_previews` + `@Preview` (F-44) | catalog preview trong-IDE: `@Preview(name/group/size, wrapper:)` + fake-repo fixtures — kiểm-tra-visual không cần chạy app | [M29/07](/m29/07-hoi-tu-quet-cuoi/) | — |
+| senior-alignment pass — đọc→diff→port→verify, giữ documented-deviation-vs-converge | quy trình đối chiếu senior có-kỷ-luật: đọc senior trước, diff từng file, port verbatim, verify bằng test — deviation phải được GHI NHẬN | [M29](/m29/) | |
+| `widget_previews` + `@Preview` | catalog preview trong-IDE: `@Preview(name/group/size, wrapper:)` + fake-repo fixtures — kiểm-tra-visual không cần chạy app | [M29/07](/m29/07-hoi-tu-quet-cuoi/) | |
 
 :::tip[Dùng trang này thế nào]
 Tìm concept → nhảy về "dạy ở" để đọc lại giải thích đầy đủ → xem

@@ -13,9 +13,9 @@ không có khái niệm "đã đăng nhập" — pill trên menu chỉ hiển th
 username local. Milestone này dựng **identity layer**: sealed session
 model, auth repository (Disabled guest-mode ↔ Supabase impl theo
 config), coordinator giữ chuỗi sign-in→sync, hai dialog VM, và pill
-tài khoản mở đúng dialog theo session — đồng thời đóng **bốn FR**:
- (sign-out reset profile), (snackbar về dialog VMs),
- (account pill + auth routing), (leaderboard uid thật).
+tài khoản mở đúng dialog theo session — đồng thời đóng bốn
+khoảng parity: sign-out reset profile; snackbar về dialog VMs;
+account pill + auth routing; leaderboard uid thật.
 
 :::note[Triết lý milestone: "guest là session thật"]
 - `AuthSessionGuest` là variant chính danh trong sealed union —
@@ -51,14 +51,13 @@ tài khoản mở đúng dialog theo session — đồng thời đóng **bốn F
  `LIVE_AUTH_FLOW: NOT_PERFORMED` trong môi trường khóa):
  `AuthRepositoryImpl` bọc Supabase + Google v7 (+ Apple trên iOS) —
  cùng contract, UI không đổi một dòng.
-- FR đóng: (sign-out → `resetUserProfile` qua coordinator;
- `_ResetButton`/`resetProfile()`/`resetProfileButton` đã xoá),
- (emit site `MenuSnackBarRequested` retire — class +
- bridge case giữ senior-true, zero emit sites; snackbar auth phát
- từ dialog VMs), (pill tappable + `requestAuthAction` +
- hai dialog), (leaderboard VM nhận `AuthRepository`,
- `switch(authState)` → uid).
-- FR mở mới: sync impl Disabled (FR mới → M25); transport
+- Đã đóng: sign-out → `resetUserProfile` qua coordinator
+  (`_ResetButton`/`resetProfile()`/`resetProfileButton` đã xoá);
+  emit site `MenuSnackBarRequested` retire (class + bridge case
+  giữ, zero emit sites — snackbar auth phát từ dialog VMs);
+  pill tappable + `requestAuthAction` + hai dialog; leaderboard
+  VM nhận `AuthRepository`, `switch(authState)` → uid.
+- Còn mở: sync impl Disabled (→ M25); transport
  `showDialog` giữ nguyên → M29; icon pipeline re-eval → M28.
 
 ## Điều milestone này cố ý chưa làm
@@ -67,7 +66,7 @@ tài khoản mở đúng dialog theo session — đồng thời đóng **bốn F
 |---|---|---|
 | `UserProfileSyncRepositoryImpl` — merge local↔remote + upsert `public.users` + emit `syncStateStream` | **M25** | M24 chỉ ship seam + Disabled no-op; `main()` cố ý `Disabled()` luôn (senior chọn conditional — đổi một dòng khi impl vào) |
 | `DreChangeNotifier`/`asyncOp` + cancel thật | **M26** | single-flight `_isLoading` + `_isDisposed` đủ cho dialog; DRE là lớp chung sau |
-| `MenuDialogLayer` + `MenuDialogAuth`/`MenuDialogSignOut` state + `onDismissLockChanged`/`MenuDialogBackdrop` | **M29** | : transport `showDialog` + `PopScope` giữ — cùng scaffold settings/leaderboard |
+| `MenuDialogLayer` + `MenuDialogAuth`/`MenuDialogSignOut` state + `onDismissLockChanged`/`MenuDialogBackdrop` | **M29** | transport `showDialog` + `PopScope` giữ — cùng scaffold settings/leaderboard |
 | `SettingsDialogShell`/`OnboardingGameButton`/icon-pipeline visual parity | **M28** | chrome `AlertDialog`+MenuTokens đủ cho behavior; polish gộp đợt visual |
 | Realtime auth/session cross-device | — | senior không dùng; `onAuthStateChange` listener đã đủ cho in-app |
 | OTP / magic-link / password-recovery / account-linking | — | senior không có; khóa không ôm — bốn đường sign-in senior là đủ |

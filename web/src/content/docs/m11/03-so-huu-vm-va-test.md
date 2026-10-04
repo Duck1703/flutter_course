@@ -241,12 +241,13 @@ hợp đồng "không đổi thì không báo".
 **Tự viết test — không copy.** `MenuViewModel` là `ChangeNotifier`. Viết
 một test trong `test/` kiểm chứng `notifyListeners`:
 
-1. Tạo `MenuViewModel`, đăng ký `vm.addListener(() => calls++)` với
-   `int calls = 0`.
-2. Gọi action đổi state (ví dụ `vm.toggleSound()` hoặc method tương
-   đương trong VM hiện tại) — assert `calls` tăng lên.
+1. Tạo `MenuViewModel` (nhớ ctor cần `store:` — dùng `makeStore` của
+   M10), đăng ký `vm.addListener(() => calls++)` với `int calls = 0`.
+2. Gọi action đổi state — ví dụ `await vm.load()` hoặc
+   `vm.applyGameResult(...)` — assert `calls` tăng lên.
 3. Dự đoán: nếu method đổi field nhưng **quên `notifyListeners()`**,
-   `calls` là bao nhiêu? UI rebuild không?
+   `calls` là bao nhiêu? UI rebuild không? Và `resetProfile` trên
+   profile mặc định notify mấy lần — vì sao?
 4. Hai listener đăng ký — `calls` tăng mấy lần cho một notify?
 
 :::note[Gợi ý]
@@ -257,22 +258,24 @@ gọi nó = field đổi nhưng không ai biết → UI đứng im.
 <details><summary><strong>Đáp án</strong></summary>
 
 ```dart
-test('VM notifies listeners on state change', () {
-  final vm = MenuViewModel();
+test('VM notifies listeners on state change', () async {
+  final vm = MenuViewModel(store: await makeStore(const {}));
+  addTearDown(vm.dispose);
   var calls = 0;
   vm.addListener(() => calls++);
-  vm.toggleSound();          // hoặc action hiện có trong VM
+  await vm.load();           // loading → ready: đổi state → notify
   expect(calls, greaterThan(0));
 });
 
-test('two listeners both fire on one notify', () {
-  final vm = MenuViewModel();
+test('two listeners both fire on one notify', () async {
+  final vm = MenuViewModel(store: await makeStore(const {}));
+  addTearDown(vm.dispose);
   var a = 0, b = 0;
   vm.addListener(() => a++);
   vm.addListener(() => b++);
-  vm.toggleSound();
-  expect(a, greaterThan(0));
-  expect(b, greaterThan(0));
+  await vm.load();
+  expect(a, 1);   // loading→loading bị _setLoadState chặn → chỉ 1 notify
+  expect(b, 1);
 });
 ```
 
@@ -297,4 +300,4 @@ notify thủ công.
   apply (đổi + notify + persist), reset (đổi/noop).
 - [ ] Trả lời được: ai sở hữu VM, ai dispose nó, và `notifyListeners`
   có diff không.
-- [ ] `flutter test` toàn suite xanh — **M11 gate**.
+- [ ] `flutter test` toàn suite xanh.

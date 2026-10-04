@@ -46,7 +46,7 @@ lỗi riêng. Đi theo checklist, không sáng tạo.
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Ý nghĩa |
-|---|---|---|
+| --- | --- | --- |
 | named param + default | `String soundText = 'Sound'` | caller có thể bỏ qua — default đứng sau |
 | param forwarding | `soundText: soundText` | VM nhận chuỗi rồi chuyển tiếp vào factory |
 | `final l10n = …` ở đầu build | `final l10n = AppLocalizations.of(context)` | lấy 1 lần, xài nhiều chỗ — tránh `of` lặp |
@@ -249,8 +249,7 @@ thêm `import '../../../l10n/app_localizations.dart';` và thay:
 `MenuViewModel` **giữ nguyên** `'Đã đặt lại hồ sơ.'` literal —
 đây là chuỗi learner-scaffolding (senior `MenuScreenViewModel` có
 variant `MenuSnackBarRequested` nhưng **không emit** từ luồng
-reset-profile — senior không có nút đó).
-không phải key ARB.
+reset-profile — senior không có nút đó) — không phải key ARB.
 
 ### Bước 6 — game screen
 
@@ -401,10 +400,10 @@ en (LANGUAGE/AUDIO/NOTIFICATIONS/ACCOUNT/DONE…); chọn "Tiếng Việt"
 mỗi cái: *đưa vào l10n hay không, và vì sao?*
 
 | Chuỗi | Vào l10n? |
-|---|---|
-| Label `'Phiên bản'` của info row (M16/05 Tự làm) | |
-| Câu hỏi/đáp án trong quiz question bank | |
-| `nativeName` `'Tiếng Việt'` trên `LanguageChip` | |
+| --- | --- |
+| Label `'Phiên bản'` của info row (M16/05 Tự làm) |  |
+| Câu hỏi/đáp án trong quiz question bank |  |
+| `nativeName` `'Tiếng Việt'` trên `LanguageChip` |  |
 
 **Phần B — migrate end-to-end** (không copy — quyết rồi mở đáp án):
 
@@ -438,7 +437,7 @@ Việt" kể cả khi app đang en).
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. Vì sao `localizedSettingItems` nhận 6 String thay vì tự gọi
    `AppLocalizations.of`?

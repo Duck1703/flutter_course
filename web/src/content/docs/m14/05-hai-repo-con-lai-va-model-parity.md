@@ -11,7 +11,7 @@ sidebar:
 - **Nhận diện** (không học mới) pattern repository qua hai repo còn
   lại: `UserSettingsRepository` và `OnboardingRepository`.
 - Thêm `UserSettingsData` — model settings 7 field đúng senior.
-- Nâng `UserProfileData` lên field set senior (FR-19):
+- Nâng `UserProfileData` lên field set senior:
   `totalEarnings`, `totalQuestionCount`, parse phòng thủ đầy đủ.
 
 Bài này cố tình *ít lý thuyết*: contract/subject/guard đã học — giờ
@@ -27,7 +27,7 @@ guard, quay lại bài 3–4; đó là tín hiệu bài này đúng chỗ.
 ## Ba repository của app — nhìn trước
 
 | Repo | Stream | Seed | Key prefs | Consumer thật |
-|------|--------|------|-----------|---------------|
+| ------ | -------- | ------ | ----------- | --------------- |
 | `UserProfileRepository` | `ValueStream<UserProfileData>` | `const UserProfileData()` | `user_profile` | menu VM (bài 7) |
 | `UserSettingsRepository` | `ValueStream<UserSettingsData>` | `const UserSettingsData()` | `user_settings` | settings dialog — M16 |
 | `OnboardingRepository` | `ValueStream<bool>` | `false` | `onboarding_completed` | onboarding gate — M18 |
@@ -61,7 +61,7 @@ không được phép vào model.
 
 > `languageCode` giờ chỉ guard non-empty. Senior whitelist nó qua
 > `SupportedLanguageData` — bộ từ vựng localization đó đến M17
-> (register FR-26 — simplification tạm, đã đăng ký).
+> (đơn giản hoá tạm — guard non-empty đủ cho M14).
 
 ### Bước 2 — `UserSettingsRepository` + impl
 
@@ -95,7 +95,7 @@ nhất: `ValueStream<bool>`, seed `false`, key `'onboarding_completed'`,
 stream state không chỉ dành cho "model lớn": một cờ đơn giản cũng đi
 qua cùng một boundary.
 
-### Bước 4 — `UserProfileData` đạt field set senior (FR-19)
+### Bước 4 — `UserProfileData` đạt field set senior
 
 Hai field mới — và chúng là *field lưu trữ*, không phải getter tính:
 
@@ -111,7 +111,7 @@ final int totalQuestionCount;    // tổng câu đã trả lời
   xoá getter (UI còn đang đọc nó).
 - `applyGameResult` giờ ghi cả hai: `totalEarnings: formatVnd(...)`,
   `totalQuestionCount: + result.questionsAnswered`.
-- `expForNextLevel` vẫn ở lại — register FR-01, retire M22.
+- `expForNextLevel` vẫn ở lại — `LevelConfig` của senior tính nó ở M22.
 
 `fromMap` nâng lên đúng độ sâu senior:
 
@@ -195,7 +195,7 @@ Nếu bạn viết được file này mà không nhìn bài 4 — pattern reposi
 ## Ta cố ý chưa thêm
 
 - **Settings/onboarding UI** — M16/M18; repo chỉ là nền.
-- **Whitelist `SupportedLanguageData`** — M17 (FR-26).
+- **Whitelist `SupportedLanguageData`** — M17.
 - **Repo leaderboard/auth/sync** của senior — gắn milestone sau
   (M21–M24).
 

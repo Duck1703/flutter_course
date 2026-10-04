@@ -85,7 +85,7 @@ DRE queue — đó là M26): một helper `_emitWithSaveResult(next, …)`
 phát state mới + `unawaited(_saveGameResult(…))` ngay tại 4 transition.
 
 | Điểm kết thúc | `earnedAmount` | `isWin` | `questionCount` |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `_loadNextQuestionOrVictory` nhánh victory (đúng câu cuối) | `moneyEarned` | `true` | `questionIndex + 1` |
 | `_endGame` (sai/hết giờ) | `guaranteedAmount` | `false` | `questionIndex + 1` |
 | `confirmWalkAway` | `_walkAwayAmount` | `false` | `questionIndex + 1` |

@@ -49,7 +49,7 @@ của code gán state (bài 5). Nó chỉ đảm bảo *tập variant đóng*.
 ## Dart cần dùng / Dart mới
 
 | Cú pháp | Ví dụ | Nghĩa |
-|---------|-------|-------|
+| --------- | ------- | ------- |
 | `sealed class X` | `sealed class PaymentState` | base của tập đóng; **không `new` được** — chỉ tồn tại để làm cha chung |
 | `final class Y extends X` | `final class PaymentIdle extends PaymentState` | variant lá — `final` cấm người khác extends/implement thêm |
 | cùng file | các subtype **phải** nằm trong file của `sealed class` | đây là luật làm tập *đóng* — compiler liệt kê hết được |

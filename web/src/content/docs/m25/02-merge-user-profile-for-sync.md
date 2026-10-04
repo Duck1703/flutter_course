@@ -95,12 +95,12 @@ rỗng trước khi so sánh; lệch một field cũng coi là profile thật.
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
-|---|---|
+| --- | --- |
 | top-level `UserProfileData mergeUserProfileForSync({required …})` | hàm thuần trên import — không class vì không giữ state |
-| `levelLeader.copyWith(…)` | kết quả = bản leader vá lại từng nhóm field — |
+| `levelLeader.copyWith(…)` | kết quả = bản leader vá lại từng nhóm field |
 | `_nonEmpty(session.displayName)` | `String?` → `String?` chỉ giữ nếu không rỗng — chuỗi fallback `??` |
 | `left.currentExp >= right.currentExp` | tiebreak tại bằng → left (remote) thắng hoà |
-| `profile == const UserProfileData(…)` | so khớp nguyên object nhận diện demo — |
+| `profile == const UserProfileData(…)` | so khớp nguyên object nhận diện demo |
 
 Chi tiết nhỏ đáng học: `>=` (không phải `>`) trong tiebreak — khi
 level *và* exp đều bằng nhau, **remote thắng hoà** (remote là arg
@@ -165,7 +165,7 @@ mỗi lần sync.
 ## Senior project connection
 
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
-|---|---|
+| --- | --- |
 | `lib/data/profile/app_user_data.dart` (`mergeUserProfileForSync` + `_higherLevelProgressionProfile`/`_maxInt`/`_nonEmpty`/`_withoutDemoProgression`/`_hasDemoProgression` + demo constant) | learner port verbatim — cùng file `app_user_data.dart`, cùng luật và thứ tự fallback |
 | `test/user_profile_sync_merge_test.dart` | 7 test learner port verbatim (chỉ đổi package import) — leader/max/session-identity/zero-starter/demo-normalize |
 

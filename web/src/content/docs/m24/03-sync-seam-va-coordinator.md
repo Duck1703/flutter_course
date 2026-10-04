@@ -103,7 +103,7 @@ Ba điểm dễ nhầm, khắc ngay:
 |---|---|
 | `Future<R> Function()` param | truyền "hành động sign-in" vào `_signInAndSync` — method-tearoff như closure (áp dụng) |
 | `x is! T` (negated type test) | guard "không authenticated → fail sớm" — đọc ngược của `is` |
-| `switch` expression trả String | `_sessionLabel` cho debug log — |
+| `switch` expression trả String | `_sessionLabel` cho debug log |
 | `Future<void>` no-op body `async {}` | Disabled impl trả về ngay — method rỗng hợp lệ của contract |
 
 ## Ví dụ độc lập — chuỗi 3 bước trong 20 dòng
@@ -248,7 +248,7 @@ Future<AuthActionResult> _signInAndSync(
 ```
 
 Và `signOut` (`:134-146`): `result.isSuccess` →
-`_userProfileRepository.resetUserProfile()` — : hành vi nút
+`_userProfileRepository.resetUserProfile()` — hành vi nút
 reset M10 sống lại đúng nghĩa "sign-out → thiết bị về hồ sơ khách",
 không còn là nút bấm trên menu.
 

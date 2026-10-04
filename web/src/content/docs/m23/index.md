@@ -57,7 +57,7 @@ repository thật (tĩnh khi chưa cấu hình, remote khi có).
 | Ghi/sync `public.users` (insert/update/upsert) | **M25** | M23 chỉ ĐỌC — `settingsGuestSyncHint` vẫn là hint |
 | `DreChangeNotifier`/`asyncOp` + cancel thật | **M26** | `_requestId` monotonic guard đủ cho pull-race |
 | SVG rank badge/avatar asset/frame painter/`LeaderboardRowStyle`, `LeaderboardEntryCard` tách file | **M28** | pipeline asset chưa có; `#N` text + MenuTokens chrome |
-| `MenuDialogLayer` + `MenuDialogLeaderboard` state | **M29** | : transport `showDialog` giữ — cùng scaffold settings |
+| `MenuDialogLayer` + `MenuDialogLeaderboard` state | **M29** | transport `showDialog` giữ — cùng scaffold settings |
 | Realtime subscription | — | senior cũng không dùng cho bảng này; refresh là cơ chế |
 | Verify remote sống | — | `LIVE_SUPABASE_CONNECTIVITY: NOT_PERFORMED` — không credential trong môi trường; deterministic fakes là đường PASS |
 

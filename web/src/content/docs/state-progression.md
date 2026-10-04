@@ -107,7 +107,7 @@ Session state machine (M19) → state game = một object bất biến +
 | **Cơ chế** | `ChangeNotifierProvider(create:)` đặt *trong* subtree dialog → VM sinh/chết cùng dialog; thay đổi đi qua `repo.save → BehaviorSubject → stream → VM → notifyListeners` |
 | **Ai sở hữu** | ba tầng rõ rệt: repo = app-scope (sống suốt app), `MenuViewModel` = screen-scope, `SettingsViewModel` = dialog-scope |
 | **Hướng dữ liệu** | `Switch.onChanged` → `vm.toggleSetting` → repo → stream → `_handleSettings` → rebuild; UI không giữ giá trị |
-| **Còn thiếu** | entry dialog vẫn `showDialog` (FR-16/29 → M21) |
+| **Còn thiếu** | entry dialog vẫn `showDialog` (→ M21) |
 
 ### Bước 8 — Locale = derived state ở app-root (M17)
 
@@ -117,7 +117,7 @@ Session state machine (M19) → state game = một object bất biến +
 | **Cơ chế** | `StreamBuilder` quanh `MaterialApp` trên `userSettingsStream` (`initialData: .value` chống flicker) + `_selectedLocaleFor` whitelist en/vi → `Locale`; gen-l10n tạo `AppLocalizations` từ 2 file `.arb` |
 | **Ai sở hữu** | chuỗi sống trong `.arb` (source of truth); locale sống trong repo stream; VM/factory **context-free** — UI đọc `l10n` rồi truyền chuỗi vào |
 | **Hướng dữ liệu** | chip ngôn ngữ → `vm.setLanguage` → repo → stream → `StreamBuilder` → `MaterialApp.locale` → `AppLocalizations.of(context)` trả bản mới — đổi toàn app trong một frame |
-| **Còn thiếu** | quiz-bank + repo error strings chưa l10n (FR-31, `ACTIVE_TEMPORARY`); onboarding l10n → M18 |
+| **Còn thiếu** | quiz-bank + repo error strings chưa l10n ; onboarding l10n → M18 |
 
 ### Bước 9 — Overlay-scoped VM + cờ show-once (M18)
 
@@ -127,7 +127,7 @@ Session state machine (M19) → state game = một object bất biến +
 | **Cơ chế** | `Positioned.fill(child: OnboardingOverlayScope())` trong `Stack` của menu; scope = `FutureBuilder(loadOnboardingCompleted)` → `ChangeNotifierProvider` overlay-scoped; VM giữ queue `List<OnboardingStepState>` (`listEquals` + `List.unmodifiable`), tự subscribe `onboardingCompletedStream` để clear |
 | **Ai sở hữu** | tầng thứ tư: app (repos) → screen (`MenuViewModel`) → dialog (`SettingsViewModel`) → overlay (`OnboardingViewModel`); cờ `onboarding_completed` sống trong repo, persist SharedPreferences |
 | **Hướng dữ liệu** | `vm.nextStep`/`skipIntro` → `setOnboardingCompleted` → subject → stream → VM tự clear → `SizedBox.shrink` — ẩn là hậu quả của state, không phải `pop` |
-| **Còn thiếu** | permission thật + lịch hẹn (FR-27 → M27); visual parity blur/AnimatedSwitcher/badge (FR-32 → M28) |
+| **Còn thiếu** | permission thật + lịch hẹn (→ M27); visual parity blur/AnimatedSwitcher/badge (→ M28) |
 
 ### Bước 10 — VM-owned session state machine + presentation mapper (M19)
 
@@ -137,7 +137,7 @@ Session state machine (M19) → state game = một object bất biến +
 | **Cơ chế** | `GameSessionState` bất biến (`copyWith` + `clear*` flag) giữ `phase` enum 6 giá trị; `GameScreenViewModel` dispatch qua method có guard (`phase != playing → return`), sở hữu `Timer.periodic` + `Future.delayed` với `flowToken` vô hiệu callback lỗi thời; `buildGameScreenPresentation` thuần suy `GameScreenData`; event bridge → `showDialog`/`pop`; `PopScope(canPop:false)` route back theo `dialogState` |
 | **Ai sở hữu** | tầng screen thứ hai theo kiểu senior: VM chứa *mọi* quyết định game; widget chỉ render DTO + forward ý định; `AppNavigationController` (navigatorKey) điều hướng không context; `main()` khóa `portraitUp` |
 | **Hướng dữ liệu** | tap → `vm.submitAnswer` → `copyWith(phase: answeredPending)` → `notifyListeners` → `watch` rebuild → 1.5s `flowToken`-guarded reveal → `answeredRevealed` → 1s → `GameExplanationDialog` event → bridge `showDialog` → dismiss → `playing`/`gameOver`/`victory` |
-| **Còn thiếu** | lifelines + `usedFeatureButtons`/`visibleOptionTexts` (M20); dialog trong `Stack` thay `showDialog` (M21, FR-07); VM-side save thay pop-result (M22, FR-04); DRE reducer thay method-dispatch (M26) |
+| **Còn thiếu** | lifelines + `usedFeatureButtons`/`visibleOptionTexts` (M20); dialog trong `Stack` thay `showDialog` (M21); VM-side save thay pop-result (M22); DRE reducer thay method-dispatch (M26) |
 
 ### Bước 11 — Lifelines: state sở hữu "quyền dùng-một-lần" (M20)
 
@@ -147,7 +147,7 @@ Session state machine (M19) → state game = một object bất biến +
 | **Cơ chế** | `usedFeatureButtons: Set<GameFeatureButtonType>` immutable trên `GameSessionState` (ghi `{...used, type}` trong `copyWith`); `handleFeatureClick` kiểm hai lớp (`button.isEnabled` → `_canUseFeature` phase+used+walkAway-amount); `visibleOptionTexts` là bản copy có thể biến đổi (50:50 ghi `''`, bank gốc nguyên); `audiencePercentiles` = `Map<text,int>` hợp sẵn với ô trống (0% miễn phí); `_GameDialogHost` đọc `dialogState` *live* qua `ListenableBuilder` để AI dialog đổi loading→result trong một route; `resolvedResult` chốt `won`/`earned` tại transition (walk-away = `victory` phase + `won:false`) |
 | **Ai sở hữu** | VM sở hữu sổ đã-dùng + mutation + token/`_schedule` guard cho emit trễ; mapper suy `isEnabled`/`audiencePercentile` vào DTO; widget render `isEnabled` + forward `handleFeatureClick` — không giữ trạng thái |
 | **Hướng dữ liệu** | tap nút → `handleFeatureClick` → `_canUseFeature` → `copyWith(usedFeatureButtons + type, …)` → mapper rebuild `isEnabled:false` → nút mờ; AI: emit loading → `Future.delayed(700ms)` → guard `is!` + token → emit result trên **cùng dialogState slot** → host rebuild route đang mở |
-| **Còn thiếu** | visual nút = `IconData` phẳng thay painter/SVG (FR-34 → M28); dialog vẫn `showDialog` route (in-`Stack` layer M21); `resolvedResult` là interim carrier — persist qua repository ở M22; DRE reducer M26 |
+| **Còn thiếu** | visual nút = `IconData` phẳng thay painter/SVG (→ M28); dialog vẫn `showDialog` route (in-`Stack` layer M21); `resolvedResult` là interim carrier — persist qua repository ở M22; DRE reducer M26 |
 
 ### Bước 12 — In-`Stack` dialog layer + PopScope back choreography (M21)
 
@@ -155,9 +155,9 @@ Session state machine (M19) → state game = một object bất biến +
 |---|---|
 | **Vấn đề giải quyết** | `showDialog` route ôm riêng cơ chế hiển thị: event `GameDialogRequested` một-lần phải "đuổi kịp" route, back hệ thống pop route-dialog thay vì hỏi máy trạng thái, transition route không biết variant |
 | **Cơ chế** | `GameDialogLayer` = child cuối của `Stack` màn: `Positioned.fill` → `IgnorePointer(ignoring: Hidden)` → `AnimatedSwitcher(300ms, easeOut/InCubic, ValueKey(runtimeType))` → `_DialogBackdrop` (`ClipRect`→`BackdropFilter σ16`→`ColoredBox`→`Stack[opaque GD, SafeArea→Center→ConstrainedBox(375)]`) → 9 view callback-style; `PopScope(canPop:false, onPopInvokedWithResult)` → `_handleRouteBack` chia 3 nhánh theo `dialogState`; `_afterExit` chờ terminal animate-out rồi mới `goBack`/`playAgain`; `GameDialogRequested` + `_GameDialogHost` + `_showCurrentDialog`/`_dialogOpen` retired — `GameScreenUiEvent` chỉ còn `GameNavigateToMenuEvent` |
-| **Ai sở hữu** | `dialogState` vẫn VM-owned (A-18); layer chỉ *render* state + forward callback; back-policy nằm ở bridge theo bảng: Hidden→confirm-exit, Ladder/Ended/Victory→ignore, còn lại→dismiss |
+| **Ai sở hữu** | `dialogState` vẫn VM-owned ; layer chỉ *render* state + forward callback; back-policy nằm ở bridge theo bảng: Hidden→confirm-exit, Ladder/Ended/Victory→ignore, còn lại→dismiss |
 | **Hướng dữ liệu** | `copyWith(dialogState: X)` → `notifyListeners` → `watch` rebuild `GameDialogLayer(dialog: X)` → switcher swap theo `ValueKey(runtimeType)` → action nút gọi VM trực tiếp (không `pop(result)`) |
-| **Còn thiếu** | `goBack(GameResult)` vẫn là transport kết quả — VM-side `GameSaveResult` + profile progression ở M22 (FR-03/FR-04); `onShare` terminal → M27 (FR-33); `GameDialogShell` chrome (gradient/sheen/`QzdsGameButton`) → M28 (FR-32/FR-34); menu `showDialog` → M29; DRE reducer → M26 |
+| **Còn thiếu** | `goBack(GameResult)` vẫn là transport kết quả — VM-side `GameSaveResult` + profile progression ở M22 ; `onShare` terminal → M27 ; `GameDialogShell` chrome (gradient/sheen/`QzdsGameButton`) → M28 ; menu `showDialog` → M29; DRE reducer → M26 |
 
 ### Bước 13 — Save kết quả trong VM + `LevelConfig` progression (M22)
 
@@ -165,7 +165,7 @@ Session state machine (M19) → state game = một object bất biến +
 |---|---|
 | **Vấn đề giải quyết** | `Navigator.pop(GameResult)` để menu save là đường phụ sai ownership (result có thể mất cùng route); curve EXP learner (`correctAnswers × 50`, tăng ×1.5 mỗi cấp) sai hẳn senior; `expForNextLevel` là field lưu-thừa |
 | **Cơ chế** | `_emitWithSaveResult(next, earnedAmount, isWin)` tại 4 transition kết thúc (victory/gameOver/walkAway/backToMenu): check `_state.hasSavedResult` → emit `next.copyWith(hasSavedResult: true)` + `unawaited(_saveGameResult(…))`; `_saveGameResult` load profile → `+moneyWon/+gainedExp=earnedAmount` → `_applyLevelProgression` (`while` đốt `LevelConfig.getExpRequiredForLevel`, clamp 1..100) → `+gamesJoined/+gamesWon?/+totalQuestionCount` → repo save; `_syncSavedGameResult` là stub `debugPrint` (M25) |
-| **Ai sở hữu** | VM-side save boundary (A-22) — transition sở hữu persistence, cờ sống trong `GameSessionState`; `MenuLevelProgress.fromProfile` (D-39) suy `requiredExp`/`ratio`/`tier` từ profile thô — menu không còn đọc `expForNextLevel`/`expPercent`; `UserProfileData` về đúng 9 field senior |
+| **Ai sở hữu** | VM-side save boundary  — transition sở hữu persistence, cờ sống trong `GameSessionState`; `MenuLevelProgress.fromProfile`  suy `requiredExp`/`ratio`/`tier` từ profile thô — menu không còn đọc `expForNextLevel`/`expPercent`; `UserProfileData` về đúng 9 field senior |
 | **Hướng dữ liệu** | transition → `_emitWithSaveResult` → save (fire-and-forget) → repo `BehaviorSubject` emit → `MenuViewModel` → `_LevelCard` rebuild với `progress.ratio`/`formatted*` — route pop chỉ là `goBack()` trần |
 | **Còn thiếu** | sync thật (`_syncSavedGameResult`) → M24/M25; DRE `GameSaveResult` asyncOp thay `unawaited` call → M26; `shareResult` → M27; `LevelProgressCard` ring/glass/tier + `menuMaxLevelReached` label → M28 (max-level hiện lộ `maxExpRequirement` thô — cosmetic sót) |
 
@@ -174,7 +174,7 @@ Session state machine (M19) → state game = một object bất biến +
 | | |
 |---|---|
 | **Vấn đề giải quyết** | mọi repository trước M23 đều local (SharedPreferences trên một máy); bảng xếp hạng theo bản chất là dữ liệu nhiều-người → nguồn data phải chuyển từ static/local sang remote mà UI/VM không đổi một dòng; thiếu config vẫn phải chạy được chứ không crash |
-| **Cơ chế** | `SupabaseClientService.initialize` → `SupabaseClient?` sentinel; `main()` chọn impl duy nhất một chỗ `client == null ? DisabledLeaderboardRepository : SupabaseLeaderboardRepository` (A-24) sau cùng contract `LeaderboardRepository` (A-23); `LeaderboardDialogViewModel` render 4 variant `LeaderboardPopupState` sealed + `isRefreshing`; `_requestId` monotonic stale guard (D-42) chặn response cũ ghi đè |
+| **Cơ chế** | `SupabaseClientService.initialize` → `SupabaseClient?` sentinel; `main()` chọn impl duy nhất một chỗ `client == null ? DisabledLeaderboardRepository : SupabaseLeaderboardRepository`  sau cùng contract `LeaderboardRepository`; `LeaderboardDialogViewModel` render 4 variant `LeaderboardPopupState` sealed + `isRefreshing`; `_requestId` monotonic stale guard  chặn response cũ ghi đè |
 | **Ai sở hữu** | `main()` sở hữu lựa chọn impl — app-scope, đăng ký `Provider<LeaderboardRepository>.value` theo kiểu contract; `LeaderboardDialogViewModel` (dialog-scope) sở hữu load/refresh/retry + stale guard; repo sở hữu query chain `select/order/limit/eq` + `maybeSingle` + row mapping phòng thủ |
 | **Hướng dữ liệu** | menu row tap → `MenuLeaderboardRequested` → `showLeaderboardDialog` → VM `load()` → repo → Supabase view `public.leaderboard` (hoặc static khi Disabled) → `LeaderboardSnapshot` → popup states → UI; pull-to-refresh/`retry()` đi cùng đường, qua `_requestId` guard |
 | **Còn thiếu** | `AuthRepository` + uid thật cho `.eq('auth_uuid',…)` → M24; ghi/sync `public.users` → M25; DRE asyncOp/cancel thay `_requestId` guard → M26; rank badge/avatar/`LeaderboardRowStyle` parity senior → M28; `MenuDialogLayer` thay `showDialog` transport → M29 |
@@ -184,7 +184,7 @@ Session state machine (M19) → state game = một object bất biến +
 | | |
 |---|---|
 | **Vấn đề giải quyết** | identity là *state* — "bạn là ai" đứng đó cho tới khi đổi — không phải một màn đăng nhập hay một route; trước M24 mọi người chơi đều là guest vô danh: cần "session hiện tại" ở boundary mà pill/leaderboard/sync cùng đọc, và guest phải là giá trị chính danh chứ không phải `null`/`User?` vắng mặt |
-| **Cơ chế** | sealed `AuthSessionData` (`AuthSessionGuest` / `AuthSessionAuthenticated{uid,email,displayName,photoUrl}` + `isAuthenticated`) trên `authStateStream` — `BehaviorSubject` seeded đúng pattern M14 (Disabled: `AuthSessionGuest`; impl: seed `client.auth.currentUser`, `onAuthStateChange`→emit, `onError`→Guest); `AuthActionResult` value-type (private ctor `._` + redirecting `.success`/`.failure`) mang "outcome một lần của action" — tách bạch khỏi state stream; conditional DI `main()` chọn `DisabledAuthRepository`/`AuthRepositoryImpl` duy nhất một chỗ (nhánh A-24 của M23) |
+| **Cơ chế** | sealed `AuthSessionData` (`AuthSessionGuest` / `AuthSessionAuthenticated{uid,email,displayName,photoUrl}` + `isAuthenticated`) trên `authStateStream` — `BehaviorSubject` seeded đúng pattern M14 (Disabled: `AuthSessionGuest`; impl: seed `client.auth.currentUser`, `onAuthStateChange`→emit, `onError`→Guest); `AuthActionResult` value-type (private ctor `._` + redirecting `.success`/`.failure`) mang "outcome một lần của action" — tách bạch khỏi state stream; conditional DI `main()` chọn `DisabledAuthRepository`/`AuthRepositoryImpl` duy nhất một chỗ (nhánh conditional-DI của M23) |
 | **Ai sở hữu** | `AuthRepository` sở hữu session stream + 6 method (contract); `main()` sở hữu lựa chọn impl — `DisabledAuthRepository` trả guest + `configurationError` khi thiếu dart-define, `AuthRepositoryImpl` bọc Supabase/Google v7 khi đủ config; `MenuAuthActionCoordinator` sở hữu chuỗi post-action `signIn*→loadAuthState→guard→syncUserProfile` và `signOut→resetUserProfile` một chỗ; hai dialog-scoped VM sở hữu `_isLoading` single-flight + `SnackBar`/`Dismiss` event |
 | **Hướng dữ liệu** | pill tap → `requestAuthAction` route theo session (guest → `MenuAuthRequested` → auth dialog; authed → `MenuSignOutRequested` → sign-out dialog) → dialog VM gọi coordinator → repo method → `authStateStream` emit → `MenuViewModel` (seed + sub) → pill/menu re-render; sign-out success → `resetUserProfile` → profile stream về mặc định → pill về "Khách" |
 | **Còn thiếu** | `UserProfileSyncRepositoryImpl` ghi/merge `public.users` + emit `ProfileSyncStateData` → M25 (Disabled no-op giữ call-site đúng); `showDialog` transport → `MenuDialogLayer` + `MenuDialogAuth`/`MenuDialogSignOut` state → M29; DRE `asyncOp`/cancel thay `_isLoading` tay → M26; verify provider sống — `LIVE_AUTH_FLOW: NOT_PERFORMED` |
@@ -207,13 +207,13 @@ Session state machine (M19) → state game = một object bất biến +
 | **Cơ chế** | `DreChangeNotifier<GameState, GameAction, GameEffect, GameAsyncOp>`: `dispatch(action)` → `reducer.reduce(state, action)` trả `DreResult{state, effects, asyncOp}` → swap state → `notifyListeners()` chỉ khi instance đổi → đẩy effects vào broadcast stream → `unawaited(executeAsyncOp(op, postReduceSnapshot))`; `GameReducer` chia 4 `part` file theo flow domain (session/answer/feature/timer) với private `extension`; `flowToken` sống TRONG `GameState` — `*Elapsed` actions mang token chụp lúc schedule, reducer no-op khi `flowToken != state.flowToken` (stale = action bị loại, không phải exception); `_withSaveResult` set `hasSavedResult` + emit `GameSaveResult` op đúng một lần |
 | **Ai sở hữu** | reducer = mọi transition + guard + chấm điểm (thuần, test không cần Flutter); VM = timer/future/repo/stream plumbing (`_handleEffect` bridge part file, `executeAsyncOp` switch → `_saveGameResult`); repository = persistence; UI = render `screenData`/`dialogState` + forward taps (không đổi một dòng) |
 | **Hướng dữ liệu** | UI tap → `dispatch(GameAction)` → `DreResult` → state mới (notify) + effects → bridge: `GameStartTimer/Pause/Stop` → `_timer` cancel/periodic, `GameSchedule*` → `Future.delayed` → re-dispatch `*Elapsed(token)` (guard `_isDisposed`), `GameNavigateToMenu` → `_events`; asyncOp `GameSaveResult` → `_saveGameResult` → `_syncSavedGameResult` (M25 y nguyên) |
-| **Còn thiếu** | share plumbing (`GameShareRequested`/`GameShareResult`/`GameShareResultEvent`/`shareResult`) → M27 (FR-33); notification/share/package_info → M27; visual polish → M28; `MenuDialogLayer` → M29 |
+| **Còn thiếu** | share plumbing (`GameShareRequested`/`GameShareResult`/`GameShareResultEvent`/`shareResult`) → M27 ; notification/share/package_info → M27; visual polish → M28; `MenuDialogLayer` → M29 |
 
 ### Bước 18 — Platform boundary: contract → impl → plugin → OS (M27)
 
 | | |
 |---|---|
-| **Vấn đề giải quyết** | Ba "lỗ hổng platform": notification toggle ghi flag nhưng không ai lên lịch; onboarding giả vờ OS luôn đồng ý (`onNotificationPermissionResult(true)` inline — FR-27); dialog kết thúc không có share (FR-33) |
+| **Vấn đề giải quyết** | Ba "lỗ hổng platform": notification toggle ghi flag nhưng không ai lên lịch; onboarding giả vờ OS luôn đồng ý (`onNotificationPermissionResult(true)` inline); dialog kết thúc không có share  |
 | **Cơ chế** | `LocalNotificationService` contract 5 method → `LocalNotificationServiceImpl` bọc `flutter_local_notifications` + `timezone`/`flutter_timezone` (`tz.setLocalLocation`, UTC fallback); `zonedSchedule` id 1001 + `DateTimeComponents.time` + `inexactAllowWhileIdle` + `_nextDailyTime` rollover; permission qua `resolvePlatformSpecificImplementation` + `!kIsWeb` fallback; `SettingsNotificationCoordinator` = "làm-việc-OS trước, save sau, hỏng thì hoàn-tác-best-effort" (enable: schedule→save / disable: cancel→save / updateTime: conditional-reschedule); `_hasNotificationPermission` trong VM state — `effectiveNotificationEnabled` = flag AND permission |
 | **Ai sở hữu** | widget = forward tap + đọc `effectiveNotificationEnabled`; VM = permission state + orchestrate qua coordinator; coordinator = chuỗi schedule/save + rollback; service contract = ranh giới duy nhất plugin được chạm; `PackageInfo.fromPlatform` qua `loadAppVersion` seam → `v$appVersion` |
 | **Hướng dữ liệu** | toggle → `requestPermission` → denied: persist-off + `notificationPermissionRequired` snackbar / granted: `coordinator.enable` → `scheduleDaily` → `saveUserSettings`; share tap → `dispatch(GameShareRequested)` → reducer → `GameShareResult` effect → bridge → `GameShareResultEvent` → screen `SharePlus.instance.share(ShareParams(text, sharePositionOrigin))` → catch → `Clipboard.setData` + snackbar |
@@ -225,17 +225,17 @@ Session state machine (M19) → state game = một object bất biến +
 |---|---|
 | **Vấn đề giải quyết** | Game chạy đúng nhưng *trông* không giống senior: timer là text phẳng (field `timerProgress` đã có nhưng không ai render), money là text thường (`animationTrigger` tồn tại không consumer), lifeline = `IconData` trên nền phẳng, dialog = container `MenuTokens` tự chế; màu/khoảng-cách/cỡ chữ rải rác — không có nguồn-đúng-duy-nhất |
 | **Cơ chế** | `AppTokens` (318d, `GoogleFonts` type ramp + `QzdsButtonScale` + gradients + `screenDesignWidth=375`) + `AppAssets` subset-8 const → `DesignFrame` cap-bề-rộng; `AnimationController`×2 trên timer: progress-tween (1s, `didUpdateWidget` forward-vs-snap) + critical-pulse (`repeat(reverse)`, bounds 1.0→1.08, chỉ khi `progress ≤ 0.2`); `_PillProgressPainter` vẽ stadium `Path` + gradient stroke (`extractPath`/`computeMetrics` cho dash); `GameMoneyAmountMotion` — chỉ animate khi `animationTrigger > oldTrigger` (đổi amount thường → snap), 260ms count + glitch `ShaderMask`; `GameFeatureButton` painter rotating-gradient + ripple controller + `SvgPicture.asset(iconAsset)`; `GameDialogShell` (BackdropFilter scrim + `headerSheen` + `title.toUpperCase()`) + `QzdsGameButton`/`GameDialogButton`/`GameDialogMoneyRow`; reduce-motion đúng-chỗ-senior-có (`MediaQuery.disableAnimations → Duration.zero` ở money/dialog/blink — pulse timer + sheen nút *không* honor, verbatim parity) |
-| **Ai sở hữu** | `AppTokens`/`AppAssets` = nguồn duy nhất màu/cỡ/motion/asset-path (A-38); `AnimationController` sống trong `State` + `vsync` + `dispose` (widget sở hữu motion, VM không biết); painter sở hữu *vẽ* (không widget-tree); mapper vẫn sở hữu data (icon → `iconAsset` path — DTO đổi `IconData`→`String` là boundary đổi duy nhất) |
+| **Ai sở hữu** | `AppTokens`/`AppAssets` = nguồn duy nhất màu/cỡ/motion/asset-path ; `AnimationController` sống trong `State` + `vsync` + `dispose` (widget sở hữu motion, VM không biết); painter sở hữu *vẽ* (không widget-tree); mapper vẫn sở hữu data (icon → `iconAsset` path — DTO đổi `IconData`→`String` là boundary đổi duy nhất) |
 | **Hướng dữ liệu** | state→mapper→DTO (`timerProgress`/`animationTrigger`/`iconAsset` đã có từ M19–M20, M28 mới *render* chúng) → `didUpdateWidget` đọc prop-mới → controller `forward(from:0)` hoặc snap → `AnimatedBuilder`/painter rebuild — VM không đổi một dòng (visual là lớp cuối của pipeline đã đúng) |
-| **Còn thiếu** | `MenuTokens` → `AppTokens` migration cho menu widgets + `SettingItemData.iconAsset`/`_SettingIconBadge` (FR-30) + `_SettingsAccountRow` chrome (FR-28-residual) + onboarding visuals `OnboardingTokens`/`BackdropFilter`-scrim/`AnimatedSwitcher`-indicator (FR-32) + `MenuDialogLayer` transport + full asset parity → **M29 final sweep**; `REAL_DEVICE_VISUAL_CHECK: NOT_PERFORMED` |
+| **Còn thiếu** | `MenuTokens` → `AppTokens` migration cho menu widgets + `SettingItemData.iconAsset`/`_SettingIconBadge`  + `_SettingsAccountRow` chrome  + onboarding visuals `OnboardingTokens`/`BackdropFilter`-scrim/`AnimatedSwitcher`-indicator  + `MenuDialogLayer` transport + full asset parity → **M29 final sweep**; `REAL_DEVICE_VISUAL_CHECK: NOT_PERFORMED` |
 
-### Bước 20 — Senior alignment sweep: menu dialog layer + fidelity zero-debt (M29)
+### Bước 20 — Senior alignment sweep: menu dialog layer + khớp-senior zero-debt (M29)
 
 | | |
 |---|---|
 | **Vấn đề giải quyết** | Game đã có dialog in-`Stack` từ M21 nhưng *menu* vẫn mở dialog bằng `showDialog` route + 4 event một-lần (`MenuSettingsRequested`…) — hai cơ chế cho cùng một ý định; đồng thời còn sót mọi simplification đã-ghi-nợ: `SettingItemData.icon` (IconData), leaderboard thiếu avatar/rank assets, onboarding visual rút gọn, `MenuTokens` shim, 31 ARB value khác casing-convention senior |
 | **Cơ chế** | `MenuDialogState` sealed 5-variant (`None/Leaderboard/Settings/Auth/SignOut`, `transitionKey=runtimeType`) sống trong `MenuScreenViewModel.dialogState` — dialog là *state*, không phải event; `MenuDialogLayer` trong `Stack` render scope qua `AnimatedSwitcher` `ValueKey(transitionKey)`; `MenuScreenView` `PopScope(canPop: !isVisible)` + `_dialogDismissLocked` cho sign-out loading; `menu_screen.dart` 87d giữ đúng 2-event bridge (`MenuGameRequested`/`MenuSnackBarRequested`); `requestAuthAction` = duy nhất dispatch còn lại: session quyết Auth-vs-SignOut |
-| **Ai sở hữu** | VM sở hữu `dialogState` (mọi `requestXxx` chỉ set state); view sở hữu dismiss-lock + PopScope wiring; scope×4 sở hữu dialog-lifetime VM (A-15); `AppTokens` sở hữu mọi giá trị visual (`MenuTokens` đã xoá — zero reference); `AppAssets` 45 consts = mọi đường-dẫn asset |
+| **Ai sở hữu** | VM sở hữu `dialogState` (mọi `requestXxx` chỉ set state); view sở hữu dismiss-lock + PopScope wiring; scope×4 sở hữu dialog-lifetime VM ; `AppTokens` sở hữu mọi giá trị visual (`MenuTokens` đã xoá — zero reference); `AppAssets` 45 consts = mọi đường-dẫn asset |
 | **Hướng dữ liệu** | tap → `viewModel.requestSettingsDialog()` → `_dialogState = MenuDialogSettings` → `notifyListeners` → `MenuDialogLayer` rebuild switch → `MenuSettingsDialogScope` mount → dialog VM `loadSettings`; back/outside-tap → `dismissCurrentDialog()` → `MenuDialogNone` → unmount; dismiss-lock chỉ chặn *dismiss*, không chặn emit |
 | **Còn thiếu** | không còn simplification được ghi nợ — `lib/` ⊆ `lib/` senior (6 preview catalog cố ý không port); `REAL_DEVICE_*`/`LIVE_*` `NOT_PERFORMED` vẫn đứng (course-level documented) |
 

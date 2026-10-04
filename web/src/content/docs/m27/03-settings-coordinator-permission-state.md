@@ -321,7 +321,7 @@ enum SettingsSnackBarMessage {
   loadFailed,
   updateFailed,
   notificationTimeUpdateFailed,
-  // M27: xin quyền thông báo bị từ chối (FR-27 converge).
+  // M27: xin quyền thông báo bị từ chối.
   notificationPermissionRequired,
 }
 ```
@@ -401,7 +401,7 @@ Future<String> loadSettingsAppVersion() async {
 ```dart
   String get appVersion => _appVersion;
 
-  /// FR-27 converge — senior AND flag với quyền OS: toggle "bật" chỉ
+  /// Senior AND flag với quyền OS: toggle "bật" chỉ
   /// thật sự bật khi permission granted; mất quyền → switch tự tắt.
   bool get effectiveNotificationEnabled =>
       _settings.notificationEnabled && _hasNotificationPermission;
@@ -476,7 +476,7 @@ effectiveNotificationEnabled` — flag đơn thành AND-gate.)
 ```dart
   /// Chọn xong giờ → senior: `coordinator.updateTime` (reschedule nếu
   /// notifications đang effective rồi mới persist; lỗi → restore lịch
-  /// cũ + snackbar). M27 — FR-27.
+  /// cũ + snackbar).
   Future<void> onNotificationTimeSelected(int hour, int minute) async {
     _timePickerVisible = false;
     notifyListeners();

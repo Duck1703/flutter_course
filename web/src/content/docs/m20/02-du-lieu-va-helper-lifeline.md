@@ -248,7 +248,7 @@ enum GameFeatureButtonType {
 }
 
 /// Một nút trên thanh lifeline — senior `GameFeatureButtonData`.
-/// FR-34: `icon` là `IconData` thay `String iconAsset` của senior
+/// `icon` là `IconData` thay `String iconAsset` của senior
 /// (learner chưa có pipeline SVG/`flutter_svg` — độ sâu visual hội
 /// tụ ở M28); `type`/`semanticLabel`/`isEnabled`/`copyWith` giữ
 /// đúng shape senior.
@@ -642,7 +642,7 @@ bảng luật sẽ đọc được code, và test chỉ là bảng đó dưới 
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. `audiencePercentiles` kiểu `Map<String,int>?` — tại sao key là
    *text* đáp án chứ không phải index?

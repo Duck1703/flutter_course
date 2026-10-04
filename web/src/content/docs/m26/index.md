@@ -14,10 +14,8 @@ Cuối M25,
 `extends
 ChangeNotifier`
  + 
-`_emit`
-/
-`_schedule`
-/
+`_emit`/
+`_schedule`/
 `_emitWithSaveResult`
  tay —
 733 dòng trộn transition, timer, delay, repository và lifecycle
@@ -56,8 +54,7 @@ persistence là async-op
 , widget
   test, mọi call-site compile y nguyên: refactor kiến trúc,
   contract đông cứng. Chỉ trừ 
-`shareResult`
-/
+`shareResult`/
 `GameShare*`
  — cố ý để
  M27.
@@ -66,93 +63,13 @@ persistence là async-op
 ## Bản đồ bài học
 
 | Bài | Nội dung | Checkpoint |
-|-----|----------|-----------|
+| ----- | ---------- | ----------- |
 | [01](/m26/01-vi-sao-mutation-tay-dat-gioi-han/) | Felt problem: 733 dòng trộn 4 chủng việc; DRE trong repo này = action/effect/asyncOp/reducer (repo không expansion); diagram trước/sau; counter reducer độc lập | **236/236** (+0 — đọc hiểu) |
-| [02](/m26/02-core-dre-primitives/) | 
-`lib/core/dre/`
-: 
-`abstract interface class`
- markers + generic bounds 
-`A extends DreAction`
-; dispatch 5 nhịp — reduce → swap → 
-`!=`
- notify → effects broadcast → 
-`unawaited`
- asyncOp post-reduce snapshot + 
-`onAsyncOpError`
-; 
-`@protected`
-; 
-`dre_change_notifier_test.dart`
- 5 test | **241/241** (+5) |
-| [03](/m26/03-game-state-actions-effects/) | 
-`view_models/game/dre/`
-: 
-`GameState`
- 13 field — 
-`flowToken`
- thành state vs VM field cũ; 
-`List/Map/Set.unmodifiable`
-; 
-`initial`
- + 
-`copyWith`
-/
-`clear*`
-; 13 
-`GameAction`
- / 7 
-`GameEffect`
- / 1 
-`GameAsyncOp`
- sealed + barrel 
-`game_dre_contract.dart`
-; unused-but-compiling = scaffold | **241/241** (+0) |
-| [04](/m26/04-game-reducer/) | 
-`reducer/game_reducer.dart`
- + 
-`part`
-/
-`part of`
- + 4 private 
-`extension _GameReducer*Flow`
- (
-`part`
-/
-`part of`
- reuse từ M24 — mới: private 
-`extension`
- qua part files); switch exhaustive 13 arm; guard 
-`_result(state)`
- same-instance; 
-`_withSaveResult`
- → 
-`GameSaveResult`
- op idempotent; 10 reducer test thuần — không Flutter, không fake | **251/251** (+10) |
-| [05](/m26/05-vm-migration-va-bridges/) | VM rewrite 733→166 dòng: 
-`extends DreChangeNotifier<…>`
-; ctor wire 
-`GameReducer`
- + 
-`GameState.initial`
-; 
-`effects.listen(_handleEffect)`
-; public = 
-`dispatch`
- one-liners; 
-`executeAsyncOp`
- → 
-`_saveGameResult`
-; 2 
-`part 'bridge/…'`
-; xoá 
-`GameSessionState`
- khỏi 
-`data/`
- | **251/251** (+0 — behavior-preserving) |
-| [06](/m26/06-regression-va-tong-ket/) | 3 regression test ghim behavior qua refactor: submit-ignored-intro, stale-AI-result-sau-dismiss, terminal-save-once qua 
-`backToMenu`
- lặp; recap reducer/VM/repo/UI; → CONVERGED | **254/254** (+3) |
+| [02](/m26/02-core-dre-primitives/) | `lib/core/dre/`: `abstract interface class` markers + generic bounds `A extends DreAction`; dispatch 5 nhịp — reduce → swap → `!=` notify → effects broadcast → `unawaited` asyncOp post-reduce snapshot + `onAsyncOpError`; `@protected`; `dre_change_notifier_test.dart` 5 test | **241/241** (+5) |
+| [03](/m26/03-game-state-actions-effects/) | `view_models/game/dre/`: `GameState` 13 field — `flowToken` thành state vs VM field cũ; `List/Map/Set.unmodifiable`; `initial` + `copyWith` / `clear*`; 13 `GameAction` / 7 `GameEffect` / 1 `GameAsyncOp` sealed + barrel `game_dre_contract.dart`; unused-but-compiling = scaffold | **241/241** (+0) |
+| [04](/m26/04-game-reducer/) | `reducer/game_reducer.dart` + `part` / `part of` + 4 private `extension _GameReducer*Flow` ( `part` / `part of` reuse từ M24 — mới: private `extension` qua part files); switch exhaustive 13 arm; guard `_result(state)` same-instance; `_withSaveResult` → `GameSaveResult` op idempotent; 10 reducer test thuần — không Flutter, không fake | **251/251** (+10) |
+| [05](/m26/05-vm-migration-va-bridges/) | VM rewrite 733→166 dòng: `extends DreChangeNotifier<…>`; ctor wire `GameReducer` + `GameState.initial`; `effects.listen(_handleEffect)`; public = `dispatch` one-liners; `executeAsyncOp` → `_saveGameResult`; 2 `part 'bridge/…'`; xoá `GameSessionState` khỏi `data/` | **251/251** (+0 — behavior-preserving) |
+| [06](/m26/06-regression-va-tong-ket/) | 3 regression test ghim behavior qua refactor: submit-ignored-intro, stale-AI-result-sau-dismiss, terminal-save-once qua `backToMenu` lặp; recap reducer/VM/repo/UI; → khớp senior | **254/254** (+3) |
 
 ## Kết quả cuối milestone
 
@@ -193,8 +110,7 @@ persistence là async-op
 `dialogState`
 ,
   
-`uiEvents`
- — 
+`uiEvents` —
 `game_screen.dart`
  + widget tests +
   
@@ -218,7 +134,7 @@ persistence là async-op
  + 
 `GameScreenUiEvent`
  — khớp layout senior.
-- FR đóng: — bản trung gian 
+- Khớp cuối: bản trung gian 
 `ChangeNotifier`
  +
   manual-guards → 
@@ -241,56 +157,16 @@ persistence là async-op
 ## Điều milestone này cố ý chưa làm
 
 | Chưa làm | Milestone sở hữu | Vì sao |
-|---|---|---|
-| 
-`GameShareRequested`
- action + 
-`GameShareResult`
- effect + 
-`GameShareResultEvent`
- + 
-`shareResult`
- | **M27** | SharePlus/plumbing — reducer switch cố ý thiếu arm share; đừng flag "missing case" |
-| Notification permission/scheduling + version text 
-`v$appVersion`
- | **M27** (residual) | platform extras chưa vào scope |
-| Visual parity: 
-`SettingsDialogShell`
-/
-`OnboardingGameButton`
-/icon-asset/
-`LevelProgressCard`
- | **M28** (32/34) | chrome hiện tại đủ cho behavior; polish gộp đợt visual |
-| 
-`MenuDialogLayer`
- + 
-`MenuDialogAuth`
-/
-`MenuDialogSignOut`
- state | **M29** | transport 
-`showDialog`
- giữ — cùng scaffold settings/leaderboard |
-| 
-`onAsyncOpError`
- override trong game VM | — | senior game không override — 
-`_saveGameResult`
- tự try/catch nuốt+log; hook chỉ là extension point |
-| Rollback/retry cho 
-`GameSaveResult`
- fail | — | senior không có: lỗi save log+swallow — save là best-effort, lần sau là retry tự nhiên |
+| --- | --- | --- |
+| `GameShareRequested` action + `GameShareResult` effect + `GameShareResultEvent` + `shareResult` | **M27** | SharePlus/plumbing — reducer switch cố ý thiếu arm share; đừng flag "missing case" |
+| Notification permission/scheduling + version text `v$appVersion` | **M27** (residual) | platform extras chưa vào scope |
+| Visual parity: `SettingsDialogShell` / `OnboardingGameButton` /icon-asset/ `LevelProgressCard` | **M28** (32/34) | chrome hiện tại đủ cho behavior; polish gộp đợt visual |
+| `MenuDialogLayer` + `MenuDialogAuth` / `MenuDialogSignOut` state | **M29** | transport `showDialog` giữ — cùng scaffold settings/leaderboard |
+| `onAsyncOpError` override trong game VM | — | senior game không override — `_saveGameResult` tự try/catch nuốt+log; hook chỉ là extension point |
+| Rollback/retry cho `GameSaveResult` fail | — | senior không có: lỗi save log+swallow — save là best-effort, lần sau là retry tự nhiên |
 | Middleware/store/time-travel/debugger | — | DRE là project-local, không phải port Redux — đừng import tư tưởng senior không có |
-| 
-`==`
-/equality cho 
-`GameState`
- | — | senior không override: 
-`!=`
- trong dispatch là identity — mọi instance mới notify, guard 
-`_result(state)`
- same-instance im lặng |
-| DRE hoá menu/settings/onboarding VMs | — | senior chỉ áp DRE cho game VM; các VM còn lại giữ 
-`ChangeNotifier`
- tay — đúng parity |
+| `==` /equality cho `GameState` | — | senior không override: `!=` trong dispatch là identity — mọi instance mới notify, guard `_result(state)` same-instance im lặng |
+| DRE hoá menu/settings/onboarding VMs | — | senior chỉ áp DRE cho game VM; các VM còn lại giữ `ChangeNotifier` tay — đúng parity |
 
 ## Checkpoint tổng kết
 
@@ -346,8 +222,7 @@ persistence là async-op
 Trả lời được năm câu này là đủ:
 
 1. **Học gì?** 
-`part`
-/
+`part`/
 `part of`
  + private 
 `extension`
@@ -404,14 +279,11 @@ Trả lời được năm câu này là đủ:
 `backToMenu`
  ×2 → save một lần, nav vẫn emit.
 5. **Cần ở đâu sau?** M27 thêm 
-`GameShareRequested`
-/
+`GameShareRequested`/
  
-`GameShareResult`
-/
+`GameShareResult`/
 `shareResult`
- + platform extras (
- /28); M28 visual parity; M29 
+ + platform extras (visuals → M28); M28 visual parity; M29 
 `MenuDialogLayer`
 . Shape
    

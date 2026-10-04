@@ -185,7 +185,7 @@ factory UserSettingsData.fromMap(Map<String, Object?> map) {
 whitelist dưới đây — để nguyên cả hai sẽ thành unused-element warning.
 
 ```dart
-/// FR-26 (CONVERGED tại M17): y hệt senior `_supportedLanguageCode`
+/// Converged tại M17: y hệt senior `_supportedLanguageCode`
 /// — không phải String HOẶC không nằm trong whitelist → null.
 static String? _supportedLanguageCode(Object? value) {
   if (value is! String || !SupportedLanguageData.isSupportedCode(value)) {
@@ -338,12 +338,12 @@ trong store, dự đoán `MaterialApp.locale` cuối cùng và điều người
 dùng thấy:
 
 | `languageCode` trong store | `Locale?` truyền vào | App hiển thị ngôn ngữ? |
-|---|---|---|
-| `'vi'` | | |
-| `'en'` | | |
-| `'fr'` | | |
-| `null` (chưa bao giờ ghi) | | |
-| `'vi'` rồi user gạt sang `'en'` trong dialog | | |
+| --- | --- | --- |
+| `'vi'` |  |  |
+| `'en'` |  |  |
+| `'fr'` |  |  |
+| `null` (chưa bao giờ ghi) |  |  |
+| `'vi'` rồi user gạt sang `'en'` trong dialog |  |  |
 
 Kèm: với hàng cuối, trace đường đi đầy đủ từ `save` tới rebuild —
 nêu tên 5 điểm chạm (repository → stream → seed/builder → locale →
@@ -367,7 +367,7 @@ của `languageCode` đã persist, suy ra mỗi lần stream emit.
 
 </details>
 
-## Kiểm tra hiểu biết## Kiểm tra hiểu biết
+## Kiểm tra hiểu biết
 
 1. Vì sao `locale` là `Locale?` (nullable) thay vì `Locale`?
 2. `languageCode` đổi lúc app đang chạy — trace đường đi từ `save`
