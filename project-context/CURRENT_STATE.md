@@ -1,9 +1,11 @@
 # Current State
 
 Project: AI Millionaire — guided Flutter course
-Phase: Step 24 — M16–M22 targeted pedagogy remediation — COMPLETE.
-M01–M29 course complete; early+mid-course learner practice remediated.
-Awaiting supervisor review before Step 25.
+Phase: Step 27 — release closeout — COMPLETE.
+M01–M29 course complete; Steps 21–26A pedagogy audit/remediation chain
+closed; release gate CLEARED (non-blocking editorial notes only);
+accepted content integrated to `main` and pushed to `origin/main`.
+M30 not started.
 
 ## Completed
 
@@ -543,7 +545,10 @@ Awaiting supervisor review before Step 25.
   (onboarding visuals → M29); FR-30/FR-28-residual/FR-31
   residuals → M29. 259→309, site 159. Replay 6/6
   byte-identical. `REAL_DEVICE_VISUAL_CHECK: NOT_PERFORMED`).
-- Website deployment (Vercel/static host) — deferred, local build only.
+- Website deployment — no existing configuration (verified Step 27:
+  no `vercel.json`/CI/`site` URL); Vercel static deploy of `web/` is
+  the documented target; release content ready for manual or connected
+  deployment.
 - Visual QA (browser screenshot) still not performed; build/route/content
   sanity verified via HTTP + markup checks.
 
@@ -644,12 +649,49 @@ Awaiting supervisor review before Step 25.
   learner app zero diff, M01–M15/M23–M29 untouched, senior untouched,
   no M30.
   Report: `report/STEP-24-M16-M22-TARGETED-PEDAGOGY-REMEDIATION.md`.
+- Step 25: **M23–M29 derive-first + late pedagogy remediation** —
+  COMPLETE on `remediation/step25-m23-m29-derive-first`, checkpoint
+  `9323e57`. Derive-first prompts landed at m23/02, m24/02, m25/03,
+  m26/03, m27/03, m28/01, m29/01/04/05/06; m26/04 five-phase load map;
+  m28/06 A/B/C structure; ~1,106 prose registry-ID tokens removed;
+  ~3,450 hyphenation normalizations. Per-milestone dual review + Atlas
+  approval — all PASS. Regression: analyze clean, 396/396 tests,
+  `flutter build web` PASS, site 167 pages, learner app unchanged.
+  Evidence: `AI_HANDOFF/work/step-25-pedagogy-remediation/`.
+- Step 26: **Independent full-course pedagogy re-audit** — COMPLETE
+  (read-only audit of `9323e57`, content revision `48f8f30f9cc62a22`;
+  artifacts committed inside `79249c6`). Verdict
+  `NOT_RELEASE_READY_PEDAGOGY`: 1 PEDAGOGICAL_BLOCKER (m12/02) + 12
+  LEARNING_RISK + ~56 FRICTION + ~35 NOTE. Ratings 67/52/12/1.
+  Reports: `report/STEP-26-FINAL-FULL-COURSE-REAUDIT.md`,
+  `STEP-26-PEDAGOGY-FINDINGS-REGISTER.md`, `STEP-26-LESSON-PEDAGOGY-HEATMAP.md`.
+- Step 26A: **Targeted final remediation** — COMPLETE on
+  `remediation/step26a-final-release-blockers`, checkpoint `79249c6`,
+  frozen CONTENT_REVISION `3c62ec07839270` (EOL-invariant fingerprint
+  `a9ab104c665a0605`). All 14 Step-26 plan items resolved; 3
+  remediation-discovered M12 defects fixed (m12/01 context.read step +
+  widget-test `AppDependencyScope` seam, m12/03 lazy/eager); ~50
+  broken tables repaired; governance vocabulary removed from learner
+  prose. Argus PASS + Pedagogy `PEDAGOGY_PASS_WITH_NOTES` on the same
+  frozen revision. Regression: analyze clean, 396/396, build web PASS,
+  167 pages. Learner app zero diff; senior untouched; no M30.
+  Report: `report/STEP-26A-TARGETED-FINAL-REMEDIATION.md`.
+- Step 27: **Release closeout** — Step-26A gate independently
+  re-verified from repository+report evidence (blockers 0, risks 0,
+  both reviews PASS on the same frozen revision); content freeze
+  reproduced; `main` fast-forwarded `97e85ed`→`79249c6`; full
+  regression green on main; `origin/main` synced. Deployment: no
+  existing configuration — Vercel static deploy of `web/` remains the
+  documented future target (`WEBSITE_ARCHITECTURE.md`); content ready
+  for manual or connected deployment. Artifacts:
+  `AI_HANDOFF/work/step-27-release-closeout/`.
+  Report: `report/STEP-27-RELEASE-CLOSEOUT.md`.
 
 ## Next recommended task
-Step 24 COMPLETE pending supervisor review. Step-25 candidate:
-M23–M29 derive-first + late learner-noise + advanced cognitive-load
-remediation (late-band Step-21 findings, incl. M26 DRE port-order,
-M28 visual convergence dumps, M29/01 port-process-as-mental-model).
-Remaining human-facing options: device/live verification passes
-(`REAL_DEVICE_*`, `LIVE_SUPABASE_*` NOT_PERFORMED), publish/deploy
-authorization, or new-scope requests.
+Course M01–M29 `RELEASE_READY_WITH_NOTES`; source release closed
+(`origin/main` synced at the Step-27 closeout state). Options for the
+next human decision: post-release editorial polish backlog
+(`AI_HANDOFF/work/step-27-release-closeout/post-release-editorial-backlog.md`),
+production deployment (Vercel static — no existing configuration),
+production monitoring / learner feedback, or project archival.
+M30 does not exist on the roadmap.
