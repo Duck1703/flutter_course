@@ -232,6 +232,53 @@ M05 đã "giữ sẵn" trong `main()`.
    pattern đó giải quyết vấn đề gì? — *Cho phép `await getInstance()`
    trước khi có object: constructor đồng bộ không chứa await được.*
 
+## Tự làm (PREDICT)
+
+Sau khi `ProfileStore` đã nối vào app: chơi một ván xong (profile được
+save), rồi **kill và mở lại app**. Với từng thứ sau, dự đoán **giữ hay
+reset** — và nói vì sao:
+
+1. `username`, `level`, EXP, tiền thắng, số ván (profile);
+2. `_playTapCount` (đếm bấm PLAY);
+3. `_soundOn` (cờ âm thanh);
+4. Đồng hồ phiên `Stream.periodic` (số giây);
+5. Trạng thái đang tải (loading → done).
+
+Sau đó thử thật: chơi một ván, kill app (stop + run lại), đối chiếu.
+
+**Câu nâng:** `_soundOn` và `_playTapCount` đang reset sau restart —
+nếu muốn chúng cũng sống sót, đâu là thay đổi *nhỏ nhất* về mặt kiến
+trúc? (Chỉ nêu hướng, không implement — quyết định đó chính là bản
+chất của "chọn cái gì xứng đáng persist".)
+
+:::note[Gợi ý]
+Chỉ những gì đi qua `ProfileStore` mới sống sót — storage là một key
+duy nhất chứa một model duy nhất. Mọi `State` field không được ghi vào
+prefs đều chết theo process. Với câu nâng: `ProfileStore` đọc/ghi gì,
+và hai field kia hiện sống ở đâu?
+:::
+
+<details><summary>Đáp án</summary>
+
+1. **Giữ** — chúng là field của `UserProfileData`, object được
+   `toMap`/`jsonEncode`/`setString` và `fromMap` lại khi load.
+2. **Reset** — `int _playTapCount` là State-field thuần UI, không nằm
+   trong model → chết theo process.
+3. **Reset** — `_soundOn` cũng là State-field; nó *nên* persist (đó là
+   preference thật), nhưng hiện chưa đi qua store → reset.
+4. **Reset** — stream bắt đầu lại từ `initialData` (subscription mới
+   khi widget vào cây); giây "phiên" theo định nghĩa là phiên mới.
+5. **Reset** — loading là vòng đời `FutureBuilder`, luôn bắt đầu lại.
+
+Câu nâng: đưa `_soundOn`/`_playTapCount` (nếu xứng đáng) **vào model
+persisted** — `UserProfileData` thêm field, `toMap`/`fromMap` thêm key,
+State đọc từ profile thay vì field riêng. Đó là đáp án đúng hướng —
+persist nằm ở *model*, không phải "gọi setString ở chỗ khác". (Course
+cố ý không làm: `soundOn` đúng ra sẽ thuộc settings repository —
+M14+; bài chỉ yêu cầu nhận ra *hướng*.)
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - **Interface `ProfileRepository` + `BehaviorSubject` stream** — senior

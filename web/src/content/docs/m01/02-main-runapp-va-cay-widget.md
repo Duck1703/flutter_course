@@ -84,6 +84,53 @@ cây**. Cú pháp `Something.of(context)` (sẽ gặp sau) đi *lên* cây từ 
 Đừng bao giờ hình dung context như `applicationContext`.
 :::
 
+## Ví dụ độc lập — `ProfileChip`
+
+Trước khi build màn hình thật, nhìn khái niệm "widget = cấu hình bất biến"
+một mình — không cần app Millionaire. Đoạn này chạy được trong DartPad
+(chế độ Flutter) hoặc thay tạm nội dung `main.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(
+      const MaterialApp(home: ProfileChip(name: 'Lan')),
+    );
+
+class ProfileChip extends StatelessWidget {
+  const ProfileChip({super.key, required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text(name));
+  }
+}
+```
+
+Đọc nó như một cây:
+
+```
+ProfileChip(name: 'Lan')   ← object cấu hình: chỉ mang một field `name`
+  └─ build() → Center      ← mô tả, không phải pixels
+       └─ Text(name)
+```
+
+- `required this.name` — named parameter bắt buộc: gọi `ProfileChip()`
+  không truyền `name` là lỗi compile. Đây là cú pháp bạn vừa gặp ở
+  `super.key`, giờ thấy nó mang *dữ liệu của riêng bạn*.
+- `final String name` — field bất biến của widget. Widget giống một
+  "phiếu cấu hình" hơn là view: `ProfileChip(name: 'Lan')` và
+  `ProfileChip(name: 'Minh')` là hai object khác nhau, `build` của mỗi
+  cái trả về `Text` khác nhau.
+- `build` **trả về** cây widget con — nó không vẽ, không chạm màn hình.
+  Flutter lấy mô tả đó và lo phần còn lại.
+
+Kết nối về production: `WelcomeScreen` ở bước 2 là đúng pattern này —
+widget bất biến, `build` trả `Scaffold → Center → Text`. Khác duy nhất
+ở dữ liệu nó mô tả.
+
 ## Cầu nối Android / Compose
 
 - SIMILARITY: `runApp(const AIMillionaireApp())` ≈ `setContent { App() }` trong
@@ -259,6 +306,55 @@ sẽ xuất hiện khi cần hỏi theme (`Theme.of(context)`).
    bất biến được tạo lại khi rebuild, không giữ state; nó không "là" pixels.
 4. Micro-task: đổi `backgroundColor` thành `Color(0xFF1B1140)` rồi predict UI
    trước khi save — nền tím đậm hơn.
+
+## Tự làm (PREDICT)
+
+Bài kiểm tra bạn hiểu `MaterialApp`/`Scaffold` đóng vai trò gì — không chỉ
+"luôn có mặt". Trong `lib/main.dart`, **tạm sửa** `main()` thành:
+
+```dart
+void main() {
+  runApp(const Center(child: Text('Xin chào')));
+}
+```
+
+— bỏ hẳn `MaterialApp` và `WelcomeScreen` (hai class vẫn còn trong file,
+chỉ không được dùng). **Trước khi chạy**, trả lời:
+
+1. Code có compile được không? Vì sao?
+2. Chữ "Xin chào" hiện ra trông như thế nào — giống màn hình bình thường,
+   khác, hay không hiện?
+3. Theo mental model của bài, `MaterialApp` đang cung cấp những gì mà một
+   cây `Center → Text` trần không có?
+
+Chạy thật (`flutter run -d chrome`), ghi lại điều thực tế, sau đó **khôi
+phục** `runApp(const AIMillionaireApp())` — checkpoint của bài yêu cầu
+màn hình M01 còn nguyên.
+
+:::note[Gợi ý]
+"Compile được" và "hiển thị đúng" là hai câu hỏi khác nhau. Nghĩ đến
+`Something.of(context)` đi lên cây — chữ cần biết hướng viết (trái→phải)
+lấy từ đâu?
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+1. **Compile bình thường** — mọi kiểu đều hợp lệ: `runApp` nhận bất kỳ
+   `Widget` nào, `Center`/`Text` là widget hợp lệ. Analyzer không báo gì
+   về chuyện "thiếu vỏ Material".
+2. **Chữ không hiện như mong đợi** — app báo lỗi thiếu *directionality*:
+   `Text` cần biết hướng viết, và không có widget nào phía trên trong cây
+   cung cấp nó. (Bạn sẽ thấy màn hình lỗi của Flutter thay vì chữ.)
+3. `MaterialApp` (và `WidgetsApp` bên trong nó) **cung cấp dịch vụ ngầm**
+   cho cả cây con: hướng viết, theme, media query, navigator… — chứ không
+   chỉ là "khung màu sắc Material". Đây là dấu ấn đầu tiên của ý tưởng
+   "widget cha cung cấp dịch vụ qua context" — M02 (`Theme.of`) và M12
+   (Provider) sẽ khai triển thành hệ.
+
+Điều bài tập kiểm tra: bạn tách được "code hợp lệ" khỏi "đủ dịch vụ để
+hiển thị", và hiểu `MaterialApp` là *service provider* — không phải lớp
+trang trí có thể bỏ đi tuỳ ý.
+</details>
 
 ## Cố ý chưa làm
 

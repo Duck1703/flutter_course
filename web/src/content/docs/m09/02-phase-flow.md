@@ -265,6 +265,47 @@ từ `!submitted` thành `!revealed` — phần còn lại giữ nguyên.
    nếu dialog `finished` đã chắn tap? — *Vẫn cần: phase `revealing` đã
    khoá chọn *trước khi* dialog xuất hiện.*
 
+## Tự làm (PREDICT)
+
+Điền bảng chuyển phase bằng tay — 6 tình huống, mỗi dòng ghi **phase
+trước → phase sau** + **timer chạy hay dừng**:
+
+| Tình huống | Phase trước → sau | Timer |
+|---|---|---|
+| 1. Người chơi chọn rồi bấm CHỐT | ? | ? |
+| 2. Đang reveal, bấm TIẾP (đúng, còn câu) | ? | ? |
+| 3. Đang reveal, bấm TIẾP (sai — ván thua) | ? | ? |
+| 4. Đang reveal, bấm TIẾP (đúng câu cuối — thắng) | ? | ? |
+| 5. Đếm ngược chạm 0 lúc chưa chốt | ? | ? |
+| 6. Back về menu giữa lúc đang đếm | ? | ? |
+
+Sau đó chơi một ván thật (cố ý trả lời sai một câu, để hết giờ một câu)
+và đối chiếu.
+
+:::note[Gợi ý]
+Timer chỉ sống trong `answering`. "TIẾP khi đúng" quay về `answering`
+cho câu mới — vậy thì timer cũ phải… và timer mới phải…?
+:::
+
+<details><summary>Đáp án</summary>
+
+| Tình huống | Phase | Timer |
+|---|---|---|
+| 1. Chốt | answering → revealing | dừng (cancel — đã xong lượt) |
+| 2. TIẾP đúng, còn câu | revealing → answering | restart: cancel cũ + timer mới 15s |
+| 3. TIẾP sai | revealing → finished | dừng (hết ván) |
+| 4. TIẾP đúng câu cuối | revealing → finished | dừng |
+| 5. Hết giờ | answering → finished | tự kết thúc lượt tick cuối |
+| 6. Back giữa chừng | (route pop — State dispose) | `dispose` cancel — không phase nào nhận event |
+
+Hai điểm cần nhấn: (a) "TIẾP đúng" là transition **quay về** `answering`
+— không phải đi tới; máy trạng thái có cạnh lùi. (b) Dòng 6 không có
+"phase sau" — thoát màn hình không qua máy trạng thái mà qua lifecycle;
+đó là lý do `dispose` phải tự dọn timer thay vì trông chờ một
+transition.
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - Score/tiền thưởng theo câu — senior có **money ladder**; bản learner

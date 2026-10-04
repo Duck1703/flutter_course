@@ -217,6 +217,52 @@ diff với cây cũ → chỉ Text('Số lần bấm: …') cần update RenderO
 4. Predict: hai `setState` trong cùng một event handler sinh mấy build? —
    Một — Flutter gộp dirty trong frame.
 
+## Tự làm (PREDICT)
+
+Bốn viễn cảnh nhỏ kiểm tra cơ chế — dự đoán **từng cái trước**, rồi kiểm
+chứng bằng `debugPrint` ở đầu `build` (thí nghiệm 2 đã dạy cách). Với
+mỗi viễn cảnh trả lời: *`build()` có chạy lại không, và UI hiển thị
+giá trị nào?*
+
+1. `_onPlayTap` viết thành: `_playTapCount++; setState(() {});`
+2. `_onPlayTap` gọi `setState(() => _playTapCount++);` **hai lần liên
+   tiếp** trong một tap.
+3. Đặt `setState(() {})` ngay **đầu `build()`** của `_MenuScreenState`.
+4. Đổi `_soundOn = false;` trong `initState()` — **không** bọc `setState`.
+
+Viết dự đoán xuống giấy trước; sau đó thử từng cái trên app (hoặc
+DartPad với `LightSwitch` của bài 1), đối chiếu, và **khôi phục** code
+về trạng thái đúng sau mỗi lần thử.
+
+:::note[Gợi ý]
+Hai điểm mấu chốt: `setState` chỉ *báo dirty* (mutation ở đâu không quan
+trọng đối với việc rebuild); và `build()` lần đầu đã được framework lên
+lịch sẵn khi State được tạo.
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+1. **UI vẫn cập nhật đúng** — mutation đã xảy ra (biến tăng); `setState`
+   rỗng vẫn báo dirty → `build` đọc giá trị mới. Chứng minh closure chỉ
+   là *nơi tiện* đặt mutation: `setState` không "chứa" phần đổi biến.
+2. **Một lần build, đếm +2** — hai lần báo dirty trong cùng event được
+   gộp thành một frame; biến tăng 2 và UI nhảy 2.
+3. **Lỗi/vòng lặp** — `setState` gọi trong `build` (trong frame) yêu cầu
+   một frame mới, frame đó lại gọi `build` lại gọi `setState`… Flutter
+   chặn bằng exception "setState() called during build". Mutation/marking
+   thuộc *event handler*, không thuộc `build`.
+4. **Không cần `setState`** — `initState` chạy trước `build` đầu tiên;
+   framework đã lên lịch build đầu rồi nên giá trị `false` được đọc luôn.
+   `setState` trong `initState` là *thừa* (không lỗi, nhưng vô ích — và
+   trên một số đường code còn rác rối). Quy tắc: chỉ cần `setState` khi
+   mutation xảy ra **sau** khi widget đã build ít nhất một lần.
+
+Điều bài tập kiểm tra: bạn vận dụng được cơ chế "đánh dấu dirty → frame
+→ build lại" vào bốn trường hợp mép — bao gồm hai trường hợp người mới
+thường sai (mutation ngoài closure vẫn hiển thị; `setState` trong
+`initState`/`build`).
+</details>
+
 ## Cố ý chưa làm
 
 - `mounted` + `setState` sau async — M05 (Future); giờ chưa có async.

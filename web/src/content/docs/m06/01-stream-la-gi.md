@@ -67,6 +67,47 @@ listener huỷ (`cancel()`), stream ngừng phát cho listener đó.
 `computation(tickCount)` được gọi với `tickCount = 0, 1, 2…` và kết quả là
 event. Ta `tick + 1` để event là "giây thứ 1, 2, 3…".
 
+## Ví dụ độc lập — stream *lười*, nhìn tận mắt
+
+Chạy trong DartPad (pure Dart, import `dart:async`):
+
+```dart
+import 'dart:async';
+
+void main() {
+  final s = Stream<int>.periodic(
+    const Duration(milliseconds: 400),
+    (tick) => tick * 10,
+  );
+
+  print('A: stream vừa tạo — có gì chạy chưa?');
+
+  s.take(4).listen((v) => print('event: $v'));
+
+  print('B: đã listen xong — chờ event');
+}
+```
+
+Output (kèm khoảng cách thời gian thật ~0.4s giữa các dòng event):
+
+```
+A: stream vừa tạo — có gì chạy chưa?
+B: đã listen xong — chờ event
+event: 0
+event: 10
+event: 20
+event: 30
+```
+
+Hai quan sát đáng tiền:
+
+- Giữa "tạo stream" và "listen" **không có event nào được phát** — in `A`
+  rồi `B` liền nhau vì `listen` trả về ngay (nó đăng ký, không chờ).
+  Nhịp chỉ bắt đầu *sau khi* có listener: đó là "lazy".
+- `take(4)` biến stream vô hạn thành "4 event rồi đóng" — sau `30` chương
+  trình im lặng, subscription kết thúc. Trong app, `StreamBuilder` đóng
+  vai `listen` này cho bạn (bài 2).
+
 ## Flutter cần dùng
 
 Chưa có widget mới trong bài này — `StreamBuilder` ở bài 2. Bài này thuần
@@ -221,6 +262,52 @@ listener — đó là nghĩa của "lazy".
 3. `take(3)` làm gì? — Trả stream mới phát tối đa 3 event đầu rồi đóng —
    tiện cho test.
 4. `stream.first` trả gì? — `Future<T>` của event đầu tiên.
+
+## Tự làm (PRODUCE)
+
+Viết một hàm mới — `Stream<int> countdown(int from)` — phát `from,
+from-1, …, 1` mỗi 100ms rồi đóng. Chỉ được dùng những gì bài này đã dạy
+(`Stream.periodic` + computation + `take`).
+
+Trước khi code:
+
+1. `computation` nhận `tick` đếm từ 0 — biểu thức nào biến `0,1,2,…`
+   thành `from, from-1, …`?
+2. Stream `periodic` là vô hạn — đặt giới hạn `take(?)` ở đâu: trong
+   hàm (stream trả về đã giới hạn) hay để người gọi tự giới hạn? **Bạn
+   quyết** và bảo vệ lựa chọn đó.
+3. Dự đoán output của `countdown(3)` trước khi verify.
+
+Verify bằng DartPad: `countdown(3).listen(print)` phải in `3, 2, 1`
+(hoặc test `emitsInOrder([3,2,1])` nếu bạn đưa hàm vào project).
+
+:::note[Gợi ý]
+`tick + 1` biến `0,1,2,…` thành `1,2,3,…`. Phép biến ngược —
+`0,1,2,…` → `N, N-1, N-2, …` — cũng chỉ là một phép tính trên `tick`.
+:::
+
+<details><summary>Đáp án</summary>
+
+```dart
+Stream<int> countdown(int from) {
+  return Stream<int>.periodic(
+    const Duration(milliseconds: 100),
+    (tick) => from - tick,
+  ).take(from);
+}
+```
+
+- `tick` chạy `0,1,2,…`; `from - tick` cho `3,2,1,0,-1,…` → phải cắt
+  trước `0` → `take(from)` (3 event đầu).
+- Đặt `take` **trong hàm** là lựa chọn chặt hơn: `countdown` *theo định
+  nghĩa* là hữu hạn — một stream vô hạn phát số âm không còn là
+  "countdown". Giới hạn thuộc về ngữ nghĩa của hàm chứ không phải của
+  người gọi. (Nếu bạn để người gọi `take` và ghi rõ điều đó trong doc,
+  cũng bảo vệ được — điểm là quyết định phải có lý do.)
+- Khi `take(from)` đủ event, stream **đóng** — subscription kết thúc,
+  periodic ngừng. Không cần huỷ tay cho stream đã đóng.
+
+</details>
 
 ## Cố ý chưa làm
 

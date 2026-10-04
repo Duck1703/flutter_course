@@ -190,6 +190,49 @@ là `StatelessWidget` với `Scaffold` + `AppBar` + body gradient chứa một
 3. Ai gọi `pop()` khi bấm `←` trên AppBar? — *Chính `AppBar`: nó render
    `BackButton` gọi `Navigator.maybePop` khi route có thể pop.*
 
+## Tự làm (PREDICT)
+
+M08 sẽ làm cho ô đáp án **bấm được**: chọn một ô → ô đó đổi màu viền,
+ba ô kia giữ nguyên; bấm ô khác → lựa chọn dời sang ô mới.
+
+**Đừng viết code.** Trước khi đọc M08, quyết ba quyết định kiến trúc
+trên giấy — dùng đúng luật ownership của M03:
+
+1. State "đáp án đang chọn" (ví dụ `selectedIndex`) nên sống ở đâu:
+   (a) trong mỗi `_AnswerPlaceholder` tự quản; (b) trong một
+   `State` chung của `GameScreen`; (c) trong `_QuestionCard`?
+2. `_AnswerPlaceholder` cần nhận thêm những param nào để hiển thị được
+   "đang chọn" và báo lên khi bị bấm? Gợi ý hướng dữ liệu: data đi
+   xuống hay callback đi lên?
+3. Dự đoán: vì sao phương án (a) — mỗi ô tự giữ state — sẽ hỏng ngay ở
+   yêu cầu "chọn ô khác thì ô cũ mất chọn"?
+
+Giữ lại đáp án của bạn — khi đọc M08, đối chiếu với thiết kế thật.
+
+:::note[Gợi ý]
+Nhớ bài `_soundOn` của M03: khi nhiều widget cần cùng biết một trạng
+thái, ai giữ nó? Và `_AnswerPlaceholder` nhìn lên y hệt `_ProfileHeader`:
+không biết đến `setState` của ai.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. **(b) — `State` của `GameScreen`.** `selectedIndex` là *trạng thái
+   của màn hình*: bốn ô đáp án + nút chốt đều cần biết nó (ô để tô màu,
+   nút để bật khi có chọn). Owner chung nhất vừa đủ thấy mọi consumer —
+   đúng pattern `_MenuScreenState` giữ `_soundOn`/`_profile`.
+2. `_AnswerPlaceholder` nhận: `selected` (bool — data đi **xuống**) +
+   `onTap` (`VoidCallback` — callback đi **lên**). Nó vẫn Stateless,
+   hiển thị viền theo `selected` và báo bấm về State.
+3. (a) hỏng vì ba ô còn lại **không cách nào biết** ô thứ tư vừa được
+   chọn để tự tắt viền — mỗi ô chỉ thấy state của chính nó. Trạng thái
+   "shared" bắt buộc phải nâng lên owner chung (*lifting state up*).
+
+Đây chính xác là thiết kế M08 sẽ đưa vào — nếu bạn tự suy ra được, bạn
+đã nắm được state ownership chứ không chỉ chép pattern.
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - Chọn đáp án / chấm điểm / câu tiếp theo — **M08** (cần `StatefulWidget`

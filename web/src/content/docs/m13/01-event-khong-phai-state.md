@@ -59,6 +59,47 @@ cho người đến trễ: bấm CHƠI khi chưa ai nghe thì event trôi qua �
 đúng bản chất "sự kiện", khác với state "ai đến sau cũng đọc được
 giá trị hiện tại".
 
+## Ví dụ độc lập — broadcast stream không replay
+
+Bản chất "event = nhận một lần rồi qua" nhìn rõ nhất trong Dart thuần
+(DartPad — chỉ cần `dart:async`, không Flutter):
+
+```dart
+import 'dart:async';
+
+void main() async {
+  final events = StreamController<String>.broadcast();
+
+  // Listener A đến TRƯỚC khi có event.
+  events.stream.listen((e) => print('A nhận: $e'));
+
+  events.add('vừa bấm CHƠI'); // A đang nghe → nhận được
+
+  // Listener B đến SAU event — broadcast không replay.
+  events.stream.listen((e) => print('B nhận: $e'));
+
+  events.add('vừa bấm THOÁT'); // cả A và B nhận
+
+  await Future<void>.delayed(Duration.zero);
+  await events.close();
+}
+```
+
+Output:
+
+```text
+A nhận: vừa bấm CHƠI
+A nhận: vừa bấm THOÁT
+B nhận: vừa bấm THOÁT
+```
+
+B **không bao giờ thấy** `'vừa bấm CHƠI'` — đó là lựa chọn cố ý của
+event: đến trễ thì event đã qua, không được xem lại. Nếu đây là
+*state* (ví dụ "profile hiện tại"), hành vi đó là bug; với *event*,
+nó là đúng bản chất. Một kênh phát, nhiều listener, mỗi event đi qua
+đúng một lần cho ai đang nghe — VM của bạn expose `events` chính là
+cái stream này.
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -257,6 +298,48 @@ kênh chạy.)
 3. Vì sao `events` là getter trả `Stream` chứ không public
    `StreamController`? — *Che quyền `add`: chỉ VM phát event; UI chỉ
    nghe — kênh một chiều.*
+
+## Tự làm (RECOGNIZE)
+
+Menu sắp có 6 "thứ thay đổi" sau. Phân loại từng cái: **state**
+(ChangeNotifier — rebuild để hiển thị) hay **event** (stream — nghe
+để hành động một lần)? Với mỗi cái, trả lời thêm: *nếu listener đến
+trễ, có được xem/nhận lại không — và có nên không?*
+
+| # | Thứ thay đổi | State hay event? |
+|---|---|---|
+| 1 | "Đang tải profile" | ? |
+| 2 | "Vừa bấm nút CHƠI" | ? |
+| 3 | Tên hiển thị của user | ? |
+| 4 | "Vừa lưu profile thành công" (hiện snackbar) | ? |
+| 5 | Số ván đã chơi trong session | ? |
+| 6 | "Vừa xin điều hướng về menu" | ? |
+
+:::note[Gợi ý]
+Câu hỏi phân ranh giới: nếu widget **rebuild lại từ đầu** sau khi
+"thứ đó" đã xảy ra — nó có cần *hiển thị/nhận lại* giá trị đó không?
+Cần → state. Chỉ cần *hành động đúng lúc nó xảy ra* → event.
+:::
+
+<details><summary>Đáp án</summary>
+
+| # | Chọn | Vì sao |
+|---|------|--------|
+| 1 | **state** | UI phải vẽ đúng trạng thái mọi lúc; đến trễ vẫn phải thấy "đang load" |
+| 2 | **event** | hành động một lần (điều hướng); ai đến trễ không "được bấm lại" — mà không nên |
+| 3 | **state** | giá trị hiện tại; mọi widget đọc lại được bất cứ lúc nào |
+| 4 | **event** | snackbar hiện đúng một lần rồi tự biến mất; nếu rebuild lại mà hiện lại snackbar là bug kinh điển |
+| 5 | **state** | số đếm hiện tại; rebuild phải vẽ đúng nó — mất giá trị khi đến trễ là không chấp nhận được |
+| 6 | **event** | intent một lần — giống `MenuGameRequested`/`MenuBackRequested` |
+
+Cái bẫy thường gặp là **#4**: nhiều người đưa "đã lưu" vào state để
+"an toàn" — rồi snackbar hiện lại sau mỗi rebuild/config-change cho
+đến khi ai đó nhớ reset cờ. Event kênh giải quyết đúng bản chất:
+*việc vừa xảy ra* ≠ *giá trị hiện tại*. Giữ hai kênh song song —
+state trong `ChangeNotifier`, event trong broadcast stream — là toàn
+bộ kiến trúc M11–M13.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

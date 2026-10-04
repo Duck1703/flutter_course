@@ -192,6 +192,43 @@ assets, fonts. Mỗi lần sửa nó, chạy `flutter pub get` — giống hệt
 3. Vì sao xoá `test/widget_test.dart` thay vì sửa nó? — Nó test app counter
    của template đã bị xoá; lesson test đầu tiên thuộc M04, khi đó ta tự viết.
 
+## Tự làm (PREDICT)
+
+Bài này kiểm tra bạn nắm được *quy tắc đặt tên package* chứ không chỉ nhớ
+một ví dụ. Tạo một thư mục probe trống (ví dụ `probe/`) và dự đoán **trước
+khi chạy** `flutter create` chấp nhận hay từ chối từng `--project-name`:
+
+| Tên thử | Dự đoán của bạn (accept/reject) | Vì sao (theo quy tắc nào) |
+|---------|----------------------------------|---------------------------|
+| `AIMillionaire` | | |
+| `ai-millionaire` | | |
+| `ai_millionaire` | | |
+| `2cool` | | |
+
+Sau đó trong `probe/` chạy thử từng cái, ví dụ
+`flutter create --project-name ai_millionaire try1`, và đối chiếu thông
+báo thực tế với dự đoán. **Dọn sạch thư mục `probe/` khi xong** — nó
+không phải một phần của `learner-app`.
+
+:::note[Gợi ý]
+Quy tắc package Dart có ba phần: ký tự cho phép, chữ hoa/thường, và ký
+tự đầu tiên.
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+- `AIMillionaire` → **reject** — tên package Dart phải chữ thường.
+- `ai-millionaire` → **reject** — dấu gạch ngang không hợp lệ; dùng
+  gạch dưới (`snake_case`), đúng như `ai_millionaire_course` của ta.
+- `ai_millionaire` → **accept**.
+- `2cool` → **reject** — tên phải bắt đầu bằng chữ cái; chữ số chỉ được
+  phép sau ký tự đầu.
+
+Điều bài tập kiểm tra: bạn *áp dụng* được quy tắc `snake_case` vào bốn
+trường hợp khác nhau — kể cả hai trường hợp lẻ (gạch ngang vs gạch dưới,
+chữ số ở đầu) — chứ không chỉ lặp lại một tên đã cho.
+</details>
+
 ## Cố ý chưa làm
 
 - Chưa viết Dart nào — `main.dart` vẫn là template (bài 2 thay thế).

@@ -182,6 +182,62 @@ index vào `options` — `isCorrect(i)` che đi phép so sánh; khi UI cần bi�
 3. Vì sao model không cần `copyWith`? — *Câu hỏi không bao giờ "được cập
    nhật" — immutable-update chỉ cần khi state đổi qua object mới.*
 
+## Tự làm (MODIFY)
+
+Thêm một field mới cho `QuizQuestion`: `explanation` — lời giải thích
+hiển thị sau khi chốt đáp án (senior cũng có khái niệm này; UI của nó
+đến sau, hôm nay chỉ model + data).
+
+Trước khi code, quyết:
+
+1. `explanation` nên là `String` hay `String?`? Nên `required` không —
+  nếu `required`, điều gì xảy ra với 4 câu đã có trong bank?
+2. Thêm param mới vào constructor theo kiểu nào để **không phải sửa 4
+   câu hiện có**?
+3. Có cần `copyWith`/`==`/`hashCode` cho field mới không? (Nhớ lý do
+   model này không có chúng từ đầu.)
+
+Sau đó: thêm field + param, thêm `explanation` cho câu hỏi đầu tiên
+trong bank, `flutter analyze`, và in thử `quizQuestions[0].explanation`
+trong `main()` tạm thời.
+
+:::note[Gợi ý]
+"Không phải câu nào cũng có lời giải" là dữ kiện quan trọng cho quyết
+định kiểu. Và named-param-optional có một đặc tính dễ quên: constructor
+cũ gọi mà không truyền param mới vẫn hợp lệ.
+:::
+
+<details><summary>Đáp án</summary>
+
+```dart
+class QuizQuestion {
+  final String question;
+  final List<String> options;
+  final int correctIndex;
+  final String? explanation; // nullable: không phải câu nào cũng có giải thích
+
+  const QuizQuestion({
+    required this.question,
+    required this.options,
+    required this.correctIndex,
+    this.explanation, // optional — nullable tự default null
+  });
+
+  bool isCorrect(int index) => index == correctIndex;
+}
+```
+
+- `String?` + `this.explanation` (không `required`, không default): nếu
+  là `required`, cả 4 câu trong bank biến thành lỗi compile — "một field
+  mới" vô tình làm nghĩa vụ sửa mọi chỗ khởi tạo. Optional nullable giữ
+  mọi call-site cũ hợp lệ: `explanation` của chúng tự `null`.
+- Không cần `copyWith`/`==`: câu hỏi không được cập nhật hay so sánh —
+  quyết định M04-style chỉ-viết-khi-cần vẫn đứng.
+- Kiểm chứng: `flutter analyze` sạch (không sửa bank), `print` in ra
+  explanation của câu 1 — câu 2–4 trả `null` đúng thiết kế.
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - `id`/`category`/`difficulty`/`explanation` — senior có; ta thêm khi UI

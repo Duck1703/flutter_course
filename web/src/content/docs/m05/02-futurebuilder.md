@@ -67,6 +67,67 @@ Hai quy tắc vàng — nhớ mãi:
    widget có thể đã bị gỡ; `setState` sau dispose là crash. `mounted` là
    property của `State` trả `true` nếu còn gắn trên cây.
 
+## Ví dụ độc lập — `FutureBuilder` tối thiểu
+
+Trước khi bọc menu, xem `FutureBuilder` trọn vẹn trong một app 40 dòng
+(DartPad — chế độ Flutter). App này tải một "câu quote" giả:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: QuoteLoader()));
+
+class QuoteLoader extends StatefulWidget {
+  const QuoteLoader({super.key});
+  @override
+  State<QuoteLoader> createState() => _QuoteLoaderState();
+}
+
+class _QuoteLoaderState extends State<QuoteLoader> {
+  late Future<String> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _fetchQuote(); // Future sinh MỘT LẦN — không trong build
+  }
+
+  Future<String> _fetchQuote() async {
+    await Future.delayed(const Duration(seconds: 1));
+    return 'Keep it simple.';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: FutureBuilder<String>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) return const Text('Lỗi rồi!');
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            }
+            return Text(snapshot.data ?? '');
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+Chạy nó: spinner ~1 giây → "Keep it simple.". Ba chi tiết đáng để ý trước
+khi quay lại app thật:
+
+- `FutureBuilder<String>` mang **kiểu** — `snapshot.data` là `String?`
+  (nullable!) nên cần `?? ''`; bản `FutureBuilder<void>` của menu chỉ
+  đọc trạng thái vì dữ liệu đi vào `_profile` qua setState.
+- `_future` là `late` field gán ở `initState` — đúng hai quy tắc vàng
+  phía dưới.
+- Không `setState` nào trong ví dụ: **FutureBuilder tự subscribe và tự
+  rebuild** — đó là cả lý do nó tồn tại.
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -375,6 +436,47 @@ main() → runApp → MenuScreen → createState → initState
    `hasError`, `hasData`.
 4. Retry là gì về mặt cơ chế? — Gán `_profileLoadFuture` một Future mới
    trong `setState` — FutureBuilder tự chuyển về waiting.
+
+## Tự làm (PREDICT)
+
+Phá luật vàng số 1 một cách có chủ đích — trong `build()`, đổi:
+
+```dart
+// từ:
+future: _profileLoadFuture,
+// thành:
+future: _loadProfile(),   // tạo Future mới ngay trong build!
+```
+
+**Trước khi chạy**, dự đoán: app khởi động bình thường không? Sau khi
+menu hiện, bấm nút PLAY (nó gọi `setState`) — điều gì xảy ra với màn
+hình? Bấm thêm 3 lần nữa?
+
+Sau đó chạy thật, quan sát, rồi sửa lại.
+
+:::note[Gợi ý]
+`_loadProfile()` trả về gì? Một Future **mới** — và Future mới nghĩa là
+một lần tải mới vừa được khởi động. `setState` ở nút PLAY gọi `build()`
+→ `build` tạo Future mới → …?
+:::
+
+<details><summary>Đáp án</summary>
+
+- Khởi động vẫn có vẻ bình thường (loading → menu) — vì lần đầu chỉ có
+  một Future.
+- Bấm PLAY một lần: `_onPlayTap` → `setState` → `build()` chạy lại →
+  `_loadProfile()` tạo **Future mới** → `FutureBuilder` thấy future đổi
+  → quay về `waiting` → **toàn màn hình chớp về spinner** ~900ms rồi
+  hiện lại menu.
+- Mỗi lần bấm lặp lại hiện tượng: mọi `setState` (đổi âm thanh, đếm
+  bấm) đều khởi động một lần tải mới — reload vô hình ở mọi tương tác,
+  tồi tệ hơn nữa nếu loader gọi mạng thật.
+- Đó là lý do Future phải là **field ổn định của `State`**: `initState`
+  tạo một lần, chỉ gán lại khi cố ý retry. Future-in-build không "sai
+  compile" — nó sai *ngữ nghĩa*: build phải thuần mô tả UI, không phải
+  nơi khởi động công việc.
+
+</details>
 
 ## Cố ý chưa làm
 

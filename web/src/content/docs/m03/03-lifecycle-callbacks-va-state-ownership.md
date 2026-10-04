@@ -72,6 +72,62 @@ tap → nó ở `_MenuScreenState` (tổ tiên của header). Nếu đặt trong
 | `debugPrint` | Log lifecycle ra console DevTools/terminal |
 | `GestureDetector` | Ôn lại: event đi *lên* qua callback |
 
+## Ví dụ độc lập — `ScoreBoard` + `ScoreChip`
+
+Trước khi bàn ownership trong menu, nhìn quy tắc "state đi xuống, sự kiện
+đi lên" trong ~30 dòng trung lập — chạy được trong DartPad (chế độ
+Flutter):
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(
+      home: Scaffold(body: Center(child: ScoreBoard())),
+    ));
+
+class ScoreBoard extends StatefulWidget {
+  const ScoreBoard({super.key});
+
+  @override
+  State<ScoreBoard> createState() => _ScoreBoardState();
+}
+
+class _ScoreBoardState extends State<ScoreBoard> {
+  int _score = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return ScoreChip(
+      score: _score,
+      onTap: () => setState(() => _score++),
+    );
+  }
+}
+
+class ScoreChip extends StatelessWidget {
+  final int score;
+  final VoidCallback onTap;
+
+  const ScoreChip({required this.score, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Text('Điểm: $score'),
+    );
+  }
+}
+```
+
+Ai sở hữu `_score`? **`_ScoreBoardState`** — vì nó là nơi duy nhất cần
+*nhớ và đổi* giá trị. `ScoreChip` chỉ nhận `score` để hiển thị và nhận
+`onTap` để "gọi ngược lên" — nó không biết `setState` là gì, và đó là
+thiết kế tốt: widget con càng ít biết, càng tái dùng được.
+
+Đây chính là quan hệ `_MenuScreenState` ↔ `_ProfileHeader`/`_PlayButton`
+trong app của bạn — cùng quy tắc "tổ tiên chung thấp nhất".
+
 ## Cầu nối Android / Compose
 
 - SIMILARITY: `initState` ≈ `LaunchedEffect(Unit)` (chạy một lần khi vào

@@ -57,6 +57,62 @@ ngay trong `build()`, mỗi rebuild trả stream *instance khác* → `StreamBui
 thấy `stream` đổi → cancel cũ + subscribe mới → **bộ đếm reset liên tục**.
 Field `final Stream<int> _sessionTicker` giữ một instance cho cả đời State.
 
+## Ví dụ độc lập — `StreamBuilder` tối thiểu
+
+Một app 45 dòng chạy được trong DartPad (chế độ Flutter) — xúc xắc "tự
+đổi" mỗi giây, không `setState`:
+
+```dart
+import 'dart:async';
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: DiceScreen()));
+
+class DiceScreen extends StatefulWidget {
+  const DiceScreen({super.key});
+  @override
+  State<DiceScreen> createState() => _DiceScreenState();
+}
+
+class _DiceScreenState extends State<DiceScreen> {
+  // Stream ổn định — MỘT instance cho cả đời State.
+  final Stream<int> _rolls = Stream<int>.periodic(
+    const Duration(seconds: 1),
+    (tick) => tick % 6 + 1, // 1..6 lặp vòng
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: StreamBuilder<int>(
+          stream: _rolls,
+          initialData: 1,
+          builder: (context, snapshot) {
+            return Text(
+              '🎲 ${snapshot.data ?? 1}',
+              style: const TextStyle(fontSize: 48),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+Chạy: `🎲 1 → 🎲 2 → … → 🎲 6 → 🎲 1…` mỗi giây — không một dòng `setState`.
+Ba điểm là bài học:
+
+- `initialData: 1` — snapshot trước event đầu đã có gì để hiển thị;
+  `snapshot.data` vẫn `int?` nên `??` vẫn có mặt.
+- `_rolls` là `final` field — nếu tạo `Stream.periodic` ngay trong
+  `build`, mỗi rebuild làm bộ đếm nhảy về 1 (đúng bẫy stable-stream phía
+  trên).
+- `StreamBuilder` bọc **đúng `Text`** — toàn màn hình không rebuild
+  mỗi giây; đặt builder sâu nhất có thể là quy tắc sẽ áp dụng cho
+  `_SessionTickerCard` ngay sau đây.
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -273,6 +329,65 @@ với stream" đúng nghĩa.
 4. StreamBuilder vs `setState` để đổi UI theo stream — chọn cái nào khi chỉ
    cần hiển thị event? — StreamBuilder: không cần lưu event vào State, ít
    code, tự quản lifecycle.
+
+## Tự làm (MODIFY)
+
+Yêu cầu mới cho `_SessionTickerCard`: icon `Icons.timer_outlined` phải
+**đổi màu theo giây chẵn/lẻ** — chẵn `accentCyan`, lẻ `textSecondary`.
+
+Hiện `StreamBuilder` chỉ bọc `Text` cuối Row. Ba phương án:
+
+- **(a)** Nâng `StreamBuilder` lên bọc cả `Row` — icon và text cùng
+  rebuild mỗi event;
+- **(b)** Giữ `StreamBuilder` quanh `Text`, thêm **một `StreamBuilder`
+  thứ hai** bọc riêng `Icon`;
+- **(c)** Bỏ `StreamBuilder`, quay về `listen` + `setState` trong State.
+
+**Bạn quyết chọn cái nào — và phải nêu được cái giá của phương án bị loại
+nguy hiểm nhất.** Sau đó implement phương án đã chọn và chạy kiểm chứng.
+
+:::note[Gợi ý]
+Mỗi `StreamBuilder` là **một subscription**. Hai builder trên cùng một
+stream = hai lần `listen` — và `_sessionTicker` là stream
+single-subscription hay broadcast? Nhớ lại `Stream.periodic` thuộc loại
+nào.
+:::
+
+<details><summary>Đáp án</summary>
+
+**(a) là lựa chọn đúng** — bọc `Row` (hoặc cặp `Icon`+`Text`) trong một
+`StreamBuilder`:
+
+```dart
+child: StreamBuilder<int>(
+  stream: stream,
+  initialData: 0,
+  builder: (context, snapshot) {
+    final sec = snapshot.data ?? 0;
+    final color = sec.isEven
+        ? MenuTokens.accentCyan
+        : MenuTokens.textSecondary;
+    return Row(children: [
+      Icon(Icons.timer_outlined, color: color, size: 18),
+      /* …SizedBox, label… */
+      Text('${sec}s', /* style */),
+    ]);
+  },
+),
+```
+
+- **(b) chết ở chỗ nguy hiểm nhất**: `Stream.periodic` là **single-
+  subscription** — `StreamBuilder` thứ hai `listen` lần nữa → `StateError:
+  Stream has already been listened to` ngay lúc chạy. Kể cả stream có
+  broadcast, hai subscription cũng là hai lần nghe — logic trùng, chi phí
+  gấp đôi.
+- **(c)** tự viết lại đúng thứ `StreamBuilder` đã đóng gói — thêm code,
+  thêm `dispose`/`cancel` để quên.
+- Cái giá của (a): mỗi giây rebuild một `Row` hai widget con — rẻ hơn
+  nhiều so với bọc cả card/cả menu. Quy tắc vẫn đứng: bọc **mức sâu nhất
+  bao trọn được các widget cần đổi**.
+
+</details>
 
 ## Cố ý chưa làm
 

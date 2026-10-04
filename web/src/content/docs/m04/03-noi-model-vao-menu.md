@@ -434,6 +434,48 @@ object nguồn.
    `'$x'`/`'${x}'` ép về `String` ngay chỗ hiển thị, model vẫn giữ `int`
    cho tính toán.
 
+## Tự làm (PREDICT)
+
+`_onPlayTap` hiện chạy `setState` với `_playTapCount++` và
+`_profile = _profile.gainExp(10)`. Bấm nút PLAY 50 lần rồi dừng.
+
+**Trước khi chạy**, liệt kê các vị trí hiển thị trên menu và dự đoán
+mỗi cái **đổi hay đứng yên**, kèm lý do:
+
+1. `username` ở header?
+2. Text `'X / 35000 EXP'`?
+3. Thanh progress trong `_LevelCard`?
+4. Ba ô `_StatsRow` (ván đã chơi / thắng / tỉ lệ)?
+5. Caption của `_PlayButton`?
+
+Sau đó chạy thật và đối chiếu từng mục.
+
+:::note[Gợi ý]
+`setState` báo rebuild — nhưng rebuild chỉ *hiển thị những gì model
+chứa*. Câu hỏi thật: `gainExp` đụng vào field nào của
+`UserProfileData`? Mỗi widget đọc field nào? Ghép hai danh sách đó lại.
+:::
+
+<details><summary>Đáp án</summary>
+
+- `username` — **đứng yên**: `gainExp` không truyền `username` vào
+  `copyWith` → giữ nguyên `'0XFF'`.
+- `'X / 35000 EXP'` — **đổi**: `currentExp` +10 mỗi lần bấm.
+- Thanh progress — **đổi** (rất ít): `expPercent = currentExp * 100 ~/
+  35000` tăng dần; ở cap 35000, 50 lần bấm chỉ nhích ~1%.
+- `_StatsRow` — **đứng yên**: `gainExp` không đụng `gamesJoined`/
+  `gamesWon`/`totalMoneyWon` → `winRateDisplay` vẫn `'—'`. Rebuild có
+  chạy nhưng model cho nó *dữ liệu cũ y hệt*.
+- `_PlayButton` caption — **đổi**: nó đọc `tapCount`, field riêng của
+  `State`, không qua model.
+
+Bài học lớn: "UI đọc model" nghĩa là **UI chỉ đổi khi phần model nó đọc
+đổi**. `setState` là cái còi báo rebuild; `gainExp` mới là thứ quyết
+định rebuild *thấy gì*. Nếu một ô trên UI "không chịu đổi", hỏi ngược:
+field mà ô đó đọc có thật sự đổi trong object mới không?
+
+</details>
+
 ## Cố ý chưa làm
 
 - Load profile từ đâu khác — M05 sẽ thay `const UserProfileData()` bằng

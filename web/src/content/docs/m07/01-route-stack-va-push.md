@@ -57,6 +57,67 @@ Vì sao `Navigator.of(context)`? `Navigator` là một widget ẩn *trong cây*
 nó là *truy vấn lên cây*. Cùng kiểu `X.of(context)` bạn sẽ gặp ở
 `ScaffoldMessenger.of`, `Theme.of`…
 
+## Ví dụ độc lập — hai màn hình, một stack
+
+Trước khi push `GameScreen` thật, xem toàn bộ cơ chế trong app 45 dòng
+(DartPad — chế độ Flutter):
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: HomeScreen()));
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Home')),
+      body: Center(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const DetailScreen(),
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.blue,
+            child: const Text('Mở Detail',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DetailScreen extends StatelessWidget {
+  const DetailScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Detail')),
+      body: const Center(child: Text('Route thứ hai')),
+    );
+  }
+}
+```
+
+Chạy và thử ba điều — mỗi cái minh chứng một câu trong mental model:
+
+- Bấm "Mở Detail" → Detail trượt lên: đó là `push` đặt route **lên
+  trên** stack.
+- AppBar của Detail **tự có nút ←** — không viết dòng nào; route biết
+  nó có route nằm dưới.
+- Bấm ← → về Home. `DetailScreen` bị dispose, `HomeScreen` thì không —
+  route dưới nằm yên (state của nó sống sót, bạn sẽ kiểm chứng điều đó
+  bằng counter ở app thật).
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -215,6 +276,49 @@ Khi `push` chạy:
 3. Đổi `MaterialPageRoute<void>` thành `MaterialPageRoute<int>` — app có
    vỡ không? — *Không: generic chỉ mô tả kiểu giá trị pop trả về; ta chưa
    trả gì nên `void` là đúng nhất.*
+
+## Tự làm (PREDICT)
+
+**Vẽ stack bằng tay trước khi chạy.** Với app đang mở MenuScreen, dự đoán
+nội dung stack sau mỗi bước — viết dạng `[đáy, …, đỉnh]`:
+
+1. App vừa mở.
+2. Bấm BẮT ĐẦU CHƠI (push GameScreen).
+3. Bấm ← trên AppBar của GameScreen.
+4. Bấm BẮT ĐẦU CHƠI lần thứ hai.
+5. **Khó hơn:** từ trong GameScreen, giả sử một nút nào đó lại gọi
+   `Navigator.of(context).push(MaterialPageRoute(builder: (_) => const
+   GameScreen()))` — stack lúc này? Bấm back một lần sẽ về màn nào?
+
+Với mỗi bước, ghi thêm: `_MenuScreenState` còn sống không? State của
+`GameScreen` còn sống không?
+
+Sau đó chạy app kiểm chứng bước 1–4 (bước 5 đọc đáp án để hiểu — hoặc
+tự thử bằng cách thêm tạm nút push trong GameScreen).
+
+:::note[Gợi ý]
+Stack là LIFO thuần: `push` đặt lên đỉnh bất kể route đó "cùng kiểu" hay
+không; `pop` chỉ gỡ đỉnh. Hai `GameScreen` trong stack là **hai instance
+route khác nhau**, không "trùng nhau" để gộp.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. `[Menu]` — MenuScreen top.
+2. `[Menu, Game]` — Game top; `_MenuScreenState` **sống** (maintainState).
+3. `[Menu]` — GameScreen bị **dispose**; State menu nguyên vẹn (counter
+   không reset — kiểm chứng được khi chạy).
+4. `[Menu, Game]` — một instance GameScreen **mới** (initState chạy lại;
+   State cũ đã chết ở bước 3).
+5. `[Menu, Game, Game]` — push không quan tâm "màn này đã có chưa"; hai
+   entry cùng kiểu vẫn là hai route riêng. Back một lần → `Game` (route
+   thứ nhất của game), **không** về Menu. Phải pop hai lần mới về Menu.
+
+Bài học lớn: stack lưu **instance**, không lưu kiểu. "Đã ở GameScreen
+rồi" không ngăn push thêm một GameScreen nữa — và State của route cũ
+không bao giờ hồi sinh sau khi bị pop.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

@@ -72,6 +72,48 @@ Hai điểm yếu của M08 nổ ra khi ván game thật xuất hiện:
 Bỏ sót bất kỳ quy tắc nào → hai timer chạy song song, hoặc `setState`
 sau `dispose`.
 
+## Ví dụ độc lập — `Timer.periodic` trong DartPad
+
+Trước khi gắn timer vào game, xem nó trần (pure Dart, `dart:async`):
+
+```dart
+import 'dart:async';
+
+void main() {
+  var remaining = 3;
+  final timer = Timer.periodic(const Duration(seconds: 1), (t) {
+    print(remaining);
+    remaining--;
+    if (remaining == 0) {
+      print('GO!');
+      t.cancel(); // callback nhận chính timer → tự tắt được
+    }
+  });
+  print('main xong — timer vẫn sống');
+}
+```
+
+Output:
+
+```
+main xong — timer vẫn sống
+3
+2
+1
+GO!
+```
+
+Ba điều cần thấy:
+
+- `Timer.periodic` trả một object `Timer` — giữ nó (biến `timer`) vì
+  chỉ qua nó mới `cancel()` được. Nó **không phải Stream**: không
+  `listen`, không `await`, không `StreamSubscription`.
+- `main` kết thúc không giết timer — callback cứ chạy theo nhịp cho tới
+  khi `t.cancel()`. Đây chính là "chiếc đồng hồ bạn phải tự tắt".
+- Callback nhận tham số `(Timer t)` — chính timer đó, nên trong callback
+  vẫn `cancel()` được. (Biến `timer` ở ví dụ này chỉ giữ để bạn thấy
+  kiểu trả về; app thật sẽ giữ nó trong field `_timer` của `State`.)
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -319,6 +361,48 @@ không cần widget mới, chỉ cần một so sánh.
    được không? — *Được nhưng xấu: `_endReason` lúc đó không còn nghĩa và
    "finished" mất tính chất "có lý do đi kèm". Tách cho phép phase và
    lý do biến thiên độc lập.*
+
+## Tự làm (PREDICT)
+
+Ba quy tắc sống còn của timer — giờ **phá từng cái một** trên giấy và
+dự đoán triệu chứng *nhìn thấy được*:
+
+| Phá quy tắc | Dự đoán triệu chứng trên UI/console |
+|---|---|
+| 1. Không `cancel` timer cũ trong `_startTimer` (chuyển câu tạo timer mới) | ? |
+| 2. Không `cancel` trong `dispose` (back về menu giữa đếm ngược) | ? |
+| 3. Không guard `_phase != answering` trong `_onTick` | ? |
+
+Viết dự đoán cho từng dòng trước. Sau đó chọn **một** dòng để kiểm
+chứng thật trong app (dễ nhất: bỏ guard `_onTick`, chốt đáp án ở giây
+cuối), quan sát, rồi sửa lại.
+
+:::note[Gợi ý]
+Quy tắc 1: hai `Timer.periodic` cùng gọi `_secondsLeft--` — mỗi giây
+mất mấy đơn vị? Quy tắc 2: callback của timer chạy `setState` — `State`
+đã dispose thì sao? Quy tắc 3: timer chạy đúng lúc vừa chốt xong —
+`_onTick` sẽ làm gì ở phase `revealing`?
+:::
+
+<details><summary>Đáp án</summary>
+
+1. **Hai timer song song:** mỗi giây `_secondsLeft` giảm 2 (hoặc nhiều
+   hơn sau vài câu) — đồng hồ "chạy nhanh" bất thường, và hết giờ sớm
+   gấp đôi. Triệu chứng đặc trưng: đếm lùi nhảy 2 số một lần.
+2. **`setState() called after dispose()`:** back về menu mà timer còn
+   sống → callback tiếp tục gọi `setState` trên `State` đã chết → lỗi
+   trong console (và leak: State không được giải phóng).
+3. **Double-finish / giảm lố:** `_onTick` chạy ở phase `revealing` vẫn
+   trừ giây — và khi chạm 0 sẽ kích đường "hết giờ" *lần nữa*, gọi
+   logic kết thúc một lần nữa (dialog trùng / phase nhảy sai). Guard
+   là *an toàn kép* vì `cancel` và "tick đã lên lịch" có thể xảy ra
+   cùng một frame.
+
+Mẫu chung: lỗi timer không báo lúc compile — nó biểu hiện bằng *triệu
+chứng thời gian* (nhanh bất thường, crash muộn, dialog trùng). Vì vậy
+ba quy tắc là checklist, không phải gợi ý.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

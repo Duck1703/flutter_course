@@ -425,6 +425,102 @@ bề ngang khả dụng → mỗi card tự cao, rộng 343.
 4. Micro-task: đổi `flex` thành 5:5 — thanh tiến trình thành 50%. Predict
    trước khi reload.
 
+## Tự làm (PRODUCE)
+
+Thêm một thẻ mới `_StreakCard` vào `_MenuBody` — hiển thị nhãn
+`'CHUỖI NGÀY'` và số `'0 ngày'`, phong cách giống `_LevelCard` (nền
+`cardBackground`, bo góc `radiusCard`, viền `cardBorder`). **Không copy
+y nguyên `_LevelCard`** — trước khi viết, tự quyết:
+
+1. `_StreakCard` đứng **trước hay sau** `_EarningsCard` trong `children`?
+   Chọn một thứ tự và bảo vệ nó bằng một lý do thiết kế (ví dụ: thẻ nào
+   đáng đọc trước?).
+2. `SizedBox(height: spacingSm)` cần thêm ở đâu — trước, sau, hay giữa
+   các thẻ?
+3. `crossAxisAlignment: stretch` của `Column` cha có cần đổi không để
+   thẻ mới giãn hết khung như hai thẻ kia?
+
+Viết widget (khoảng 25–30 dòng, chỉ dùng API đã xuất hiện trong bài),
+thêm vào `children` của `_MenuBody`, `flutter analyze` sạch, reload và
+quan sát ba thẻ.
+
+:::note[Gợi ý]
+`_LevelCard` cho bạn "khối card" hoàn chỉnh: `Container(padding:,
+decoration:) > Column(min, start) > [Text nhãn, SizedBox, Text nội
+dung]`. Thẻ của bạn đơn giản hơn — không cần `Row`/`Spacer`/thanh flex.
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+Một cách hợp lệ (cách khác cũng chấp nhận nếu bảo vệ được):
+
+```dart
+/// Thẻ chuỗi ngày chơi liên tiếp.
+class _StreakCard extends StatelessWidget {
+  const _StreakCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(MenuTokens.spacingMd),
+      decoration: BoxDecoration(
+        color: MenuTokens.cardBackground,
+        borderRadius: BorderRadius.circular(MenuTokens.radiusCard),
+        border: Border.all(color: MenuTokens.cardBorder),
+      ),
+      child: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'CHUỖI NGÀY',
+            style: TextStyle(
+              color: MenuTokens.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.1,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            '0 ngày',
+            style: TextStyle(
+              color: MenuTokens.accentCyan,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+Và trong `children` của `_MenuBody` (đặt sau `_EarningsCard` — thẻ "ít
+quan trọng nhất" đứng cuối, giống hệ senior xếp thẻ phụ dưới thẻ chính):
+
+```dart
+_LevelCard(),
+SizedBox(height: MenuTokens.spacingSm),
+_EarningsCard(),
+SizedBox(height: MenuTokens.spacingSm),   // khoảng mới
+_StreakCard(),
+```
+
+- (1) Thứ tự là *quyết định thiết kế*: giữ thẻ nổi bật (gradient) trên,
+  thẻ phụ dưới — cách khác chấp nhận nếu nêu được lý do.
+- (2) `SizedBox` đi **giữa** các thẻ — nó là con của cùng `Column`, là
+  "khoảng trống" chứ không phải margin của card (Flutter không có
+  margin ngoài Container).
+- (3) **Không cần đổi** — `stretch` ép mọi con theo bề ngang cột; thẻ
+  mới tự giãn 343 như các thẻ khác.
+
+Điều bài tập kiểm tra: bạn tái sử dụng được pattern card *với những
+quyết định của riêng mình* (thứ tự, khoảng cách, màu nhấn) — đây là lần
+đầu bạn sản xuất một widget UI đầy đủ không theo bản mẫu từng dòng.
+</details>
+
 ## Cố ý chưa làm
 
 - `GestureDetector`/`onTap` cho badge — M03 (bấm vào chưa làm gì là cố ý).

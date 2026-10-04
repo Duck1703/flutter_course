@@ -72,6 +72,68 @@ Ba quy tắc tra cứu:
 3. **`Provider.value` ≠ `Provider(create:)`** — `.value` cho object đã
    tồn tại (không dispose); `create:` provider tự tạo *và* tự dispose.
 
+## Ví dụ độc lập — `InheritedWidget` viết tay
+
+Provider là `InheritedWidget` được gói sẵn. Nhìn cái trần trước — ví
+dụ này **không cần package nào**, chạy thẳng trên DartPad (Flutter):
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const UserScope(name: 'Minh', child: App()));
+
+/// InheritedWidget viết tay: mang dữ liệu, cho con cháu tra.
+class UserScope extends InheritedWidget {
+  const UserScope({super.key, required this.name, required super.child});
+
+  final String name;
+
+  /// Cổng tra cứu quen thuộc — giống hệt `Theme.of(context)`.
+  static UserScope of(BuildContext context) {
+    final scope =
+        context.dependOnInheritedWidgetOfExactType<UserScope>();
+    assert(scope != null, 'Không có UserScope nào phía trên context');
+    return scope!;
+  }
+
+  /// true → khi instance này bị thay (dữ liệu đổi), các dependent
+  /// rebuild. Provider dùng chính cơ chế này cho `watch`.
+  @override
+  bool updateShouldNotify(UserScope old) => name != old.name;
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: Scaffold(body: Center(child: Greeting())),
+    );
+  }
+}
+
+class Greeting extends StatelessWidget {
+  const Greeting({super.key});
+  @override
+  Widget build(BuildContext context) {
+    // Tra LÊN cây: không truyền `name` qua constructor tầng nào.
+    return Text('Xin chào ${UserScope.of(context).name}');
+  }
+}
+```
+
+Ba điều đáng nhìn chậm:
+
+- `Greeting` không nhận `name` qua constructor — nó **tra lên cây**
+  từ context của chính nó. `UserScope.of(context)` đi bộ ngược lên,
+  gặp `UserScope` gần nhất.
+- `dependOnInheritedWidgetOfExactType` vừa tra **vừa đăng ký**:
+  `UserScope` bị thay bằng instance có `name` khác → `updateShouldNotify`
+  trả `true` → `Greeting` tự rebuild. **Đó chính là `watch`** — Provider
+  chỉ gói nó lại.
+- Nếu `Greeting` nằm **trên** `UserScope` trong cây → `of` trả
+  `null` → crash. Lookup chỉ đi lên — quy tắc 1 của bài.
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -238,6 +300,56 @@ class AIMillionaireApp extends StatelessWidget {
    hai (settings), cấu trúc nào đổi? — *`AppDependencyScope.build`
    chuyển sang `MultiProvider(providers: [Provider.value(…),
    Provider.value(…)])` — chính là form senior.*
+
+## Tự làm (PREDICT)
+
+Cây widget bên dưới có 4 lần tra `context.read<MenuViewModel>()` /
+`context.watch<MenuViewModel>()` ở các vị trí khác nhau. Với mỗi lần:
+**tra được hay `ProviderNotFoundException`?** (và nếu được — `read`
+hay `watch` là hợp lệ?)
+
+```
+Provider<ProfileStore>.value(store)
+ └─ MaterialApp
+     └─ MenuScreen                       ← (A) build của MenuScreen
+          └─ ChangeNotifierProvider<MenuViewModel>(create: …)
+               └─ _MenuScreenView       ← (B) build của view này
+                    └─ Column
+                         ├─ Header      ← (C) build của Header
+                         └─ Footer     ← (D) onTap callback trong Footer
+```
+
+1. `(A)` — `build` của `MenuScreen` gọi `context.watch<MenuViewModel>()`.
+2. `(B)` — `build` của `_MenuScreenView` gọi `context.watch<MenuViewModel>()`.
+3. `(C)` — `build` của `Header` gọi `context.watch<MenuViewModel>()`.
+4. `(D)` — `onTap` của `Footer` gọi `context.watch<MenuViewModel>()`.
+
+:::note[Gợi ý]
+Hai câu hỏi theo thứ tự: (i) provider nằm **trên hay dưới** context
+đang tra? (ii) lệnh gọi đang ở **trong build** hay trong **callback**?
+Một câu hỏi sai ở bất kỳ cái nào cũng đủ crash.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. `(A)` — **`ProviderNotFoundException`.** Context của `MenuScreen`
+   nằm *trên* `ChangeNotifierProvider` — lookup đi lên thì không thấy
+   gì. Đây chính là lý do pattern "screen bọc provider quanh view":
+   ai đặt provider thì không tra được nó.
+2. `(B)` — **được.** Context của view ở dưới provider; `watch` trong
+   build là hợp lệ → subscribe, rebuild mỗi notify. Đây là chỗ bài
+   này đặt `watch`.
+3. `(C)` — **được.** Header càng sâu càng thấy provider (lookup đi
+   lên tìm *gần nhất* — bao nhiêu tầng ở giữa cũng không sao).
+4. `(D)` — **crash.** `onTap` chạy ngoài build → `watch` không được
+   phép subscribe ở đó (Provider ném lỗi ngay). Callback chỉ cần
+   *gọi* VM, không cần rebuild → `context.read<MenuViewModel>()`.
+
+Quy tắc nén: **trên mình không tra được, ngoài build không `watch`
+được.** Lỗi phổ biến nhất của Provider không phải "quên provider" —
+mà tra đúng kiểu ở sai context.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

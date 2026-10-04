@@ -148,18 +148,20 @@ Future<void> demo() async {
 ### Bước 2 — LEARNING EXAMPLE: `StreamController` + `broadcast`
 
 ```dart
-// LEARNING EXAMPLE — KHÔNG DÙNG TRONG APP HIỆN TẠI
+// Ví dụ độc lập — chạy được trong DartPad (pure Dart, không phải app):
 import 'dart:async';
 
-final controller = StreamController<int>();
-final sub = controller.stream.listen((v) => debugPrint('nhận $v'));
-controller.add(1);      // listener thấy 'nhận 1'
-controller.add(2);      // 'nhận 2'
-await sub.cancel();
-await controller.close(); // controller cũng cần đóng — tài nguyên giải phóng
+Future<void> main() async {
+  final controller = StreamController<int>();
+  final sub = controller.stream.listen((v) => print('nhận $v'));
+  controller.add(1);      // listener thấy 'nhận 1'
+  controller.add(2);      // 'nhận 2'
+  await sub.cancel();
+  await controller.close(); // controller cũng cần đóng — tài nguyên giải phóng
 
-// Muốn nhiều listener: StreamController<int>.broadcast() — event đi tới
-// mọi listener đang nghe (nhưng không đệm cho ai đến muộn).
+  // Muốn nhiều listener: StreamController<int>.broadcast() — event đi tới
+  // mọi listener đang nghe (nhưng không đệm cho ai đến muộn).
+}
 ```
 
 - `StreamController<T>()` — mặc định **single-subscription**: `stream`

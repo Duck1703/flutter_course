@@ -65,6 +65,77 @@ thay đổi sau load (áp result, reset) đều tự rebuild.
 Exhaustive trên enum, trả giá trị — gọn hơn `if/else` cho "chọn widget
 theo state".
 
+## Ví dụ độc lập — `ChangeNotifier` + `ListenableBuilder` trần
+
+Toàn bộ cơ chế trong ~55 dòng (DartPad — chế độ Flutter). Chú ý: ví dụ
+này **không phải** `MenuViewModel` — nó chỉ chứng minh contract:
+
+```dart
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: CounterScreen()));
+
+/// Model nhỏ tự quản state — object thường + cơ chế listener.
+class Counter extends ChangeNotifier {
+  int _count = 0;
+  int get count => _count; // getter public — ngoài đọc, không ghi
+
+  void increment() {
+    _count++;
+    notifyListeners(); // "ding" — báo có đổi, KHÔNG mang giá trị
+  }
+}
+
+class CounterScreen extends StatefulWidget {
+  const CounterScreen({super.key});
+  @override
+  State<CounterScreen> createState() => _CounterScreenState();
+}
+
+class _CounterScreenState extends State<CounterScreen> {
+  final Counter _counter = Counter(); // ai tạo — người đó dispose
+
+  @override
+  void dispose() {
+    _counter.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListenableBuilder(
+              listenable: _counter,
+              builder: (context, _) =>
+                  Text('${_counter.count}',
+                      style: const TextStyle(fontSize: 40)),
+            ),
+            GestureDetector(
+              onTap: _counter.increment,
+              child: const Text('bấm để tăng'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+Chạy: mỗi lần bấm, số tăng — và **không có `setState` nào trong
+`State`**. Ba điều đây là toàn bộ bài:
+
+- `_count++` đổi field; `notifyListeners()` chỉ phát tín hiệu —
+  `ListenableBuilder` nghe tín hiệu rồi **tự đọc lại** `_counter.count`.
+- `Counter` không biết widget nào đang nghe — decoupling đúng nghĩa:
+  thêm một `ListenableBuilder` thứ hai vào đâu đó, nó cũng cập nhật.
+- `_counter.dispose()` ở `dispose` — notifier là tài nguyên có owner.
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -209,6 +280,48 @@ Trong `_MenuScreenState` xoá: `_profile`, `_profileLoadFuture`,
    ghi đúng, `_profile` đổi đúng, nhưng ListenableBuilder không được
    báo → UI menu giữ stats cũ tới rebuild kế. Đúng kiểu bug "dữ liệu
    đúng mà màn hình sai".*
+
+## Tự làm (PREDICT)
+
+Ba thí nghiệm nhỏ trong `MenuViewModel` — dự đoán từng cái trước, rồi
+thử và sửa lại:
+
+1. **Bỏ `notifyListeners()`** ra khỏi một method đổi state (ví dụ
+   `resetProfile` — giữ đổi field nhưng bỏ dòng notify). Bấm nút kích
+   hoạt nó: `_profile` có đổi không (check bằng `debugPrint`)? UI có
+   đổi không?
+2. **Gọi `notifyListeners()` mà không đổi gì** — thêm tạm một nút gọi
+   `notifyListeners()` trần. `ListenableBuilder` có rebuild không?
+   (Thêm `debugPrint` trong `builder` để thấy.)
+3. `notifyListeners()` được gọi **hai lần liên tiếp** trong một method —
+   `builder` chạy mấy lần? Dự đoán rồi đếm bằng print.
+
+:::note[Gợi ý]
+`notifyListeners` không mang giá trị — nó là *tín hiệu*. Hỏi ngược:
+nếu nó là StateFlow thì (1) và (2) sẽ khác gì? Đó chính là chỗ
+analogy Kotlin gãy.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. `_profile` **đổi thật** (print chứng minh) nhưng **UI đứng yên** —
+   không ai được báo để đọc lại getter. Giống hệt bẫy `setState` của
+   M03 nhưng ở tầng VM: mutation ≠ notification, ở mọi tầng.
+2. `builder` **chạy lại** — `notifyListeners` báo vô điều kiện, kể cả
+   khi "không đổi gì". Đây là lý do senior guard `!=` trước khi notify:
+   *tín hiệu* không tự diff; muốn báo-khi-đổi-thật phải so sánh tay.
+3. `builder` chạy **hai lần** (hoặc coalesce tuỳ framework — nhưng
+   nguyên tắc: mỗi notify là một tín hiệu riêng, không "gộp thông minh"
+   theo giá trị). Một quy tắc sạch: một method nên notify **một lần**,
+   ở cuối, sau khi mọi field đã ở trạng thái nhất quán — để listener
+   không bao giờ đọc được "state nửa chừng".
+
+Điểm cốt lõi: `ChangeNotifier` + `ListenableBuilder` là contract
+*ding-then-read*. Khác `StateFlow` (mang giá trị, tự diff theo
+`==`), khác `Stream` (event theo thời gian, có subscription) — ba cơ
+chế, ba mental model riêng.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

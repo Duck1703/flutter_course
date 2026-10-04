@@ -1,8 +1,9 @@
 # Current State
 
 Project: AI Millionaire — guided Flutter course
-Phase: Step 20 — M29 final senior-alignment sweep — COMPLETE.
-M01–M29 ALL MILESTONES COMPLETE. Course production run finished.
+Phase: Step 23 — M01–M13 pedagogy enrichment — COMPLETE.
+M01–M29 course complete; early-course learner practice remediated.
+Awaiting supervisor review before Step 24.
 
 ## Completed
 
@@ -590,10 +591,46 @@ M01–M29 ALL MILESTONES COMPLETE. Course production run finished.
   Argus site QA → SITE_APPROVED → sequential replay → final
   regression → post-PASS mutation check → canonical sync.
 
+- Step 21: **Independent pedagogy + senior-fidelity audit** —
+  external audit of all 132 lessons. Verdict
+  `NOT_RELEASE_READY_PEDAGOGY`; senior fidelity `PASS`; copy/port
+  dependence risk MEDIUM. Ratings: 58 STRONG / 65 ACCEPTABLE /
+  9 NEEDS_ENRICHMENT / 0 REWRITE. Findings: 0 critical, 4 high,
+  5 medium, 3 low. Principal defect: M01–M13 independent practice —
+  13/44 lessons had `## Tự làm`; no isolated runnable examples before
+  M14. Reports: `report/STEP-21-FINAL-PEDAGOGY-SENIOR-FIDELITY-AUDIT.md`,
+  `STEP-21-LESSON-PEDAGOGY-HEATMAP.md`,
+  `STEP-21-PEDAGOGY-FINDINGS-REGISTER.md`.
+- Step 22: **Pedagogy-QA governance hardening** — independent
+  Pedagogy Reviewer role + `course-pedagogy-review` skill +
+  `PEDAGOGY-REVIEW-CONTRACT.md`; dual technical+pedagogy review on the
+  same immutable `CONTENT_REVISION` required by Atlas; both reviews
+  invalidated by learner-facing edits; gates G17–G23 assigned to
+  Pedagogy Reviewer, G24 stays with Argus. Commit `97e85ed` on `main`.
+  Report: `report/STEP-22-PEDAGOGY-QA-SYSTEM-HARDENING.md`.
+- Step 23: **M01–M13 pedagogy enrichment** — COMPLETE. Additive
+  remediation only: 33 lesson files edited; `## Tự làm` coverage
+  13/44 → **44/44**; 20 lessons now carry `## Ví dụ độc lập`
+  runnable examples (DartPad-friendly, zero new deps). Exercise levels:
+  PREDICT-dominant, PRODUCE/MODIFY at M02–M06, DEBUG at M04/M10.
+  Three prereq/answer-key drifts caught and fixed (M03 `${}` leak,
+  M09 dialog wiring, M10 `_ResultAction` contract). Per-milestone
+  dual review + Atlas verdict + 167-page build ×13 — all PASS.
+  Evidence: `AI_HANDOFF/work/step-23-pedagogy-remediation/m01–m13/`.
+  Regression: analyze clean, **396/396 tests**, learner app zero diff,
+  M14–M29 untouched, no M30.
+  Report: `report/STEP-23-M01-M13-V2-PEDAGOGY-ENRICHMENT.md`.
+  Step-23A closeout verification: **PASS** — `flutter build web` PASS
+  (real run), CORE isolated-example denominator 34/34 COVERED (0
+  missing), edited-file arithmetic reconciled (34, report typo
+  corrected), 13/13 original exercises accounted, 44/44 `Tự làm`
+  independently verified, zero leaks, senior/app/M14+ untouched.
+  Report: `report/STEP-23A-CLOSEOUT-VERIFICATION.md`.
+
 ## Next recommended task
-Course production run COMPLETE (M01–M29). Final learner state:
-analyze clean, 396/396 tests, `flutter build web` PASS, site 167
-pages, zero ACTIVE_TEMPORARY fidelity rows. Remaining human-facing
-options: device/live verification passes (`REAL_DEVICE_*`,
-`LIVE_SUPABASE_*` flags currently NOT_PERFORMED), publish/deploy
+Step 23 COMPLETE pending supervisor review. Step-24 candidate:
+targeted re-audit of exercise *quality* (decision-required,
+verifiability) + M14–M29 spot-check under the new dual-review bar.
+Remaining human-facing options: device/live verification passes
+(`REAL_DEVICE_*`, `LIVE_SUPABASE_*` NOT_PERFORMED), publish/deploy
 authorization, or new-scope requests.

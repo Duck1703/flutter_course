@@ -75,6 +75,47 @@ Ba quy tắc đi kèm:
 | `static` | `static String formatThousands(int v)` | Hàm của *class*, gọi `UserProfileData.formatThousands(…)` — không cần instance |
 | `StringBuffer` | `buffer.write('…')` | Ghép chuỗi hiệu quả trong vòng lặp |
 
+## Ví dụ độc lập — `Wallet` thiếu `==` rồi có `==`
+
+Vì sao `==` cần viết tay? Xem trực tiếp hậu quả khi thiếu nó — chạy trong
+DartPad:
+
+```dart
+class Wallet {
+  final int coins;
+  const Wallet({this.coins = 0});
+
+  Wallet copyWith({int? coins}) => Wallet(coins: coins ?? this.coins);
+}
+
+void main() {
+  const a = Wallet(coins: 5);
+  const b = Wallet(coins: 5);
+  print(a == b);         // ??? — dự đoán trước khi chạy
+  print(identical(a, b)); // ???
+
+  final c = a.copyWith(coins: 9);
+  print(a.coins); // 5 — a không đổi
+  print(c.coins); // 9 — object MỚI
+}
+```
+
+Output: `a == b` in **`true`** — nhưng **không phải** vì `Wallet` biết so
+giá trị. Hai `const` giống hệt nhau được Dart **canonicalize** thành cùng
+một instance (`identical(a, b)` cũng `true`), nên `==` mặc định (so
+identity) tình cờ đúng. Bẫy lộ ra khi hai instance *thật sự khác nhau*:
+
+```dart
+final d = Wallet(coins: 5); // không const!
+print(a == d);            // false — cùng dữ liệu, khác instance
+```
+
+`false` — dù cả hai "đáng lẽ" bằng nhau. Đây chính là lý do bài này viết
+`operator ==` + `hashCode`: không có chúng, `expect(profile, expected)`
+ở bài 4 sẽ fail dù mọi field khớp, và `Set`/`Map` không nhận ra "object
+này đã có". Thêm `==`/`hashCode` đúng chuẩn (như bạn sẽ viết cho
+`UserProfileData`) vào `Wallet` → `a == d` trả `true`.
+
 ## Flutter cần dùng
 
 Không có API Flutter mới — toàn bộ bài này là **pure Dart**. Đó là điểm
@@ -331,6 +372,63 @@ a.copyWith(expForNextLevel: 400).gainExp(500).level
    và 100% chỉ là trạng thái quá độ ngay trước khi `gainExp` lên cấp.
 4. `const UserProfileData()` gọi hai nơi tạo mấy object? — Một: các `const`
    giống hệt nhau được canonicalize thành cùng instance.
+
+## Tự làm (PRODUCE)
+
+Viết một method mới cho `UserProfileData`, tự quyết hai quyết định thiết
+kế trước khi code:
+
+```dart
+UserProfileData spendExp(int amount)
+```
+
+- "Tiêu" EXP: `currentExp` giảm đi `amount`.
+- Nếu `amount` lớn hơn `currentExp` — để âm, kẹp về 0, hay trừ lùi cấp?
+  **Bạn quyết** và viết theo quyết định đó.
+- Có thể **hạ level** không? Tức `gainExp` lên cấp được thì `spendExp`
+  xuống cấp được không — hay level chỉ đi một chiều?
+
+Method phải trả **object mới** (bất biến). Viết xong, verify nhanh trong
+`main()` scratch hoặc DartPad:
+
+```dart
+const p = UserProfileData(currentExp: 100, expForNextLevel: 400);
+print(p.spendExp(30).currentExp);  // dự đoán: ?
+print(p.spendExp(150).currentExp); // dự đoán: ?
+print(p.currentExp);               // phải còn nguyên 100
+```
+
+:::note[Gợi ý]
+`gainExp` dùng `copyWith` để trả instance mới — `spendExp` cũng chỉ là
+`copyWith(currentExp: …)` với logic tính `exp` mới. Câu hỏi khó không
+nằm ở code mà ở ngữ nghĩa: EXP có được phép âm? Level lùi được không —
+và nếu lùi, `expForNextLevel` lùi theo kiểu gì khi curve là một chiều?
+:::
+
+<details><summary>Đáp án</summary>
+
+Một thiết kế hợp lý (kẹp 0, không lùi cấp — giống cách nhiều game xử lý
+"điểm đã đạt"):
+
+```dart
+UserProfileData spendExp(int amount) {
+  var exp = currentExp - amount;
+  if (exp < 0) exp = 0; // kẹp: EXP không âm
+  return copyWith(currentExp: exp);
+}
+```
+
+- `spendExp(30)` → `70`; `spendExp(150)` → `0`; `p.currentExp` vẫn `100`
+  — object cũ nguyên vẹn, đúng luật bất biến.
+- **Không lùi level** là lựa chọn chặt chẽ hơn: `gainExp` tăng
+  `expForNextLevel` theo curve ×1.5 một chiều — không có phép tính ngược
+  "đáng lẽ level nào". Cho `spendExp` hạ level sẽ đòi một curve thuận-
+  nghịch mà model chưa có. Đây là quyết định *thiết kế* — nếu bạn chọn
+  lùi cấp và xử lý được curve hai chiều, đó cũng là đáp án có thể bảo
+  vệ được; điểm bắt buộc là phải **quyết có lý do**, không phải copy
+  hình dáng `gainExp`.
+
+</details>
 
 ## Cố ý chưa làm
 

@@ -80,6 +80,57 @@ buộc*, không phải boilerplate mù.
 | `tester.tap(finder)` | Chạm vào widget tìm được |
 | `findsOneWidget`/`findsNothing`/`findsNWidgets(n)` | Matcher số lượng |
 
+## Ví dụ độc lập — widget test tối thiểu
+
+Trước khi test `GameScreen`, xem toàn bộ vòng đời một widget test trên
+một widget 20 dòng (trong `test/`, hoặc DartPad không hỗ trợ test — đây
+là ví dụ chạy bằng `flutter test`):
+
+```dart
+// widget dưới test:
+class Counter extends StatefulWidget {
+  const Counter({super.key});
+  @override
+  State<Counter> createState() => _CounterState();
+}
+
+class _CounterState extends State<Counter> {
+  int _count = 0;
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Text('$_count'),
+      GestureDetector(
+        onTap: () => setState(() => _count++),
+        child: const Text('tăng'),
+      ),
+    ]);
+  }
+}
+
+// test:
+testWidgets('bấm tăng thì số đổi 0 → 1', (tester) async {
+  await tester.pumpWidget(const MaterialApp(home: Counter()));
+  expect(find.text('0'), findsOneWidget);   // trạng thái đầu
+
+  await tester.tap(find.text('tăng'));      // mô phỏng chạm
+  await tester.pump();                      // cho build chạy lại
+
+  expect(find.text('1'), findsOneWidget);   // trạng thái sau
+});
+```
+
+Bốn động tác là toàn bộ nghề của widget test:
+
+- `pumpWidget` — render cây widget vào môi trường test (không phải
+  `runApp` — không có device).
+- `find.text('0')` + `findsOneWidget` — "phải có đúng một widget hiển
+  thị '0'": assert về **những gì người dùng thấy**, không assert field.
+- `tester.tap` — chạm thật vào widget tìm được, kích hoạt `onTap`.
+- `tester.pump()` — cho một frame chạy: `setState` đã lên lịch rebuild,
+  `pump` là frame đó. Không `pump` → UI trong test không đổi (giống
+  hệt việc quên `setState` trong app!).
+
 ## Android / Compose bridge
 
 - SIMILARITY: `tester.tap(find.text(…))` ≈ `onNodeWithText().performClick()`

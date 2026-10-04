@@ -77,6 +77,53 @@ dữ liệu thay đổi được trong widget tree.
 | `GestureDetector` | Widget bắt gesture — `onTap:` nhận `VoidCallback` |
 | `widget.field` | Trong `State`, `widget` trỏ về instance Widget hiện tại — đọc param của widget (bài 3 dùng) |
 
+## Ví dụ độc lập — `LightSwitch`
+
+Trước khi chuyển `MenuScreen`, nhìn toàn bộ cặp Widget+State trong ~25
+dòng — không cần app Millionaire. Chạy được trong DartPad (chế độ
+Flutter):
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(
+      home: Scaffold(body: Center(child: LightSwitch())),
+    ));
+
+class LightSwitch extends StatefulWidget {
+  const LightSwitch({super.key});
+
+  @override
+  State<LightSwitch> createState() => _LightSwitchState();
+}
+
+class _LightSwitchState extends State<LightSwitch> {
+  bool _on = false; // ← chỗ duy nhất "nhớ" — nằm trong State, không trong widget
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => setState(() => _on = !_on),
+      child: Icon(
+        _on ? Icons.lightbulb : Icons.lightbulb_outline,
+        size: 64,
+        color: _on ? Colors.amber : Colors.grey,
+      ),
+    );
+  }
+}
+```
+
+Đọc theo mental model vừa học:
+
+- `LightSwitch` **không có field nào** — widget vẫn bất biến trọn vẹn.
+- `_on` sống trong `_LightSwitchState` — mutable, sống xuyên rebuild.
+- Tap → `setState` báo dirty → frame sau `build()` đọc `_on` mới → icon
+  và màu đổi. UI = hàm của state, đúng `UI = f(state)`.
+
+Đây chính là hình dáng `_MenuScreenState` sắp viết — chỉ khác tên field
+và widget hiển thị.
+
 ## Cầu nối Android / Compose
 
 - SIMILARITY: field trong `State` + `setState` ≈ `remember { mutableStateOf() }`
@@ -424,6 +471,57 @@ mô tả UI; cái **giữ** `_playTapCount` là `State` sống lâu.
    không tham số, không trả về; dùng cho `onTap`/`onPressed`.
 4. Predict: đặt `_playTapCount` trong `MenuScreen` (widget) sẽ ra sao? —
    Compile error: widget bất biến, không cho field mutable.
+
+## Tự làm (MODIFY)
+
+Sản phẩm muốn caption dưới nút hiển thị `'Lần bấm cuối: chẵn'` hoặc
+`'lẻ'` thay vì số đếm. **Trước khi sửa code**, tự quyết hai câu:
+
+1. Bạn cần **field state mới** (ví dụ `_lastWasEven`) hay suy ra từ state
+   đang có? Chọn một hướng và nêu lý do.
+2. Nếu suy ra: chỗ nào tính — trong `setState`, trong `build`, hay trong
+   `_onPlayTap`? Vì sao chỗ đó là chỗ đúng?
+
+Sau đó sửa `Text('Số lần bấm: $tapCount')` trong `_PlayButton` thành dạng
+chẵn/lẻ, `flutter analyze` sạch, reload và bấm vài lần để kiểm chứng.
+
+:::note[Gợi ý]
+Nguyên tắc: *không lưu thứ gì suy ra được từ state đã lưu* — nó sẽ lệch
+nguồn sự thật. `_playTapCount % 2 == 0` là đủ dữ kiện.
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+1. **Suy ra — không thêm field.** `_lastWasEven` sẽ là nguồn sự thật thứ
+   hai cho cùng một sự thật (`_playTapCount` đã chứa thông tin chẵn/lẻ);
+   lúc nào cũng có nguy cơ quên cập nhật đồng bộ. State nên lưu *dữ kiện
+   gốc*, UI tính phần suy diễn.
+2. Tính **trong `build`** — vì (a) nó chỉ ảnh hưởng hiển thị, (b) `build`
+   luôn chạy lại khi `_playTapCount` đổi nên giá trị suy ra không bao giờ
+   cũ. Đặt trong `setState`/`_onPlayTap` nghĩa là tính một lần lúc event —
+   dư thừa, và lại là lưu thứ suy ra được.
+
+Một cách sửa:
+
+```dart
+// _PlayButton.build — thay Text caption
+Text(
+  tapCount % 2 == 0 ? 'Lần bấm cuối: chẵn' : 'Lần bấm cuối: lẻ',
+  style: const TextStyle(
+    color: MenuTokens.textSecondary,
+    fontSize: 13,
+  ),
+),
+```
+
+(`%` = toán tử chia lấy dư như Kotlin; ternary `cond ? a : b` đã gặp ở
+bài này — suy diễn xảy ra ngay trong `build`, không field mới.) Bấm
+1,3,5… lần → "lẻ"; 0,2,4… → "chẵn".
+
+Điều bài tập kiểm tra: **state nguồn vs state suy diễn** — quyết định
+thiết kế thật của mọi hệ state management sau này (VM derive cũng theo
+quy tắc này).
+</details>
 
 ## Cố ý chưa làm
 

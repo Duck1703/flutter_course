@@ -263,6 +263,51 @@ bridge khi event về, không phải nút bấm.
    `unawaited` là dấu chủ đích: code nói rõ Future này được bỏ — đọc
    và analyze đều không nhầm là quên.*
 
+## Tự làm (PREDICT)
+
+Ba khâu của bridge — subscribe ở `didChangeDependencies`, guard+kết
+nối lại khi dep đổi, cancel ở `dispose` — mỗi khâu ứng với một lỗi
+nếu làm sai. Dự đoán hậu quả của từng biến thể:
+
+1. **Subscribe trong `initState`** thay vì `didChangeDependencies` —
+   `context.read<MenuViewModel>()` ở đó trả gì?
+2. **Không guard, không cancel sub cũ** trong `didChangeDependencies` —
+   hàm này chạy lần thứ hai (dependency đổi) thì `MenuGameRequested`
+   được xử lý mấy lần?
+3. **Quên `cancel()` trong `dispose`** — widget bị gỡ khỏi cây nhưng
+   VM còn sống và vẫn phát event: chuyện gì xảy ra khi event tới?
+
+:::note[Gợi ý]
+Câu (1): `context.read` là tree-lookup theo InheritedWidget —
+`initState` chạy *trước* khi element được phép depend vào cây.
+Câu (2): mỗi `listen` là một subscription riêng — không "ghi đè".
+Câu (3): listener của bạn là closure giữ reference tới State đã chết.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. **Throw ngay** — `initState` chạy trước khi element có thể
+   `dependOnInheritedWidgetOfExactType`; tra provider ở đó là lỗi
+   framework. Đó là lý do chỗ subscribe là `didChangeDependencies`:
+   lần đầu chạy sau frame đầu, dep đã sẵn sàng.
+2. **Xử lý đúp** — sub cũ vẫn sống + sub mới gắn thêm → hai listener
+   cùng nghe một broadcast stream → `_handleUiEvent` chạy hai lần →
+   `Navigator.push` hai lần (hai route game chồng nhau). Đúng cái bug
+   mà guard `if (_viewModel == viewModel) return;` + `cancel()` sub
+   cũ ngăn: mỗi attach chỉ để lại đúng một subscription.
+3. **Leak + crash tiềm ẩn** — stream giữ closure → closure giữ State
+   đã unmount → event tới vẫn gọi `_handleUiEvent` trên State chết:
+   `setState`/`context`/Navigator trên element đã deactivate → lỗi
+   lifecycle, hoặc điều hướng "ma" từ một màn hình không còn tồn tại.
+   `dispose` phải `await`-free cancel mọi handle — đó là điểm chết của
+   State, mọi tài nguyên nó sở hữu phải được trả.
+
+Ba khâu = ba câu trả lời cho "subscribe ở đâu — dep đổi thì sao —
+chết thì ai dọn". Bỏ một khâu là một class bug cụ thể, không phải
+"code không sạch".
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - **Widget bridge riêng** (`_MenuScreenEventBridge` wrapper) — senior

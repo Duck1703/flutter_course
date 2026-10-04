@@ -273,6 +273,55 @@ Nhớ đổi `_showResultDialog()` cũ thành `Future<void>` và thêm import
    chưa chốt khi hết giờ. Đếm ở `_submitAnswer` diễn tả đúng "đã bấm
    CHỐT".*
 
+## Tự làm (PREDICT)
+
+`push<GameResult>` trả `Future<GameResult?>` — menu `await` nó. Dự đoán
+`result` trên 6 đường về (hai đường cuối đi qua dialog `_ResultAction`
+của bài này):
+
+1. Ván kết thúc → dialog → bấm **CHƠI LẠI**.
+2. Ván kết thúc → dialog → bấm **VỀ MENU**.
+3. Người chơi bấm **← trên AppBar** giữa ván.
+4. Người chơi bấm **back hệ điều hành** (Android back gesture).
+5. **Phản biện:** nếu VỀ MENU vẫn giữ `popUntil(route.isFirst)` của
+   M09 thay vì đường "dialog trả action → `pop(result)`" — menu nhận
+   gì, và stats có đổi không?
+
+Với mỗi đường: Future của menu có hoàn thành không? `result` là gì?
+
+:::note[Gợi ý]
+Dialog bây giờ chỉ trả một *action* (`pop(_ResultAction.…)`) — game
+đọc action rồi mới quyết `pop(result)` hay restart. AppBar/system
+back là `maybePop` không result. `popUntil` là pop *không result*
+theo predicate — và lesson liệt kê nó trong Lỗi hay gặp.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. Future **chưa** hoàn thành — dialog pop với `playAgain`, game
+   `_restart()` và **route game còn trên stack** → `push` vẫn treo.
+   (Đúng: ván mới đang chơi, result sẽ đến khi route game rời.)
+2. `result` = `GameResult` — dialog pop với `backToMenu` → game
+   `Navigator.of(context).pop(result)` → GameRoute rời stack kèm
+   result → menu apply stats/save. Hai bước tuần tự: dialog trả
+   action (awaited), rồi route game pop kèm kết quả.
+3. `null` — AppBar back là pop không result; Future hoàn thành với
+   `null`. Menu phải handle `result == null` ("thoát giữa ván": không
+   apply gì — lựa chọn thiết kế hợp lệ, không phải lỗi).
+4. `null` — giống (3); system back cũng là pop không result →
+   `Future<GameResult?>` là contract đúng: kiểu nullable là bắt buộc.
+5. `null` và **stats không đổi** — `popUntil` gỡ GameRoute không kèm
+   result → menu nhận `null` y hệt đường (3)/(4): ván chơi bị "quên"
+   về mặt dữ liệu. Đây chính là bug trong Lỗi hay gặp số 2 — và lý do
+   flow mới là "dialog action → `pop(result)`": result chỉ đi qua
+   `pop` của đúng route game.
+
+Bài học: **kết quả route là kênh optional** — mọi cách rời route không
+qua `pop(result)` đều trả `null` về phía await. Viết `await push<T>`
+mà không nghĩ đến `null` là viết một nửa contract.
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - Trả result bằng `RouteObserver`/navigation controller — senior có

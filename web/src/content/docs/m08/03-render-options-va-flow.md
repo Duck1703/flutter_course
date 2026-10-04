@@ -295,6 +295,51 @@ tap TIẾP
 3. Vì sao `correctIndex` vẫn hiện xanh cả khi user chọn đúng? — *`_optionState`
    ưu tiên `correctIndex` trước `selectedIndex` sau chốt — đúng luôn xanh.*
 
+## Tự làm (PREDICT)
+
+Hai tình huống — viết dự đoán trước, rồi thử trong app:
+
+**Tình huống 1 — quên `setState`.** Trong `_onSelectAnswer` (hàm được gọi
+khi bấm ô đáp án), bỏ `setState` ra ngoài để chỉ còn:
+
+```dart
+_selectedIndex = index; // thay vì setState(() => _selectedIndex = index)
+```
+
+Dự đoán: bấm ô A — UI có đổi không? Field `_selectedIndex` có đổi không?
+Thêm `debugPrint('selected=$_selectedIndex')` để kiểm chứng.
+
+**Tình huống 2 — rebuild scope.** Sau khi chọn ô A (đã sửa lại
+`setState`), dự đoán những widget nào **build lại**: chỉ ô A? Bốn ô đáp
+án? Cả `Column` của `GameScreen`? Và vì sao đó vẫn chấp nhận được ở đây
+dù M06 dạy "thu hẹp rebuild"?
+
+:::note[Gợi ý]
+Tình huống 1 là bài M03/02 quay lại đòi nợ: `setState` không *đổi* dữ
+liệu — nó *báo* rằng dữ liệu đã đổi. Tình huống 2: `setState` thuộc
+`_GameScreenState` → `build()` của ai chạy lại?
+:::
+
+<details><summary>Đáp án</summary>
+
+**Tình huống 1:** Field `_selectedIndex` **đổi thật** (print chứng
+minh), nhưng **UI đứng yên** — không có `setState` nên Flutter không
+lên lịch rebuild; ô A không sáng viền cho tới khi một `setState` khác
+tình cờ chạy. Đây là "mutation without notification" — bẫy y hệt bài
+M03/02 bạn đã gặp, lần này trên state phức tạp hơn.
+
+**Tình huống 2:** `setState` ở `_GameScreenState` → `build()` của
+`GameScreen` chạy lại → **toàn bộ** subtree phía dưới (question card, 4
+ô đáp án, nút chốt) được *build* lại. Chấp nhận được vì: (a) subtree
+nhỏ (~10 widget); (b) phần lớn là `const` hoặc tham số giống hệt →
+Flutter tái sử dụng element/instance, chi phí thực chỉ ở các widget có
+tham số đổi (4 ô viền). "Thu hẹp rebuild" của M06 vẫn đúng — nhưng nó
+là tối ưu khi subtree lớn/đắt, không phải nghĩa vụ ở mọi màn hình; ở
+đây giới hạn lại là `StreamBuilder`-style đặt-sâu, không phải tách
+`setState` xuống từng ô.
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - `ListView`/`ListView.builder` — bank cố định 4–5 item, `Column` đủ;

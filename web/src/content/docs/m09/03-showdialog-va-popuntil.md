@@ -56,6 +56,69 @@ Ba ý nghĩa:
 báo khi thiếu một giá trị enum. Đó là phòng thủ miễn phí khi sau này
 thêm lý do kết thúc.
 
+## Ví dụ độc lập — `showDialog` tối thiểu
+
+Trước khi gặp dialog kết quả, xem một dialog trần trong app ~50 dòng
+(DartPad — chế độ Flutter):
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: DemoScreen()));
+
+class DemoScreen extends StatelessWidget {
+  const DemoScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: GestureDetector(
+          onTap: () {
+            showDialog<void>(
+              context: context,
+              builder: (dialogContext) => AlertDialog(
+                title: const Text('Xoá mục này?'),
+                content: const Text('Hành động không thể hoàn tác.'),
+                actions: [
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.of(dialogContext).pop(),
+                    child: const Text('HUỶ'),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.of(dialogContext).pop(),
+                    child: const Text('XOÁ'),
+                  ),
+                ],
+              ),
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.blue,
+            child: const Text('Mở dialog',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+Chạy và thử ba điều:
+
+- Bấm "Mở dialog" → dialog hiện **và nền mờ đi**: `showDialog` đã push
+  một `DialogRoute` lên đỉnh stack — đúng mental model route của M07.
+- Bấm ra vùng nền mờ → dialog đóng: `barrierDismissible` mặc định `true`.
+  (Dialog game sẽ đặt `false` — bắt người chơi chọn nút.)
+- `dialogContext` là context **của dialog**: `Navigator.of(dialogContext)
+  .pop()` đóng đúng route dialog. (Trong ví dụ đơn giản này dùng context
+  ngoài cũng "chạy được" — nhưng thói quen đúng quan trọng khi dialog
+  bắn từ chỗ sâu hơn.)
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -263,6 +326,41 @@ CHƠI LẠI inline trong `build` — dialog thay thế nó. `build` giờ chỉ 
    gỡ route rồi reset — nếu `_restart` trước, setState chạy khi dialog
    vẫn đóng vai route trên cùng và người chơi thoáng thấy câu 1 dưới
    dialog.*
+
+## Tự làm (PREDICT)
+
+Stack đang là `[Menu, Game]` và dialog kết quả vừa hiện
+(`barrierDismissible: false`). Vẽ stack sau mỗi hành động — rồi kiểm
+chứng trong app:
+
+1. Bấm ra vùng nền mờ.
+2. Bấm nút **CHƠI LẠI** (đọc code: nó gọi gì — `pop` hay `popUntil`?).
+3. Sau khi dialog hiện lại ở ván tiếp theo, bấm **VỀ MENU**.
+4. Câu phản biện: thay `popUntil((r) => r.isFirst)` bằng hai lần `pop()`
+   liên tiếp — dự đoán điều gì có thể sai?
+
+:::note[Gợi ý]
+`barrierDismissible: false` có nghĩa chữ nghĩa. Đọc lại `Hiểu code` /
+`Build it step by step` của bài: nút CHƠI LẠI cần giữ game route, nút
+VỀ MENU cần gỡ cả dialog lẫn game. `pop()` tưởng "gỡ một cái" — nhưng
+pop animation bất đồng bộ: pop thứ hai đập vào stack đang biến đổi.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. **Không gì xảy ra** — `barrierDismissible: false` nuốt tap nền;
+   stack vẫn `[Menu, Game, DialogRoute]`.
+2. CHƠI LẠI chỉ `pop` **route dialog** (kèm reset state game) → stack
+   `[Menu, Game]` — ván mới bắt đầu ngay trong route cũ.
+3. VỀ MENU `popUntil((route) => route.isFirst)` → gỡ DialogRoute **và**
+   GameRoute một lượt → `[Menu]`.
+4. Hai `pop()` liên tiếp là race: pop đầu khởi động animation đóng
+   dialog, pop thứ hai có thể trúng vào stack chưa ổn định — route sai
+   bị gỡ, hoặc hành vi lệ thuộc timing. `popUntil` là một thao tác
+   nguyên tử "gỡ tới khi predicate đúng" — đúng công cụ cho "về tới
+   đâu", và cũng là lý do `canPop`-style guard tồn tại.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

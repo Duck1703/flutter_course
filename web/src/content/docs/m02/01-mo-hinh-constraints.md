@@ -68,6 +68,46 @@ Hệ quả cần khắc sâu:
 | `crossAxisAlignment` | Canh con theo **trục ngang** (`start`/`center`/`stretch`…) |
 | `MainAxisAlignment` | Canh con theo trục chính (dọc) — dùng khi có thừa chỗ |
 
+## Ví dụ độc lập — cái hộp "tham lam"
+
+Trước khi xếp menu, hãy xem bước 2 của câu thần chú hoạt động một mình —
+không cần app Millionaire. Chạy được trong DartPad (chế độ Flutter):
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MaterialApp(home: Demo()));
+
+class Demo extends StatelessWidget {
+  const Demo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        color: Colors.blue,
+        width: 99999,
+        height: 100,
+      ),
+    );
+  }
+}
+```
+
+Dự đoán trước khi chạy: hộp xanh rộng bao nhiêu — `99999`?
+
+- `Center` truyền XUỐNG constraints "con được rộng `0..màn hình`, cao
+  `0..màn hình`".
+- `Container` *muốn* `99999` nhưng phải chọn trong khoảng được cấp → nó
+  chọn tối đa: **rộng hết màn hình, cao 100**. Kết quả: một thanh xanh
+  full-width nằm giữa màn hình.
+- Đổi `width: 99999` thành `width: 50` → hộp nhỏ `50×100` nằm giữa — vì
+  `50` nằm trong khoảng cho phép nên được chọn nguyên.
+
+Đây là toàn bộ nghịch lý "muốn to hơn phải đổi cha": con đề nghị, cha
+phê duyệt. `Text` ôm nội dung cũng là cùng cơ chế — nó *chọn* kích thước
+theo glyphs, trong khoảng cha cho.
+
 ## Cầu nối Android / Compose
 
 - SIMILARITY: `Column` ≈ `Column` của Compose — xếp con dọc, có
@@ -194,6 +234,58 @@ Center  → đặt Column vào giữa                          (parent sets posi
 3. Muốn một widget rộng hết cha — sửa widget đó hay cha nó? — Sửa cách *cha*
    phân phối constraint (ví dụ `Expanded`, `stretch`), widget con chỉ chọn
    trong khoảng được cấp.
+
+## Tự làm (PREDICT)
+
+Câu hỏi hai-tầng — "canh giữa" xảy ra ở hai chỗ khác nhau. Tưởng tượng cây
+sau trong `body` của một `Scaffold` (màn hình rộng 400):
+
+```dart
+Center(
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text('A'),
+      Text('BBBB'),
+      Text('CC'),
+    ],
+  ),
+)
+```
+
+**Trước khi chạy**, vẽ ra giấy (hoặc tưởng tượng) và trả lời:
+
+1. Cả `Column` nằm ở đâu trên màn hình?
+2. Từng `Text` nằm ở đâu *trong* cột — căn trái màn hình, giữa màn hình,
+   hay giữa… thứ gì?
+3. Đổi `crossAxisAlignment: CrossAxisAlignment.start` — cả cột có dịch
+   chuyển không? Từng chữ có?
+
+Chạy thử trong `WelcomeScreen` của app (thay `child` của `Center` hiện có)
+hoặc DartPad, đối chiếu từng câu trả lời, rồi khôi phục.
+
+:::note[Gợi ý]
+`Center` canh **cột**; `crossAxisAlignment` canh **con trong cột**. Cột
+`mainAxisSize: min` rộng bằng đúng con rộng nhất — `start` của nó không
+phải mép màn hình.
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+1. `Column` nằm chính giữa màn hình (cả ngang lẫn dọc) — `Center` đặt con
+   ở giữa vùng nó được cấp.
+2. Mặc định `crossAxisAlignment: center` → mỗi `Text` canh giữa **trục
+   ngang của cột**, tức giữa bề rộng của con rộng nhất (`BBBB`) — không
+   phải canh giữa màn hình (trùng nhau ở đây chỉ vì cột đã nằm giữa).
+3. Với `start`: **cả cột không dịch** (Center vẫn canh giữa nó), nhưng ba
+   chữ bám **mép trái của cột** = mép trái của `BBBB` — lệch vào trong so
+   với mép màn hình, chứ không chạm mép màn hình. Nếu bạn đoán "bám trái
+   màn hình" — đó chính là bẫy hai-tầng bài này muốn vạch ra.
+
+Điều bài tập kiểm tra: bạn phân biệt được *vị trí của container* với *vị
+trí của con trong container* — hai quyết định của hai cha khác nhau, đúng
+bước 3 của constraint model.
+</details>
 
 ## Cố ý chưa làm
 

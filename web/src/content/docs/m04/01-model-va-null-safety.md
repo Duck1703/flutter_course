@@ -109,6 +109,42 @@ kiểu "có thể null". Mọi hậu quả đi từ đây:
 ảnh đại diện → `null` là giá trị hợp lệ, và header sẽ hiển thị icon mặc định
 cho trường hợp đó (bài 3).
 
+## Ví dụ độc lập — `Badge` (pure Dart)
+
+Trước khi viết model thật, cảm nhận "class + named params + default +
+nullable" trong một file Dart thuần — chạy được trong DartPad (chế độ
+Dart, không cần Flutter):
+
+```dart
+class Badge {
+  final String title;
+  final int tier;
+  final String? note;
+
+  const Badge({required this.title, this.tier = 1, this.note});
+}
+
+void main() {
+  const a = Badge(title: 'Newcomer');
+  const b = Badge(title: 'Veteran', tier: 5, note: 'rare');
+
+  print(a.title);          // 'Newcomer'
+  print(a.tier);           // 1 — default tự điền
+  print(a.note);           // null — nullable không truyền thì null
+  print(a.note ?? 'none'); // 'none' — ?? thế chỗ khi null
+  print(b.note ?? 'none'); // 'rare'
+}
+```
+
+Ba quy tắc thấy ngay trong output:
+
+- `required this.title` — thiếu là lỗi compile; `this.tier = 1` — không
+  truyền thì nhận default; `this.note` (kiểu `String?`) — không truyền
+  thì `null`, không lỗi.
+- `print` là `print` Dart thuần — model không cần Flutter để chạy.
+  `UserProfileData` bạn sắp viết cũng là class thuần thế này: đó là lý
+  do bài 4 test được nó mà không cần pump widget nào.
+
 ## Flutter cần dùng
 
 Không có widget mới. Điểm duy nhất chạm Flutter: **cấu trúc thư mục**. Ta
@@ -276,6 +312,69 @@ của nó xuất hiện ở bài 2: khi mọi thứ bất biến, thay đổi tr
 4. Model có import được `material.dart` không? — Được về mặt kỹ thuật nhưng
    **không nên**: model thuần Dart thì test pure-Dart được và không lệ thuộc
    UI. Senior giữ `lib/data/` sạch Flutter-UI cũng vì vậy.
+
+## Tự làm (PRODUCE)
+
+Thiết kế một model mới — `MatchTicket` — hoàn toàn trong DartPad (pure
+Dart, không đụng project). Bốn field:
+
+- `code` — mã vé, **bắt buộc** và không bao giờ null;
+- `seat` — số ghế: vé đứng chưa có ghế → giá trị này **có thể vắng**;
+- `price` — giá vé: vé free có `price = 0`, người mua **không bắt buộc**
+  truyền;
+- `eventName` — tên sự kiện, **bắt buộc**.
+
+Trước khi viết, quyết cho từng field: `required` hay không? Kiểu `T` hay
+`T?`? Có default không — và default gì? Sau đó viết class + `main()` tạo
+hai instance hợp lệ (vé free đứng; vé trả phí có ghế) và in ra.
+
+Cuối cùng, dự đoán rồi kiểm: tạo `MatchTicket(eventName: 'Final')`
+thiếu `code` — compile hay chạy lỗi, lỗi gì?
+
+:::note[Gợi ý]
+Nhìn lại ba cách `Badge`/`UserProfileData` khai báo param: `required
+this.x`, `this.x = default`, `this.x` (nullable → tự `null`). Mỗi field
+của `MatchTicket` thuộc đúng một trong ba nhóm đó — `seat` giống
+`avatarUrl` ở chỗ nào?
+:::
+
+<details><summary>Đáp án</summary>
+
+```dart
+class MatchTicket {
+  final String code;      // required: không có code thì không có vé
+  final String? seat;     // nullable: "chưa xếp ghế" là trạng thái hợp lệ
+  final int price;        // default 0: free là trường hợp phổ biến
+  final String eventName; // required
+
+  const MatchTicket({
+    required this.code,
+    this.seat,
+    this.price = 0,
+    required this.eventName,
+  });
+}
+
+void main() {
+  const a = MatchTicket(code: 'F-001', eventName: 'Final');
+  // a.seat == null, a.price == 0 — vé free đứng, hợp lệ
+  const b = MatchTicket(
+      code: 'F-002', seat: 'A12', price: 500, eventName: 'Final');
+  print('${a.code}/${a.seat ?? "standing"}'); // F-001/standing
+}
+```
+
+- `MatchTicket(eventName: 'Final')` thiếu `code` → **lỗi compile**
+  ("required named parameter 'code' must be provided") — compiler bắt
+  ngay khi gõ, không đợi chạy. Đây chính là giá trị của `required`: bắt
+  buộc tại chỗ gọi, không phải kiểm tra tay.
+- Quyết định thật nằm ở `seat` và `price`: `seat` là `String?` **không
+  required, không default** vì "vắng" có nghĩa (giống `avatarUrl`);
+  `price` là non-nullable với `= 0` vì "miễn phí" là giá trị cụ thể chứ
+  không phải "chưa biết". Hai khái niệm — *có-thể-vắng* vs *có-default* —
+  là sự khác biệt ngữ nghĩa thật của bài này.
+
+</details>
 
 ## Cố ý chưa làm
 

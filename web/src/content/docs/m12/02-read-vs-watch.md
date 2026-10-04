@@ -203,6 +203,53 @@ Future<void> _onPlayTap() async {
    không? — *Không — Provider/element tự hủy dependency khi widget
    unmount; đó là phần watch bọc sẵn thay ListenableBuilder.*
 
+## Tự làm (RECOGNIZE + PREDICT)
+
+**Phần 1 — chọn `read` hay `watch`** cho 5 chỗ gọi dưới đây trong
+`_MenuScreenViewState`, và nêu tiêu chí quyết định:
+
+| Chỗ gọi | Cần VM để | `read` hay `watch`? |
+|---|---|---|
+| 1. `build` — hiển thị `vm.profile.displayName` | vẽ text | ? |
+| 2. `onPressed` nút CHƠI | `vm.requestGame()` | ? |
+| 3. `didChangeDependencies` — attach event bridge | giữ reference VM | ? |
+| 4. `build` — `switch (vm.loadState)` chọn widget | vẽ theo state | ? |
+| 5. callback retry | `vm.load()` | ? |
+
+**Phần 2 — dự đoán lỗi.** Một người viết `context.watch<MenuViewModel>()`
+trong `onPressed` vì "watch chắc cũng lấy được VM". Chuyện gì xảy ra
+khi bấm nút — và tại sao lỗi đó *đúng* chứ không phải Provider keo kiệt?
+
+:::note[Gợi ý]
+Tiêu chí một câu: chỗ này có cần **chạy lại khi VM notify** không?
+Build thì gần như luôn cần (hiển thị giá trị mới); callback thì gần
+như không bao giờ (nó chỉ *gọi* hành vi). Phần 2: nghĩ về lúc nào
+`watch` đăng ký dependency — build-time hay run-time?
+:::
+
+<details><summary>Đáp án</summary>
+
+| # | Chọn | Vì sao |
+|---|------|--------|
+| 1 | `watch` | đang hiển thị giá trị VM — notify → phải vẽ lại |
+| 2 | `read` | callback chỉ gọi `requestGame()`; không cần rebuild |
+| 3 | `read` | lấy instance để subscribe events — `watch` không hợp lệ/ không cần ở hook này; `read` hợp lệ trong `didChangeDependencies` |
+| 4 | `watch` | switch theo `loadState` phải chạy lại mỗi notify |
+| 5 | `read` | giống (2) — gọi hành vi, không subscribe |
+
+**Phần 2:** `watch` đăng ký "element này phụ thuộc T" **tại build-time**
+— nó cần element đang-build để gắn dependency. Trong `onPressed` không
+có element đang build → Provider ném lỗi (không phải im lặng sai, mà
+fail rõ). Nó "đúng" vì: nếu im lặng cho qua, subscribe sẽ gắn vào
+context cũ/mòn — bug khó săn hơn nhiều so với một exception tại chỗ.
+Đây là lựa chọn *fail-fast*: Provider hy sinh tính mềm dẻo để đổi lấy
+lỗi đọc được ngay.
+
+Quy tắc nén: **build → `watch`, callback/hook → `read`** — và `watch`
+là *lệnh build-time*, không phải "cách lấy VM khác".
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - `context.select<T, R>(selector)` — rebuild khi chỉ một *phần* của

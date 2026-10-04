@@ -55,6 +55,46 @@ UserProfileData ◄─fromMap()── Map<String, Object?> ◄─jsonDecode─�
 - `jsonDecode` trả `dynamic`: chuỗi `'123'` decode thành `int 123`,
   `'[1,2]'` thành `List` — chỉ có `is Map` mới đi tiếp được.
 
+## Ví dụ độc lập — vòng đời JSON trong DartPad
+
+`dart:convert` là pure Dart — chạy thử toàn bộ vòng serialize/deserialize
+trước khi đụng model thật:
+
+```dart
+import 'dart:convert';
+
+void main() {
+  const player = {'name': 'An', 'score': 120, 'vip': false};
+
+  final encoded = jsonEncode(player);
+  print(encoded);            // {"name":"An","score":120,"vip":false}
+  print(encoded.runtimeType); // String — đây là thứ ghi vào prefs
+
+  final decoded = jsonDecode(encoded);
+  print(decoded.runtimeType); // _Map<String, dynamic> / Map<dynamic, dynamic>
+  print(decoded['score']);   // 120
+  print(decoded['score'].runtimeType); // int — kiểu JSON bảo toàn được
+
+  // Bẫy 1: value là dynamic — ép sai kiểu ném lỗi LÚC CHẠY:
+  // decoded['name'] as int; // → TypeError
+  print(decoded['name'] is int); // false — guard trước khi dùng
+
+  // Bẫy 2: chuỗi không phải JSON:
+  // jsonDecode('not json'); // → FormatException
+}
+```
+
+Ba quan sát là nửa bài này:
+
+- `jsonEncode` nhận Map/List/num/String/bool/null — **không** nhận
+  `UserProfileData`: đó là lý do `toMap()` tồn tại (model → kiểu JSON
+  hiểu được).
+- `jsonDecode` trả `dynamic`: kiểu của từng value chỉ biết lúc chạy →
+  `is int` guard trong `fromMap` không phải sếu, nó là phòng thủ bắt
+  buộc khi dữ liệu đến từ ngoài (file, mạng, phiên bản app cũ).
+- `FormatException` là lỗi riêng cho chuỗi JSON hỏng — `on FormatException`
+  bắt đúng nó mà không nuốt lỗi khác.
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -272,6 +312,75 @@ cho key String nên đây chỉ là ép cho đúng chữ ký.
    ghi JSON không có key đó — `fromMap` xử lý sao? — *`map['totalSessions']`
    trả null → `is int` false → fallback default. Đây chính là lý do
    parse phòng thủ = forward-compatible.*
+
+## Tự làm (DEBUG)
+
+Storage trả về dữ liệu hỏng (phiên bản app cũ ghi sai, hoặc user sửa
+file). Dự đoán kết quả của `fromMap` — **không crash** là yêu cầu, nhưng
+field nào rơi về default?
+
+**Phần 1.** Map này đi qua các guard `is int`/`is String` → fallback:
+
+```dart
+{
+  'username': 42,          // int thay vì String!
+  'level': '3',            // String thay vì int!
+  'currentExp': 250.0,     // double thay vì int
+  'avatarUrl': null,       // null — field này có sao không?
+  'gamesJoined': 4,        // đúng kiểu
+}
+```
+
+Với từng key: dự đoán field của `UserProfileData` nhận giá trị map hay
+default. Đặc biệt: `avatarUrl` — `null` có bị guard từ chối không?
+
+**Phần 2.** Ba chuỗi đi vào `jsonDecode` — dự đoán mỗi cái ra gì và
+`fromMap` có được gọi không:
+
+```dart
+jsonDecode('123');     // ?
+jsonDecode('');        // ?
+jsonDecode('{}');      // ?
+```
+
+:::note[Gợi ý]
+`is` kiểm kiểu **chặt**: `'3' is int` → false (String ≠ int), `250.0 is
+int` → false (double ≠ int — Dart phân biệt!). `jsonDecode` trả
+`dynamic`: số JSON trần decode thành `int`, không phải Map. `avatarUrl`
+là `String?` — guard của nó phải *cho phép* null.
+:::
+
+<details><summary>Đáp án</summary>
+
+**Phần 1** — từng field:
+
+- `username: 42` → `is String` **fail** → fallback `'0XFF'` (default).
+- `level: '3'` → `is int` **fail** → `1` — chuỗi số không được "ngầm
+  ép" (Dart không JS-coerce).
+- `currentExp: 250.0` → `is int` **fail** → `0` — `250.0` là `double`;
+  JSON `250.0` decode thành double. (Đây là bẫy thật khi migrate.)
+- `avatarUrl: null` → **hợp lệ** — guard cho field nullable phải là
+  `value is String ? value : null` (hoặc tương đương cho-phép-null);
+  `null` là giá trị đúng của `String?`, không phải dữ liệu hỏng.
+- `gamesJoined: 4` → `4`.
+
+Kết quả: một profile "còn sống" với gamesJoined giữ được, phần còn lại
+về default — đúng triết lý defensive parsing: hỏng một field ≠ mất
+toàn bộ profile.
+
+**Phần 2:**
+
+- `'123'` → decode thành `int 123` — không phải Map → check `is Map`
+  fail → dùng defaults (fromMap không được gọi).
+- `''` → **`FormatException`** — chuỗi rỗng không phải JSON →
+  `on FormatException` → defaults.
+- `'{}'` → `Map` rỗng → fromMap chạy, mọi field vắng → toàn defaults.
+
+Ba trường hợp tổng hợp đúng ba tuyến phòng thủ: sai kiểu-value → guard
+field; không-phải-Map → guard `is Map`; không-phải-JSON →
+`on FormatException`.
+
+</details>
 
 ## Ta cố ý chưa thêm
 

@@ -76,6 +76,40 @@ Ba điều cần khắc:
 | `Duration` | `const Duration(milliseconds: 900)` | Kiểu thời lượng của Dart (`seconds`, `minutes`…); `Duration.zero` = không chờ |
 | `late` | `late Future<void> _f;` | Field non-nullable gán **sau** khai báo — dùng thật ở bài 2 |
 
+## Ví dụ độc lập — một `Future` là gì, in ra thử
+
+Trước khi viết loader của app, nhìn `Future` trần trong DartPad (pure
+Dart):
+
+```dart
+Future<String> fetchName() async {
+  await Future.delayed(const Duration(milliseconds: 300));
+  return 'An';
+}
+
+void main() async {
+  print('1: gọi hàm');
+  final f = fetchName();     // chạy hàm: trả về NGAY một Future
+  print('2: f là $f');       // f KHÔNG phải 'An'
+  final name = await f;      // chờ Future hoàn thành → lấy value
+  print('3: name = $name');
+}
+```
+
+Output:
+
+```
+1: gọi hàm
+2: f là Instance of 'Future<String>'
+3: name = An
+```
+
+Dòng 2 là cả bài học: **gọi hàm async cho bạn một `Future` — không cho
+bạn `String`**. `f` là "tờ nhận hàng"; `'An'` chỉ tồn tại sau khi Future
+hoàn thành, và `await` là cách lấy nó ra. Cũng nhìn kỹ: `fetchName` bắt
+đầu chạy *ngay* khi được gọi (dòng `await Future.delayed` của nó đã được
+xếp lịch) — Dart Future là eager, không phải "chờ ai đó bắt đầu nó".
+
 ## Flutter cần dùng
 
 Không có widget mới trong bài này — loader là pure Dart. `FutureBuilder`
@@ -274,6 +308,62 @@ lỗi thay vì value; ai `await` nó sẽ bị ném `StateError` ngay tại `awa
    không crash tức thì.
 4. Vì sao `delay` làm tham số? — Test truyền `Duration.zero` để không chờ
    900ms thật; param là điểm kiểm soát từ ngoài.
+
+## Tự làm (PREDICT)
+
+Dự đoán thứ tự `print` của đoạn này — viết đáp án ra giấy trước, rồi
+chạy DartPad kiểm chứng:
+
+```dart
+Future<void> work() async {
+  print('W1');
+  await Future.delayed(const Duration(milliseconds: 100));
+  print('W2');
+}
+
+void main() {
+  print('M1');
+  work();
+  print('M2');
+}
+```
+
+Bốn câu hỏi:
+
+1. `W1` in trước hay sau `M2`?
+2. `W2` in trước hay sau `M2`?
+3. `work()` được gọi mà không `await` — nó có chạy không, hay "chờ ai
+   khởi động"?
+4. Nếu `main` kết thúc khi `W2` chưa in, `W2` có còn in không?
+
+:::note[Gợi ý]
+Hỏi hai câu: (a) hàm `async` chạy đến đâu thì dừng — câu trả lời nằm ở
+"chạy phần đồng bộ rồi trả Future"; (b) khi `await` tạm dừng hàm, ai
+được chạy tiếp? `main` không `await` nên nó chạy hết.
+:::
+
+<details><summary>Đáp án</summary>
+
+```
+M1
+W1
+M2
+W2
+```
+
+- `W1` in **trước** `M2`: `work()` chạy đồng bộ đến `await` đầu tiên
+  (in `W1`) rồi trả Future về `main` — Future **eager**, tự chạy ngay
+  khi được gọi, không cần ai `await` nó để nó bắt đầu.
+- `M2` in trước `W2`: tại `await`, `work` tạm dừng và trả quyền cho
+  event loop → `main` chạy tiếp (`M2`); 100ms sau Future.delayed xong,
+  `W2` được xếp lịch in.
+- `main` kết thúc **không** giết `W2` — Future đã được xếp lịch vẫn chạy
+  (trong app Flutter thực, event loop sống đến khi app tắt).
+- Nghịch lý cần khắc: "không `await`" ≠ "không chạy" — nó chỉ nghĩa
+  *người gọi không chờ kết quả*. (Cách nói "cố ý không chờ" một cách sạch
+  sẽ — `unawaited` — đến M11.)
+
+</details>
 
 ## Cố ý chưa làm
 

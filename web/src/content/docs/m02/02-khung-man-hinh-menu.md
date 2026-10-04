@@ -340,6 +340,52 @@ Column                         → full size khung; chia trục dọc:
 4. Micro-task: đổi `designWidth` thành 480 rồi reload trên web — khung nội
    dung rộng tới 480.
 
+## Tự làm (PREDICT)
+
+Bài kiểm tra hiểu *thứ tự bọc quyết định kết quả* — vốn là điểm khác
+biệt lớn nhất so với Modifier chain của Compose. Trong `MenuScreen.build`,
+giả sử bạn đổi thứ tự hai lớp:
+
+```dart
+// HIỆN TẠI                          // ĐỔI THÀNH
+body: Container(                    body: SafeArea(
+  decoration: …gradient…,             child: Container(
+  child: SafeArea(                      decoration: …gradient…,
+    child: Center(…),                   child: Center(…),
+  ),                                  ),
+),                                  ),
+```
+
+**Trước khi sửa**, trả lời:
+
+1. Nền gradient còn phủ kín phía sau status bar không?
+2. Nội dung (khung 375 + ba vùng) còn né notch/status bar không?
+3. Theo constraint flow, `SafeArea` vừa "siết" constraint vừa là widget
+   vẽ nền được không — lớp nào thật sự bị mất hiệu ứng?
+
+Sau đó sửa thật trong `lib/screens/menu_screen.dart`, `r`, quan sát
+phía trên cùng màn hình, rồi **đổi lại như cũ**.
+
+:::note[Gợi ý]
+`Container(decoration:)` vẽ nền trong *vùng nó được cấp*. Vùng được cấp
+của nó thay đổi nếu cha của nó thay đổi.
+:::
+
+<details><summary><strong>Đáp án</strong></summary>
+
+1. **Không còn phủ** — `SafeArea` bên ngoài trừ vùng hệ thống khỏi
+   constraint của `Container`, nên gradient chỉ vẽ trong vùng an toàn;
+   phía sau status bar/gesture bar sẽ lộ màu `backgroundColor` của
+   `Scaffold` (dải đứt quãng trên cùng là thứ nhìn thấy ngay).
+2. **Vẫn né** — nội dung vẫn nằm trong vùng an toàn; thậm chí còn "an
+   toàn hơn" vì không còn gì nằm ngoài nó.
+3. `SafeArea` chỉ siết constraint + đặt con; nó không vẽ gì — lớp bị mất
+   hiệu ứng là **vùng vẽ của Container**, vì vùng ấy bị siết bởi cha mới.
+
+Điều bài tập kiểm tra: bạn dự đoán được kết quả của việc đổi thứ tự bọc —
+kỹ năng cốt lõi khi đọc/sửa bất kỳ cây widget nào.
+</details>
+
 ## Cố ý chưa làm
 
 - `Stack`/`Positioned` — senior xếp nền + content + dialog/onboarding bằng

@@ -307,6 +307,50 @@ dữ liệu/logic → VM".
    dữ liệu màn hình hoặc cần test/chia sẻ; giữ trong State khi thuần
    ephemeral.*
 
+## Tự làm (RECOGNIZE)
+
+Menu sắp có thêm tính năng. Phân loại 6 trạng thái/hành vi sau vào
+**VM** hay **State widget** — và với mỗi cái, nêu luật quyết định:
+
+| Trạng thái | VM hay State? | Vì sao |
+|---|---|---|
+| 1. Thành tựu "Chơi 10 ván" vừa mở khoá | ? | ? |
+| 2. Ô input đang focus (bàn phím mở) | ? | ? |
+| 3. Vị trí scroll của danh sách bảng xếp hạng | ? | ? |
+| 4. Profile sau khi `applyGameResult` | ? | ? |
+| 5. Cờ `_soundOn` hiện tại | ? | ? |
+| 6. Trạng thái loading/ready/failed của màn | ? | ? |
+
+Sau đó đối chiếu với bảng ranh giới của bài và bảo vệ lựa chọn khác
+biệt (nếu có) bằng luật — không bằng cảm giác.
+
+:::note[Gợi ý]
+Hai câu hỏi quyết định: (a) state này có phải *dữ liệu màn hình* cần
+sống/chia sẻ/test độc lập không? (b) nó có phải chỉ là *hành vi tương
+tác cục bộ* của một widget không? Nếu hai widget cần cùng biết nó →
+hầu như chắc chắn không phải widget-state.
+:::
+
+<details><summary>Đáp án</summary>
+
+| # | Chọn | Lý do |
+|---|------|-------|
+| 1 | **VM** | Dữ kiện game → state màn hình, cần persist/test; nhiều widget có thể hiển thị (badge, danh sách) |
+| 2 | **State** | Tương tác cục bộ của một ô; không ai khác cần biết |
+| 3 | **State** | (thực tế ScrollController tự giữ) — vị trí scroll là chi tiết tương tác, không phải dữ liệu màn hình |
+| 4 | **VM** | Đây chính là `_profile` của bài — dữ liệu nguồn, mọi widget đọc |
+| 5 | **State** | Bài học đặt nó ở State: tương tác cục bộ của nút; nếu sau này phải persist → lúc đó mới nâng (settings — M14+) |
+| 6 | **VM** | `MenuLoadState` — trạng thái tải là dữ liệu phiên, cần test được |
+
+Cái khó không phải nhớ đáp án mà là **luật ứng dụng được**: dòng 2 vs
+dòng 1 cùng là "state thay đổi khi user làm gì đó" — khác nhau ở *ai
+cần biết*. Dòng 5 đáng tranh luận nhất: `_soundOn` nghe có vẻ "dữ liệu
+user", nhưng luật của M11 là *chỉ nâng khi có lý do* — chưa ai ngoài
+nút đó cần nó. Đây chính là tư duy scale: phân ranh giới theo **nhu
+cầu**, không phải theo "nghe có vẻ quan trọng".
+
+</details>
+
 ## Ta cố ý chưa thêm
 
 - **Provider/`ChangeNotifierProvider`** — M12: tay bạn vừa tự làm

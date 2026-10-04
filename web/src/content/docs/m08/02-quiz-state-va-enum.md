@@ -57,6 +57,38 @@ chưa chốt:   index == selected → selected | else → idle
 **Enum = "một biến chỉ nhận đúng N giá trị đặt tên".** Thay cho 3 bool
 rời rạc: `_AnswerVisualState { idle, selected, correct, wrong, dimmed }`.
 
+## Ví dụ độc lập — enum trong DartPad
+
+Trước khi gặp `_AnswerVisualState`, cảm nhận enum trần (pure Dart):
+
+```dart
+enum TrafficLight { red, yellow, green }
+
+String nextAction(TrafficLight light) =>
+    light == TrafficLight.red
+        ? 'stop'
+        : light == TrafficLight.yellow
+            ? 'wait'
+            : 'go';
+
+void main() {
+  for (final light in TrafficLight.values) {
+    print('${light.name} → ${nextAction(light)}');
+  }
+}
+```
+
+Output: `red → stop`, `yellow → wait`, `green → go`. Ba điểm:
+
+- `TrafficLight light` — tham số chỉ nhận **đúng 3 giá trị**; truyền
+  `TrafficLight.blue` là lỗi compile ngay. So với `String color`: truyền
+  `'ble'` vẫn compile rồi lỗi logic lúc chạy — enum dời lỗi về compile.
+- `TrafficLight.values` — list toàn bộ giá trị theo thứ tự khai báo;
+  `.name` — tên enum thành chuỗi (`'red'`). Hai công cụ debug in giá trị.
+- `==` so theo giá trị-enum: `TrafficLight.red == TrafficLight.red` →
+  `true`. Đây là tất cả những gì `_AnswerVisualState` cần — nó cũng chỉ
+  là "một kiểu chứa đúng N giá trị đặt tên".
+
 ## Dart cần dùng
 
 | Cú pháp | Ví dụ | Nghĩa |
@@ -236,6 +268,54 @@ Mọi quyết định màu sắc gom **một chỗ** — widget con chỉ "vẽ 
    return sớm, `setState` không chạy.*
 3. Tại sao `_question` là getter chứ không phải field? — *Vì nó suy ra từ
    `_questionIndex`; field riêng sẽ phải đồng bộ tay → dễ lệch.*
+
+## Tự làm (PREDICT)
+
+Dùng bảng suy-ra của bài (idle/selected/correct/wrong/dimmed), **không
+chạy app**:
+
+**Phần 1.** Câu hỏi đầu (`correctIndex: 1`), người chơi chọn ô 2 rồi bấm
+CHỐT. Trạng thái: `_selectedIndex = 2`, `_submitted = true`. Vẽ bảng 4
+ô `0–3` và ghi visual state của từng ô.
+
+**Phần 2.** Người chơi bấm CÂU TIẾP. `_questionIndex` thành 1. Những
+field nào trong 5 field `_GameScreenState` phải được **reset**, về giá
+trị nào — và field nào **tuyệt đối không được reset**? (Gợi ý: nếu quên
+reset `_submitted`, câu mới hiển thị thế nào?)
+
+Sau đó chạy app, làm đúng kịch bản trên và đối chiếu.
+
+:::note[Gợi ý]
+Phần 1: áp dụng đúng thứ tự 3 quy tắc — `index == correctIndex` trước,
+rồi `index == selectedIndex`, còn lại là dimmed. Phần 2: hỏi "nếu field
+này giữ giá trị câu cũ, UI câu mới bị sai ở đâu?"
+:::
+
+<details><summary>Đáp án</summary>
+
+**Phần 1** — với `correctIndex = 1`, `selectedIndex = 2`, đã chốt:
+
+| Ô | State | Vì |
+|---|-------|-----|
+| 0 | dimmed | không phải correct (1), không phải chọn (2) |
+| 1 | correct | `index == correctIndex` |
+| 2 | wrong | `index == selectedIndex` sau khi đã chốt |
+| 3 | dimmed | như ô 0 |
+
+**Phần 2** — reset khi sang câu mới:
+
+- `_selectedIndex` → `null` (chưa chọn gì ở câu mới);
+- `_submitted` → `false` (chưa chốt);
+- `_questionIndex` → `+1` (đó là hành động);
+- `_correctCount` — **giữ** (nó là tích luỹ xuyên câu);
+- `_quizFinished` — giữ trừ khi hết câu.
+
+Bẫy thật: quên reset `_submitted` → câu 2 vừa render đã ở trạng thái
+"đã chốt" — người chơi thấy đáp án đúng sáng lên trước khi chọn. Đây
+là lý do "reset state theo phase" là một phép cần liệt kê tường minh,
+không phải hiểu ngầm.
+
+</details>
 
 ## Ta cố ý chưa thêm
 
