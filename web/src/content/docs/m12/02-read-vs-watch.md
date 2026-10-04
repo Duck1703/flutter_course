@@ -280,3 +280,9 @@ là *lệnh build-time*, không phải "cách lấy VM khác".
 - [ ] Biết trước: gõ `context.watch<MenuViewModel>()` *bây giờ* sẽ lỗi
   — provider của VM chỉ tồn tại từ bài 3.
 - [ ] `flutter analyze`/`flutter test` vẫn xanh (không đổi file nào).
+
+## 🤖 AI Local — Kiểm tra project sau bài này
+
+**Không cần review project ở bài này.**
+
+Bài này chỉ xây mental model `context.read` vs `context.watch` và đọc-trước code sẽ áp dụng ở bài sau — project không đổi file nào (`MenuScreen` vẫn giữ `_viewModel` + `ListenableBuilder` của M11, `initState` đã đọc store qua `context.read<ProfileStore>()` từ bài 1). Nếu muốn kiểm tra trạng thái project hiện tại, dùng prompt của bài m12/01.

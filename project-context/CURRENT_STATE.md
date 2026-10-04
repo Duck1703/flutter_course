@@ -1,8 +1,9 @@
 # Current State
 
 Project: AI Millionaire — guided Flutter course
-Phase: Step 28 — production verification + Vercel canonicalization —
-COMPLETE.
+Phase: Step 29 — per-lesson AI Local project-alignment review layer —
+COMPLETE (committed locally; awaiting human decision to push →
+auto-deploy).
 M01–M29 course complete; Steps 21–26A pedagogy audit/remediation chain
 closed; release gate CLEARED (non-blocking editorial notes only);
 accepted content integrated to `main` and pushed to `origin/main`.
@@ -711,13 +712,39 @@ cleanup recommended, not deleted. M30 not started.
   PASS, Astro 167 pages. Artifacts:
   `AI_HANDOFF/work/step-28-production-verification/`.
   Report: `report/STEP-28-PRODUCTION-VERIFICATION-VERCEL-CANONICALIZATION.md`.
+- Step 29: **Per-lesson AI Local project-alignment review layer** —
+  COMPLETE on `main`-checkout (pending push decision). All 132 lesson
+  pages carry a trailing `## 🤖 AI Local — Kiểm tra project sau bài
+  này` section: 119 copy-ready Vietnamese reviewer prompts
+  (read-only contract, per-lesson EXPECTED STATE + INVARIANTS,
+  ahead/behind/diverged classification, fixed OUTPUT ending
+  `FILES_MODIFIED_BY_REVIEW: NONE`) + 13 NO_REVIEW honesty notes;
+  classification 73 DELTA / 36 INTEGRATION / 10 MILESTONE_GATE /
+  13 NO_REVIEW (`registry.json/.md`). Mechanical validators
+  `validate_sections.py` + `audit_sections.py`: 0 failures/0 findings
+  (coverage, duplicates, placeholders, output contract, future-leakage,
+  generic-prompt, no-review reason, solution-leak). Frozen revision
+  `CONTENT_REVISION 36301c0f4b6f4835` reviewed twice: full review on
+  `c8a1d5f8461b3c02` (Argus PASS + Pedagogy
+  `PEDAGOGY_PASS_WITH_NOTES`) then delta review on the PED-001
+  intro-fix revision (Argus PASS + Pedagogy
+  `PEDAGOGY_PASS_WITH_NOTES` — PED-001 resolved; PED-002..006 notes
+  stand). Regression: learner-app analyze clean, **396/396 tests**,
+  `flutter build web` PASS, Astro 167 pages/166 indexed, learner-app
+  zero diff, senior untouched. Site preview QA: section renders with
+  copy button; 375px/1440px inherit Starlight; ~20% index-word share
+  accepted trade-off. Artifacts:
+  `AI_HANDOFF/work/step-29-ai-local-review/` (incl.
+  `reviews/05-content-qa.md`, `reviews/05-pedagogy-review.md`).
+  Report: `report/STEP-29-AI-LOCAL-ALIGNMENT-REVIEW-LAYER.md`.
 
 ## Next recommended task
-Course M01–M29 `RELEASE_READY_WITH_NOTES`; production VERIFIED and
-CANONICALIZED at `https://flutter-opal.vercel.app` (auto-deploy from
-`main` confirmed). Recommended: STEP 29 — production observation +
-learner feedback baseline. Optional deferred cleanup: duplicate Vercel
-project `flutter_course` (see step-28 artifact 09). Post-release
-editorial polish backlog remains at
+Course M01–M29 `RELEASE_READY_WITH_NOTES` + Step-29 AI Local layer
+COMPLETE locally. Recommended: push the Step-29 checkpoint commit to
+`main` → Vercel auto-deploy (human authorization required), then
+production observation + learner feedback baseline (the deferred
+original Step-29 recommendation). Optional deferred cleanup:
+duplicate Vercel project `flutter_course` (see step-28 artifact 09).
+Post-release editorial polish backlog remains at
 `AI_HANDOFF/work/step-27-release-closeout/post-release-editorial-backlog.md`.
 M30 does not exist on the roadmap.

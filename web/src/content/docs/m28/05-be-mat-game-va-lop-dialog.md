@@ -673,3 +673,49 @@ giữ stagger an toàn cho mọi độ dài.
 - [ ] 5 test file xanh (answer4+blink3+panel1+moneyrow4+
   layer11); `flutter analyze` sạch; `flutter test` **289/289**
   (+13).
+
+## 🤖 AI Local — Kiểm tra project sau bài này
+
+Dán prompt dưới đây vào **AI local** — một trợ lý code chạy trên máy bạn, có quyền đọc file và chạy lệnh trong project (ví dụ AI agent trong IDE). Bước này tuỳ chọn nhưng đáng làm sau mỗi bài: AI chỉ review và báo cáo, không tự sửa code — mọi fix vẫn là của bạn.
+
+```text
+Bạn là Project Alignment Reviewer cho project Flutter tôi đang tự code theo khóa học. Bài tôi vừa học xong: m28/05 — "Bề mặt game + lớp dialog — answers, question, dialogs" (bề mặt game hoàn chỉnh: `GameAnswerOption`+`Colors`+`List` stagger `CurvedAnimation`/`Interval` + reveal-blink `TweenAnimationBuilder` keyed `label:text:state` + `_blinkOpacity` sin-pulse; `GameQuestionPanel` lightning `yellow600 srcIn` ×2 + `AnimatedSwitcher` key `index-text`; `AudiencePollRow` `LinearProgressIndicator`; subsystem dialog mới: `GameDialogShell` + `GameDialogButton`/`GameDialogMoneyRow` + 3 family views + layer mới `dialogs/game_dialog_layer.dart` `AnimatedSwitcher` runtimeType-keyed + `BackdropFilter` blur 16 + `IgnorePointer` + dismiss-rules; implicit-family + semantics nâng; +13 → 289).
+
+CHỈ REVIEW — KHÔNG SỬA. Được: đọc file, xem cây thư mục, chạy `git status`, `git diff`, `flutter analyze`, `flutter test`. Cấm: sửa file, formatter, `flutter pub get` hoặc đổi dependency/lockfile, patch, commit, reset, revert, refactor, xoá file. Thấy vấn đề → báo cáo + gợi ý hướng sửa trong phạm vi đã học; không tự sửa.
+
+PROJECT ROOT: thư mục chứa `pubspec.yaml`. Nhiều project mà mơ hồ → `BLOCKED_PROJECT_ROOT`.
+
+PHẠM VI: chỉ chấm theo EXPECTED STATE + INVARIANTS bên dưới; ngoài danh sách = không tính thiếu. File mới land song song — `GameScreen` monolith + layer/views CŨ vẫn chạy production là ĐÚNG (BÀI 6 atomic-swap xoá chúng). `GameDialogState` 9-variant không đổi — chỉ view render khác.
+
+EXPECTED STATE SAU BÀI NÀY:
+- `lib/widgets/game/answers/game_answer_option_colors.dart` (FILE MỚI, STRICT verbatim ~45 dòng): `GameAnswerOptionColors.fromState(state)` — 4 state color set `idle`/`selected`/`correct`/`incorrect` `{background, border, textStyle…}`; màu tách class riêng, option-widget chỉ render.
+- `lib/widgets/game/answers/game_answer_option.dart` (FILE MỚI, STRICT verbatim ~193 dòng): `Semantics(container: true, button: true, enabled: effectiveOnTap != null, label: l10n.optionSemanticLabel(data.answerLabel, data.answerText), value: _stateLabel(data.state, l10n), liveRegion: data.state != GameAnswerState.idle, onTap: effectiveOnTap)` + `ExcludeSemantics(GestureDetector…)` (STRICT semantics nâng `value`/`liveRegion`/`onTap` — liveRegion gate `!= idle`, idle-node = vô nghĩa); `TweenAnimationBuilder<double>(key: ValueKey('${data.answerLabel}:${data.answerText}:${data.state}'), tween: Tween(begin: 0, end: _shouldBlink && !disableAnimations ? 1 : 0), duration: _shouldBlink && !disableAnimations ? _answerRevealBlinkDuration (1200ms) : Duration.zero, builder: (ctx, progress, child) { blinkOpacity = _blinkOpacity(progress); return Stack([child!, if (blinkOpacity > 0) Positioned.fill(IgnorePointer(DecoratedBox(key: _answerRevealBlinkKey, color: white.withValues(alpha: blinkOpacity))))]); })` bọc `AnimatedContainer(duration: disableAnimations ? zero : motionMedium, curve: easeOutCubic, decoration colors.*)` (STRICT key chứa cả state → đổi state = widget mới = tween re-arm); `_blinkOpacity(progress)` — `math.sin(visibleProgress * math.pi) * 0.34` sin-pulse trong `_answerRevealBlinkVisiblePortion` đầu (STRICT blink lên-tắt một lần, không lặp); `effectiveOnTap` null khi `answerLabel`/`answerText` rỗng (50:50 ô-câm hoàn toàn); `_stateLabel` switch enum → `String?` (idle → null value).
+- `lib/widgets/game/answers/game_answer_option_list.dart` (FILE MỚI, STRICT verbatim ~95 dòng): `SingleTickerProviderStateMixin` + một `AnimationController` `motionSlow` + `didUpdateWidget` `questionIndex` đổi → `forward(from: 0)` (STRICT `questionIndex` đóng vai `animationTrigger` — câu mới → replay stagger); `AnimatedBuilder(animation: _controller)` + per-item `CurvedAnimation(parent: _controller, curve: Interval(math.min(index * 0.1, 0.4), 1, curve: Curves.easeOutCubic))` (STRICT Interval `min(i*0.1, 0.4)` — một ticker lái 4 stagger cửa-sổ-con; 4 controller riêng = DIVERGED); lái `Opacity` + `Transform.translate(dy = 16*(1-v))` + `Transform.scale(0.98+0.02v)`.
+- `lib/widgets/game/questions/game_question_panel.dart` (FILE MỚI, STRICT verbatim ~151 dòng): `_buildQuestionSurface` hai-lớp gradient viền (`gameQuestionStrokeGradient` ngoài + `gameQuestionGradient` trong, `_panelBorderWidth`); `_buildQuestionText` `AnimatedSwitcher` gated-reduce-motion + child `ValueKey('${index}-${text}')` crossfade đổi-câu; `_buildCountBadge` `'${data.displayQuestionNumber}/${data.totalQuestions}'` kẹp hai `_lightningIcon()` = `SvgPicture.asset(AppAssets.iconGameLightning, colorFilter: ColorFilter.mode(AppTokens.yellow600, BlendMode.srcIn))` (STRICT `srcIn` đổi-màu-thật yellow600 — trắng-lên-trắng B2 vs đây tint vàng).
+- `lib/widgets/game/lifelines/game_audience_poll_row.dart` (FILE MỚI, STRICT verbatim ~46 dòng): `Text(item.option)` + `LinearProgressIndicator(value, color: AppTokens.qzdsPurple500, backgroundColor: black12, borderRadius: radiusN)` + `Text(item.percentage)` đọc `GameAudiencePollItemData` M20.
+- `lib/widgets/game/dialogs/game_dialog_shell.dart` (FILE MỚI, STRICT verbatim ~221 dòng): `GameDialogShell({title, iconAsset, icon, …})` — card ngoài gradient-viền + card trắng `white100` trong + `_Header` `title.toUpperCase()` + overlay `headerSheen` + DUAL if-case `if (iconAsset case final asset?) … else if (icon case final iconData?)` (STRICT iconAsset-thắng-icon-fallback — IconData vẫn sống song song BÀI 6); `GameDialogButton` = `SizedBox(width: infinity)` bọc `QzdsGameButton(lightShadow: true)` (STRICT bản thật — `_DialogShareButton` scaffold M27 vẫn còn ở views-cũ, retire BÀI 6); `GameDialogMoneyRow` — `SvgPicture.asset(AppAssets.iconGameMoney)` + `Flexible(FittedBox(scaleDown, Text))` + `SizedBox(width: _coinGutter)` — `_coinGutter = iconLg + spacingXs` bằng coin+gap để amount căn giữa.
+- `lib/widgets/game/dialogs/game_result_dialogs.dart` (~156) + `game_help_dialogs.dart` (~223) + `game_confirm_dialogs.dart` (~134) (3 FILE MỚI, STRICT verbatim): `_ResultShell` (share `toUpperCase` + `iconGameTrophy`), help (sparkle/audience icon + `AudiencePollRow` consumer), confirm (`primaryText`/`secondaryText` HOA).
+- `lib/widgets/game/dialogs/game_dialog_layer.dart` (FILE MỚI — đường dẫn khác `widgets/game/game_dialog_layer.dart` cũ 239d): `AnimatedSwitcher` + `ValueKey(dialog.runtimeType)` (STRICT runtimeType-key — index-key = DIVERGED: hai dialog cùng-loại nối-tiếp không replay); `_buildTransition` ladder-slide; `_DialogBackdrop` `BackdropFilter(filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16))` từ `AppTokens.dialogHazeBlurSigma` + `DesignFrame`; `_canDismissFromBackdrop` dismiss-rules (STRICT — terminal/ladder variant không backdrop-dismiss); `IgnorePointer(ignoring: dialog is GameDialogHidden)`; `_dialogBody` switch 9-variant y hệt layer cũ shape nhưng render view mới (STRICT `dialog as GameXxx` bóc data trong arm); `onShareResult` wiring giữ (M27 chain qua views mới → `GameDialogButton` share thật).
+- 5 test files (STRICT verbatim, +13): `game_answer_option_test` 4, `game_answer_reveal_blink_test` 3, `game_question_panel_test` 1, `game_dialog_money_row_test` 4 (long-amount `FittedBox` scale-down), layer test thay bản VI 10-case bằng senior 11-case.
+- `flutter analyze` sạch; `flutter test` → **289/289** (STRICT 276 + 13).
+- KHÔNG ĐƯỢC có (chưa đến): `game_feature_button*`/`game_screen_body`/GameScreen rewrite/`iconAsset` DTO swap/`TickerProvider`×2/`Listenable.merge`/painter ripple (BÀI 6); xoá `widgets/game/game_dialog_layer.dart` cũ + `game_dialog_views.dart` cũ (BÀI 6 — cả hai vẫn tồn tại song song layer-mới là ĐÚNG); layer-mới gọi từ `game_screen.dart` (screen monolith vẫn dùng layer-CŨ — BÀI 6 swap); `GameDialogMoneyRow` thay `_LadderItem` (hai class riêng — `_LadderItem` trong ladder-dialog file BÀI 4, `GameDialogMoneyRow` trong shell); `_DialogShareButton` retire (views-cũ vẫn render nó — BÀI 6 xoá file); `GameDialogState` thêm variant (9 giữ nguyên); 4 controller riêng cho 4 answers (Interval một-ticker — DIVERGED); `liveRegion` trên node-idle (gate `!= idle`); `MediaQuery` trong layer (đã gated qua views); `IconData`→`iconAsset` trong DTO (BÀI 6 — DTO vẫn `icon`).
+
+INVARIANTS NỀN — phải CÒN NGUYÊN:
+- Bài 1–4: tokens + 3 common + timer+topbar + money+ladder (ladder-dialog compile được nhờ tự chứa); M27 chain (`onShareResult`/`shareResult`/SharePlus/Clipboard nguyên — giờ wire qua views mới); M26 DRE (GameState/dialogState 9-variant nguyên — layer chỉ render); `game_screen.dart` monolith + `_GameTopBar`/`_GameFeatureButton`/`_GameAnswerButton` scaffold + layer-cũ + views-cũ (production vẫn dùng); `GameFeatureButtonData.icon: IconData`; M21 AnimatedSwitcher/runtimeType/BackdropFilter/IgnorePointer công-nghệ-gốc.
+
+Mục (STRICT) phải đúng; mục khác chấm semantic. Code vượt checkpoint → `AHEAD_COMPATIBLE`; thiếu bắt buộc → `BEHIND` + bằng chứng file/symbol. File mới import layer-cũ hoặc ngược = DIVERGED (hai subsystem song song không đan); `ValueKey(dialog.runtimeType)` thay bằng index/loại-khác = DIVERGED replay-bug; `_blinkOpacity` lặp vô hạn = DIVERGED (senior một-lần-tắt); 4 controller stagger = DIVERGED.
+
+OUTPUT (đúng format; mục trống → "None"):
+LESSON: m28/05
+PROJECT_ALIGNMENT: ON_TRACK | NEEDS_FIX | DIVERGED | BLOCKED
+COURSE_POSITION: ON_TRACK | BEHIND | AHEAD_COMPATIBLE | AHEAD_RISKY
+READY_FOR_NEXT_LESSON: YES | YES_AFTER_FIXES | NO
+VERIFICATION_PERFORMED:
+WHAT_MATCHES:
+GAPS:
+AHEAD_OF_COURSE:
+DIVERGENCES:
+REQUIRED_FIXES_BEFORE_CONTINUING:
+EVIDENCE: file/symbol → observation
+FILES_MODIFIED_BY_REVIEW: NONE
+```

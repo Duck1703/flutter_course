@@ -1,0 +1,1331 @@
+{
+ "total": 132,
+ "by_type": {
+  "DELTA": 73,
+  "INTEGRATION": 36,
+  "MILESTONE_GATE": 10,
+  "NO_REVIEW": 13
+ },
+ "lessons": [
+  {
+   "lesson": "m01/01",
+   "slug": "01-flutter-dart-va-project-dau-tien",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m01/01-flutter-dart-va-project-dau-tien.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m01/02",
+   "slug": "02-main-runapp-va-cay-widget",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m01/02-main-runapp-va-cay-widget.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m01/03",
+   "slug": "03-chay-app-hot-reload-va-tooling",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m01/03-chay-app-hot-reload-va-tooling.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m02/01",
+   "slug": "01-mo-hinh-constraints",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m02/01-mo-hinh-constraints.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m02/02",
+   "slug": "02-khung-man-hinh-menu",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m02/02-khung-man-hinh-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m02/03",
+   "slug": "03-header-va-cac-the",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m02/03-header-va-cac-the.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m02/04",
+   "slug": "04-nut-cta-va-hoan-thien-menu",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m02/04-nut-cta-va-hoan-thien-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m03/01",
+   "slug": "01-stateless-va-stateful",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m03/01-stateless-va-stateful.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m03/02",
+   "slug": "02-setstate-va-rebuild",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m03/02-setstate-va-rebuild.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m03/03",
+   "slug": "03-lifecycle-callbacks-va-state-ownership",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m03/03-lifecycle-callbacks-va-state-ownership.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m04/01",
+   "slug": "01-model-va-null-safety",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m04/01-model-va-null-safety.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m04/02",
+   "slug": "02-copywith-va-equality",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m04/02-copywith-va-equality.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m04/03",
+   "slug": "03-noi-model-vao-menu",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m04/03-noi-model-vao-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m04/04",
+   "slug": "04-unit-test-dau-tien",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m04/04-unit-test-dau-tien.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m05/01",
+   "slug": "01-future-async-await",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m05/01-future-async-await.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m05/02",
+   "slug": "02-futurebuilder",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m05/02-futurebuilder.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m05/03",
+   "slug": "03-async-main",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m05/03-async-main.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m06/01",
+   "slug": "01-stream-la-gi",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m06/01-stream-la-gi.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m06/02",
+   "slug": "02-streambuilder-trong-menu",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m06/02-streambuilder-trong-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m06/03",
+   "slug": "03-listen-cancel-streamcontroller",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m06/03-listen-cancel-streamcontroller.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m07/01",
+   "slug": "01-route-stack-va-push",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m07/01-route-stack-va-push.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m07/02",
+   "slug": "02-game-screen-va-pop",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m07/02-game-screen-va-pop.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m07/03",
+   "slug": "03-senior-navigation-checkpoint",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m07/03-senior-navigation-checkpoint.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m08/01",
+   "slug": "01-quiz-question-model",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m08/01-quiz-question-model.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m08/02",
+   "slug": "02-quiz-state-va-enum",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m08/02-quiz-state-va-enum.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m08/03",
+   "slug": "03-render-options-va-flow",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m08/03-render-options-va-flow.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m08/04",
+   "slug": "04-widget-test-dau-tien",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m08/04-widget-test-dau-tien.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m09/01",
+   "slug": "01-game-phase-va-timer",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m09/01-game-phase-va-timer.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m09/02",
+   "slug": "02-phase-flow",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m09/02-phase-flow.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m09/03",
+   "slug": "03-showdialog-va-popuntil",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m09/03-showdialog-va-popuntil.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m09/04",
+   "slug": "04-test-game-session",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m09/04-test-game-session.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m10/01",
+   "slug": "01-sharedpreferences-va-profile-store",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m10/01-sharedpreferences-va-profile-store.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m10/02",
+   "slug": "02-json-tomap-frommap",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m10/02-json-tomap-frommap.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m10/03",
+   "slug": "03-game-result-qua-pop",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m10/03-game-result-qua-pop.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m10/04",
+   "slug": "04-ap-ket-qua-va-reset",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m10/04-ap-ket-qua-va-reset.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m11/01",
+   "slug": "01-vi-sao-setstate-khong-scale",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m11/01-vi-sao-setstate-khong-scale.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m11/02",
+   "slug": "02-notifylisteners-va-listenablebuilder",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m11/02-notifylisteners-va-listenablebuilder.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m11/03",
+   "slug": "03-so-huu-vm-va-test",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m11/03-so-huu-vm-va-test.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m12/01",
+   "slug": "01-inheritedwidget-va-lookup",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m12/01-inheritedwidget-va-lookup.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m12/02",
+   "slug": "02-read-vs-watch",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m12/02-read-vs-watch.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m12/03",
+   "slug": "03-changenotifierprovider-va-scope",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m12/03-changenotifierprovider-va-scope.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m13/01",
+   "slug": "01-event-khong-phai-state",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m13/01-event-khong-phai-state.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m13/02",
+   "slug": "02-event-bridge-trong-state",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m13/02-event-bridge-trong-state.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m13/03",
+   "slug": "03-snackbar-event-va-test",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m13/03-snackbar-event-va-test.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/01",
+   "slug": "01-vi-sao-profilestore-chua-du",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/01-vi-sao-profilestore-chua-du.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/02",
+   "slug": "02-contract-abstract-interface-implements",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/02-contract-abstract-interface-implements.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/03",
+   "slug": "03-stream-state-behavior-subject-value-stream",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/03-stream-state-behavior-subject-value-stream.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/04",
+   "slug": "04-user-profile-repository-impl",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/04-user-profile-repository-impl.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/05",
+   "slug": "05-hai-repo-con-lai-va-model-parity",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/05-hai-repo-con-lai-va-model-parity.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/06",
+   "slug": "06-di-theo-contract-multiprovider-va-fake",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/06-di-theo-contract-multiprovider-va-fake.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m14/07",
+   "slug": "07-menuviewmodel-noi-vao-stream",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m14/07-menuviewmodel-noi-vao-stream.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m15/01",
+   "slug": "01-vi-sao-state-dong",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m15/01-vi-sao-state-dong.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m15/02",
+   "slug": "02-sealed-class",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m15/02-sealed-class.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m15/03",
+   "slug": "03-switch-kiet-hop-pattern",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m15/03-switch-kiet-hop-pattern.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m15/04",
+   "slug": "04-seal-event-bridge",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m15/04-seal-event-bridge.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m15/05",
+   "slug": "05-gamedialogstate-state-driven-ui",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m15/05-gamedialogstate-state-driven-ui.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m16/01",
+   "slug": "01-vi-sao-settings-persist",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m16/01-vi-sao-settings-persist.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m16/02",
+   "slug": "02-setting-item-data-factory",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m16/02-setting-item-data-factory.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m16/03",
+   "slug": "03-settings-view-model-dialog-scoped",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m16/03-settings-view-model-dialog-scoped.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m16/04",
+   "slug": "04-settings-dialog-ui",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m16/04-settings-dialog-ui.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m16/05",
+   "slug": "05-time-picker-synthesis",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m16/05-time-picker-synthesis.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m17/01",
+   "slug": "01-vi-sao-l10n-gen",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m17/01-vi-sao-l10n-gen.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m17/02",
+   "slug": "02-arb-gen-l10n-setup",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m17/02-arb-gen-l10n-setup.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m17/03",
+   "slug": "03-materialapp-locale-streambuilder",
+   "type": "INTEGRATION",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m17/03-materialapp-locale-streambuilder.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m17/04",
+   "slug": "04-di-chuyen-chu-sang-l10n",
+   "type": "DELTA",
+   "checkpoint_tests": null,
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m17/04-di-chuyen-chu-sang-l10n.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m17/05",
+   "slug": "05-synthesis-tests-tu-lam",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "90/90",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m17/05-synthesis-tests-tu-lam.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m18/01",
+   "slug": "01-vi-sao-overlay-khong-phai-route",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m18/01-vi-sao-overlay-khong-phai-route.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m18/02",
+   "slug": "02-step-state-sealed-onboarding",
+   "type": "DELTA",
+   "checkpoint_tests": "90/90",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m18/02-step-state-sealed-onboarding.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m18/03",
+   "slug": "03-onboarding-view-model",
+   "type": "DELTA",
+   "checkpoint_tests": "97/97",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m18/03-onboarding-view-model.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m18/04",
+   "slug": "04-overlay-scope-va-menu-stack",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "97/97",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m18/04-overlay-scope-va-menu-stack.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m18/05",
+   "slug": "05-hoan-thien-tests-tu-lam",
+   "type": "DELTA",
+   "checkpoint_tests": "102/102",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m18/05-hoan-thien-tests-tu-lam.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m19/01",
+   "slug": "01-vi-sao-widget-khong-giu-noi-game",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m19/01-vi-sao-widget-khong-giu-noi-game.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m19/02",
+   "slug": "02-data-game-moi-va-xe-man-cu",
+   "type": "DELTA",
+   "checkpoint_tests": "95/95",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m19/02-data-game-moi-va-xe-man-cu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m19/03",
+   "slug": "03-mapper-state-sang-screen-data",
+   "type": "DELTA",
+   "checkpoint_tests": "99/99",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m19/03-mapper-state-sang-screen-data.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m19/04",
+   "slug": "04-game-screen-view-model",
+   "type": "DELTA",
+   "checkpoint_tests": "116/116",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m19/04-game-screen-view-model.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m19/05",
+   "slug": "05-man-hinh-moi-provider-bridge-popscope",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "126/126",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m19/05-man-hinh-moi-provider-bridge-popscope.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m19/06",
+   "slug": "06-tests-regression-tu-lam",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": "126/126",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m19/06-tests-regression-tu-lam.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m20/01",
+   "slug": "01-lifeline-la-luat-game",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m20/01-lifeline-la-luat-game.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m20/02",
+   "slug": "02-du-lieu-va-helper-lifeline",
+   "type": "DELTA",
+   "checkpoint_tests": "131/131",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m20/02-du-lieu-va-helper-lifeline.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m20/03",
+   "slug": "03-nam-muoi-nam-muoi-va-hoi-khan-gia",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "141/141",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m20/03-nam-muoi-nam-muoi-va-hoi-khan-gia.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m20/04",
+   "slug": "04-hoi-ai-va-dung-cuoc-choi",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "147/147",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m20/04-hoi-ai-va-dung-cuoc-choi.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m20/05",
+   "slug": "05-tests-regression-tu-lam",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "147/147",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m20/05-tests-regression-tu-lam.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m21/01",
+   "slug": "01-dialog-la-state-khong-phai-route",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m21/01-dialog-la-state-khong-phai-route.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m21/02",
+   "slug": "02-game-dialog-layer",
+   "type": "DELTA",
+   "checkpoint_tests": "150/150",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m21/02-game-dialog-layer.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m21/03",
+   "slug": "03-animated-switcher-va-keyed-transitions",
+   "type": "DELTA",
+   "checkpoint_tests": "153/153",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m21/03-animated-switcher-va-keyed-transitions.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m21/04",
+   "slug": "04-popscope-va-back-handling",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "153/153",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m21/04-popscope-va-back-handling.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m21/05",
+   "slug": "05-tests-regression-tu-lam",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "157/157",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m21/05-tests-regression-tu-lam.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m22/01",
+   "slug": "01-ket-qua-la-ghi-db",
+   "type": "NO_REVIEW",
+   "checkpoint_tests": null,
+   "prompt": false,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m22/01-ket-qua-la-ghi-db.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m22/02",
+   "slug": "02-level-config",
+   "type": "DELTA",
+   "checkpoint_tests": "164/164",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m22/02-level-config.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m22/03",
+   "slug": "03-menu-level-progress",
+   "type": "DELTA",
+   "checkpoint_tests": "169/169",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m22/03-menu-level-progress.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m22/04",
+   "slug": "04-vm-save-mot-lan",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "168/168",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m22/04-vm-save-mot-lan.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m22/05",
+   "slug": "05-regression-va-m23-boundary",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": "168/168",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m22/05-regression-va-m23-boundary.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m23/01",
+   "slug": "01-supabase-va-dart-define",
+   "type": "DELTA",
+   "checkpoint_tests": "171/171",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m23/01-supabase-va-dart-define.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m23/02",
+   "slug": "02-init-co-dieu-kien",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "171/171",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m23/02-init-co-dieu-kien.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m23/03",
+   "slug": "03-leaderboard-repository",
+   "type": "DELTA",
+   "checkpoint_tests": "175/175",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m23/03-leaderboard-repository.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m23/04",
+   "slug": "04-viewmodel-va-stale-guard",
+   "type": "DELTA",
+   "checkpoint_tests": "184/184",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m23/04-viewmodel-va-stale-guard.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m23/05",
+   "slug": "05-dialog-va-menu-row",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "193/193",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m23/05-dialog-va-menu-row.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m24/01",
+   "slug": "01-session-model",
+   "type": "DELTA",
+   "checkpoint_tests": "199/199",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m24/01-session-model.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m24/02",
+   "slug": "02-supabase-auth-impl",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "201/201",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m24/02-supabase-auth-impl.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m24/03",
+   "slug": "03-sync-seam-va-coordinator",
+   "type": "DELTA",
+   "checkpoint_tests": "201/201",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m24/03-sync-seam-va-coordinator.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m24/04",
+   "slug": "04-dialog-vms-va-menu",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "219/219",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m24/04-dialog-vms-va-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m24/05",
+   "slug": "05-auth-ui",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "224/224",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m24/05-auth-ui.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m25/01",
+   "slug": "01-app-user-data-va-schema",
+   "type": "DELTA",
+   "checkpoint_tests": "226/226",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m25/01-app-user-data-va-schema.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m25/02",
+   "slug": "02-merge-user-profile-for-sync",
+   "type": "DELTA",
+   "checkpoint_tests": "233/233",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m25/02-merge-user-profile-for-sync.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m25/03",
+   "slug": "03-sync-repository-impl",
+   "type": "DELTA",
+   "checkpoint_tests": "233/233",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m25/03-sync-repository-impl.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m25/04",
+   "slug": "04-main-di-va-game-vm",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "233/233",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m25/04-main-di-va-game-vm.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m25/05",
+   "slug": "05-sync-tests-va-tong-ket",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": "236/236",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m25/05-sync-tests-va-tong-ket.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m26/01",
+   "slug": "01-vi-sao-mutation-tay-dat-gioi-han",
+   "type": "DELTA",
+   "checkpoint_tests": "236/236",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m26/01-vi-sao-mutation-tay-dat-gioi-han.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m26/02",
+   "slug": "02-core-dre-primitives",
+   "type": "DELTA",
+   "checkpoint_tests": "241/241",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m26/02-core-dre-primitives.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m26/03",
+   "slug": "03-game-state-actions-effects",
+   "type": "DELTA",
+   "checkpoint_tests": "241/241",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m26/03-game-state-actions-effects.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m26/04",
+   "slug": "04-game-reducer",
+   "type": "DELTA",
+   "checkpoint_tests": "251/251",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m26/04-game-reducer.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m26/05",
+   "slug": "05-vm-migration-va-bridges",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "251/251",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m26/05-vm-migration-va-bridges.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m26/06",
+   "slug": "06-regression-va-tong-ket",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": "254/254",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m26/06-regression-va-tong-ket.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m27/01",
+   "slug": "01-platform-boundary-va-dependencies",
+   "type": "DELTA",
+   "checkpoint_tests": "254/254",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m27/01-platform-boundary-va-dependencies.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m27/02",
+   "slug": "02-local-notification-service",
+   "type": "DELTA",
+   "checkpoint_tests": "254/254",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m27/02-local-notification-service.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m27/03",
+   "slug": "03-settings-coordinator-permission-state",
+   "type": "DELTA",
+   "checkpoint_tests": "259/259",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m27/03-settings-coordinator-permission-state.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m27/04",
+   "slug": "04-settings-wiring-version-onboarding",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "259/259",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m27/04-settings-wiring-version-onboarding.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m27/05",
+   "slug": "05-share-chain-dre-effect",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "259/259",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m27/05-share-chain-dre-effect.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m27/06",
+   "slug": "06-regression-va-tong-ket",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "259/259",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m27/06-regression-va-tong-ket.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m28/01",
+   "slug": "01-nen-mong-tokens-assets",
+   "type": "DELTA",
+   "checkpoint_tests": "259/259",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m28/01-nen-mong-tokens-assets.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m28/02",
+   "slug": "02-chrome-chung-pill-kinh-nen",
+   "type": "DELTA",
+   "checkpoint_tests": "263/263",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m28/02-chrome-chung-pill-kinh-nen.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m28/03",
+   "slug": "03-custompainter-animationcontroller-dong-ho",
+   "type": "DELTA",
+   "checkpoint_tests": "270/270",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m28/03-custompainter-animationcontroller-dong-ho.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m28/04",
+   "slug": "04-trigger-motion-so-tien-nhay",
+   "type": "DELTA",
+   "checkpoint_tests": "276/276",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m28/04-trigger-motion-so-tien-nhay.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m28/05",
+   "slug": "05-be-mat-game-va-lop-dialog",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "289/289",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m28/05-be-mat-game-va-lop-dialog.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m28/06",
+   "slug": "06-hoi-tu-iconasset-atomic-swap",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": "309/309",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m28/06-hoi-tu-iconasset-atomic-swap.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/01",
+   "slug": "01-nen-mong-assets-tokens-arb",
+   "type": "DELTA",
+   "checkpoint_tests": "309/309",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/01-nen-mong-assets-tokens-arb.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/02",
+   "slug": "02-settings-chrome-iconasset",
+   "type": "DELTA",
+   "checkpoint_tests": "313/313",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/02-settings-chrome-iconasset.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/03",
+   "slug": "03-duong-ong-leaderboard",
+   "type": "DELTA",
+   "checkpoint_tests": "321/321",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/03-duong-ong-leaderboard.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/04",
+   "slug": "04-be-mat-menu",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "345/345",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/04-be-mat-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/05",
+   "slug": "05-lop-dialog-menu",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "369/369",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/05-lop-dialog-menu.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/06",
+   "slug": "06-visual-onboarding",
+   "type": "INTEGRATION",
+   "checkpoint_tests": "383/383",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/06-visual-onboarding.md",
+   "section_exists": true,
+   "applied": true
+  },
+  {
+   "lesson": "m29/07",
+   "slug": "07-hoi-tu-quet-cuoi",
+   "type": "MILESTONE_GATE",
+   "checkpoint_tests": "396/396",
+   "prompt": true,
+   "section_file": "AI_HANDOFF/work/step-29-ai-local-review/sections/m29/07-hoi-tu-quet-cuoi.md",
+   "section_exists": true,
+   "applied": true
+  }
+ ]
+}

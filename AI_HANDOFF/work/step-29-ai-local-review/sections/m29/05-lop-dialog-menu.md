@@ -1,0 +1,46 @@
+## 🤖 AI Local — Kiểm tra project sau bài này
+
+Dán prompt dưới đây vào **AI local** — một trợ lý code chạy trên máy bạn, có quyền đọc file và chạy lệnh trong project (ví dụ AI agent trong IDE). Bước này tuỳ chọn nhưng đáng làm sau mỗi bài: AI chỉ review và báo cáo, không tự sửa code — mọi fix vẫn là của bạn.
+
+```text
+Bạn là Project Alignment Reviewer cho project Flutter tôi đang tự code theo khóa học. Bài tôi vừa học xong: m29/05 — "Lớp dialog của menu: dialog là STATE, không phải event" (KIẾN-TRÚC TRỌNG-TÂM M29: `MenuDialogState` sealed 5-variant `isVisible`/`transitionKey=>runtimeType` → `MenuDialogLayer` `SizedBox.expand`+`AnimatedSwitcher` `dialogMotionLong` + switch-kiệt-hợp → 4-scope keyed `ValueKey(transitionKey)` → `MenuDialogBackdrop` haze + tap-ngoài-dismiss + `GestureDetector(onTap:(){})` nuốt-tap-trong + `foregroundOverlay`-slot → `MenuScreenView` Stack(background→column→`Positioned.fill(layer)`→`Positioned.fill(overlayScope)`) + `PopScope(canPop: !isVisible)` + `_dialogDismissLocked` (sign-out `isLoading`→`onDismissLockChanged`) → `MenuScreenViewModel.dialogState` + equality-guard `_setDialogState` → `menu_screen.dart` 87d 2-event bridge; 4 `*Requested` event + 3 `showXxxDialog` RETIRE — `grep showDialog lib/` trống; +24 → 369).
+
+CHỈ REVIEW — KHÔNG SỬA. Được: đọc file, xem cây thư mục, chạy `git status`, `git diff`, `flutter analyze`, `flutter test`, `grep`/`findstr` cho `showDialog`/`showXxxDialog`/`*Requested`. Cấm: sửa file, formatter, `flutter pub get` hoặc đổi dependency/lockfile, patch, commit, reset, revert, refactor, xoá file. Thấy vấn đề → báo cáo + gợi ý hướng sửa trong phạm vi đã học; không tự sửa.
+
+PROJECT ROOT: thư mục chứa `pubspec.yaml`. Nhiều project mà mơ hồ → `BLOCKED_PROJECT_ROOT`.
+
+PHẠM VI: chỉ chấm theo EXPECTED STATE + INVARIANTS bên dưới; ngoài danh sách = không tính thiếu. Đây là architecture-swap — event→state: phán-xét "điều-gì TỒN-TẠI (state) vs XẢY-RA (event)"; `MenuGameRequested`/`MenuSnackBarRequested` GIỮ event (sau-navigate không-gì-"đang-là").
+
+EXPECTED STATE SAU BÀI NÀY:
+- `lib/view_models/menu/menu_dialog_state.dart` (FILE MỚI STRICT verbatim ~57d): `sealed class MenuDialogState` + `bool get isVisible => this is! MenuDialogNone` + `Object get transitionKey => runtimeType` (STRICT key-theo-loại — instance-key = re-animate sai); 5 `final class` variant `MenuDialogNone`/`MenuDialogLeaderboard`/`MenuDialogSettings`/`MenuDialogAuth`/`MenuDialogSignOut` const-ctor + `==`/`hashCode` per-variant `Object.hash(0..4)` (STRICT equality — guard-idempotent).
+- `lib/view_models/menu/menu_screen_view_model.dart` (STRICT): `MenuDialogState _dialogState = const MenuDialogNone()` + `getter dialogState` + `requestLeaderboardDialog()`/`requestSettingsDialog()` → `_setDialogState(variant)` + `requestAuthAction()` switch `_authState is AuthSessionAuthenticated → MenuDialogSignOut : MenuDialogAuth` (STRICT chính-sách-trong-VM — widget `if(isAuthenticated)` trước-gọi = DIVERGED policy-leak) + `dismissCurrentDialog() → _setDialogState(None)` + `bool _setDialogState(state)` — `if (_isDisposed || _dialogState == state) return false; _dialogState = state; notifyListeners(); return true` (STRICT equality-guard — duplicate-request chỉ-1-notify); `requestGame() → _events.add(MenuGameRequested())` event-giữ; `StreamController<MenuScreenUiEvent>` 2-variant.
+- `lib/view_models/menu/menu_screen_ui_event.dart` (STRICT): chỉ `MenuGameRequested` + `MenuSnackBarRequested` — 4 variant `MenuSettingsRequested`/`MenuLeaderboardRequested`/`MenuAuthRequested`/`MenuSignOutRequested` **XOÁ** (STRICT còn = retire-incomplete).
+- `lib/widgets/menu/menu_dialog_layer.dart` (FILE MỚI STRICT verbatim): `SizedBox.expand` → `AnimatedSwitcher(duration: AppTokens.dialogMotionLong, reverseDuration: same, switchInCurve: easeOutCubic, switchOutCurve: linear, transitionBuilder: FadeTransition)` → `_buildDialog(state)` switch-kiệt-hợp `MenuDialogNone() → SizedBox.shrink(key: 'menu-dialog-none') / Leaderboard → MenuLeaderboardDialogScope(key: ValueKey(state.transitionKey), onDismiss:) / Settings → MenuSettingsDialogScope(key:, onDismiss:, profile:, isAuthenticated:, onAccountAction:) / Auth → MenuAuthDialogScope / SignOut → MenuSignOutDialogScope(onDismissLockChanged: ?? (_) {})` (STRICT `ValueKey(transitionKey)` — cùng-variant-cùng-key = không-re-animate; crossfade Settings↔Auth tự-nhiên).
+- `lib/widgets/menu/menu_dialog_backdrop.dart` (STRICT verbatim — có-thể-đã-tồn-tại-từ-Bài-02-slot): `ClipRect(BackdropFilter(blur dialogHazeBlurSigma×2, GestureDetector(behavior: opaque, onTap: onDismiss, ColoredBox(dialogHazeScrim, Stack(expand)[SafeArea(Center(DesignFrame(GestureDetector(behavior: opaque, onTap: () {}, child)))) , if (foregroundOverlay != null) Positioned.fill(foregroundOverlay!)]))))` (STRICT 2-GestureDetector: ngoài-dismiss/trong-nuốt; `onTap: () {}` không-null-callback).
+- `lib/widgets/menu/menu_screen_view.dart` (FILE MỚI STRICT): `PopScope(canPop: !viewModel.dialogState.isVisible, onPopInvokedWithResult: (didPop, _) { if (!didPop && isVisible && !_dialogDismissLocked) viewModel.dismissCurrentDialog(); })` (STRICT back=state→None không-pop-route; `!didPop` check) → `Scaffold(transparent, body: Stack[Positioned.fill(GameScreenBackground), Column[topInset, MenuProfileHeader, Expanded(MenuScreenContent), GradientCtaButton, bottomInset], Positioned.fill(MenuDialogLayer(dialogState:, onDismiss: _requestDialogDismiss, onDismissLockChanged: _setDialogDismissLocked, profile:, isAuthenticated:, onAccountAction:)), Positioned.fill(OnboardingOverlayScope)])` (STRICT thứ-tự-stack: onboarding TRÊN-CÙNG kể-cả-dialog) + `bool _dialogDismissLocked` + `_requestDialogDismiss()` guard `!_dialogDismissLocked → dismissCurrentDialog` (STRICT lock chặn CẢ tap-ngoài LẪN back).
+- `lib/widgets/menu/{auth,settings,leaderboard}/*_scope.dart` (STRICT): `MenuAuthDialogScope`/`MenuSignOutDialogScope`/`MenuSettingsDialogScope`/`MenuLeaderboardDialogScope` — `ChangeNotifierProvider(create: ctx.read-repos)` → `MenuDialogBackdrop(onDismiss, child: dialog)` + sign-out-scope theo-dõi `vm.isLoading → onDismissLockChanged(bool)` (STRICT VM-scoped-sinh-chết-cùng-scope; `Provider.value` app-repo vs `create:` dialog-VM — nhầm = leak/re-create).
+- `lib/screens/menu_screen.dart` (STRICT ~87d): chỉ `ChangeNotifierProvider` + `_MenuScreenEventBridge` — switch-kiệt-hợp 2-event `MenuGameRequested → navigationController.openGame() / MenuSnackBarRequested → ScaffoldMessenger` (STRICT zero dialog-dispatch; `showDialog`/`showSettingsDialog`/`showLeaderboardDialog`/`showAuthDialog` route-fn GONE).
+- `lib/view_models/menu/menu_dialog_state.dart` + grep-verify: `grep -rn "showDialog\|showSettingsDialog\|showLeaderboardDialog\|showAuthDialog\|MenuSettingsRequested\|MenuLeaderboardRequested\|MenuAuthRequested\|MenuSignOutRequested" lib/` → **TRỐNG** (STRICT kết-quả-zero — bất-kỳ-hit-nào = retire-incomplete).
+- `test/widgets/menu_dialog_layer_test.dart` 16 (state→layer variant/key/switch/dismiss) + `test/menu_screen_view_model_test.dart` 22 (idempotent-guard/dismiss/event-một-lần) + `test/sealed_state_test.dart` 5 (2-menu-event + 5-menu-state + 9-game-state kiệt-hợp).
+- `flutter analyze` sạch; `flutter test` → **369/369** (STRICT 345 + 24).
+- KHÔNG ĐƯỢC có (chưa đến): `showDialog`/`showXxxDialog`/4-`*Requested` (RETIRE ngay-bài-này — KHÔNG phải "chưa đến" mà là "đã-xoá"); onboarding config/card/step-actions/step-indicator/overlay-4-class-visual/scope-FutureBuilder→StreamBuilder-chain (BÀI 06 — overlay visual M18-era vẫn, nhưng `OnboardingOverlayScope` nằm `Positioned.fill`-trên-cùng stack từ-bài-này); `menu_tokens.dart` xoá (BÀI 06); previews/`main`-verbatim/`AppNavigationController`-verbatim (BÀI 07); `MenuScreenContent`-visual (Bài-04-đã-xong, KHÔNG re-verify-thêm-expected-mới).
+
+INVARIANTS NỀN — phải CÒN NGUYÊN:
+- Bài 04: 4-card content + CTA + profile-files (View-tái-dùng — column-children từ-Bài-04, KHÔNG re-port); Bài 03: leaderboard-pipeline (dialog-widget giữ — chỉ transport đổi); Bài 02: settings-11-file + scope-overlay-slot (scope-tái-dùng `MenuDialogBackdrop`+`foregroundOverlay`); `OnboardingOverlayScope` (Positioned.fill-slot — visual BÀI 06); `MenuScreenViewModel` các-method-khác (profile/settings-toggle/auth-listen — chỉ dialog-dispatch đổi); `AppNavigationController.openGame` (event-MENU→nav giữ — contract BÀI 07 verbatim); `GameScreen`-DRE/dialog-layer-game M21-M28 (menu-mirror-pattern — KHÔNG chia-sẻ-file, hai-layer-riêng); 345-test-nền.
+
+Mục (STRICT) phải đúng; mục khác chấm semantic. Code vượt checkpoint → `AHEAD_COMPATIBLE`; thiếu bắt buộc → `BEHIND` + bằng chứng file/symbol. `showDialog` còn = BEHIND retire-incomplete (đây-là-expected-bài-này); `*Requested`-event còn = NEEDS_FIX; `isVisible`-thủ-công `switch` thay `this is! None` = DIVERGED; lock-chỉ-chặn-1-đường-dismiss = DIVERGED; scope-`Provider.value`-cho-VM = DIVERGED leak.
+
+OUTPUT (đúng format; mục trống → "None"):
+LESSON: m29/05
+PROJECT_ALIGNMENT: ON_TRACK | NEEDS_FIX | DIVERGED | BLOCKED
+COURSE_POSITION: ON_TRACK | BEHIND | AHEAD_COMPATIBLE | AHEAD_RISKY
+READY_FOR_NEXT_LESSON: YES | YES_AFTER_FIXES | NO
+VERIFICATION_PERFORMED:
+WHAT_MATCHES:
+GAPS:
+AHEAD_OF_COURSE:
+DIVERGENCES:
+REQUIRED_FIXES_BEFORE_CONTINUING:
+EVIDENCE: file/symbol → observation
+FILES_MODIFIED_BY_REVIEW: NONE
+```

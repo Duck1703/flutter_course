@@ -1,0 +1,1718 @@
+[
+ {
+  "m": "m01",
+  "n": "01",
+  "slug": "01-flutter-dart-va-project-dau-tien",
+  "file": "m01/01-flutter-dart-va-project-dau-tien.md",
+  "title": "Bài 1 · Flutter, Dart và project đầu tiên",
+  "size": 9244,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m01",
+  "n": "02",
+  "slug": "02-main-runapp-va-cay-widget",
+  "file": "m01/02-main-runapp-va-cay-widget.md",
+  "title": "Bài 2 · main(), runApp() và cây Widget đầu tiên",
+  "size": 14693,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m01",
+  "n": "03",
+  "slug": "03-chay-app-hot-reload-va-tooling",
+  "file": "m01/03-chay-app-hot-reload-va-tooling.md",
+  "title": "Bài 3 · Chạy app, Hot Reload và tooling",
+  "size": 7845,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m02",
+  "n": "01",
+  "slug": "01-mo-hinh-constraints",
+  "file": "m02/01-mo-hinh-constraints.md",
+  "title": "Bài 1 · Mô hình layout: constraints đi xuống, kích thước đi lên",
+  "size": 10819,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m02",
+  "n": "02",
+  "slug": "02-khung-man-hinh-menu",
+  "file": "m02/02-khung-man-hinh-menu.md",
+  "title": "Bài 2 · Khung màn hình menu & MenuTokens",
+  "size": 15970,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m02",
+  "n": "03",
+  "slug": "03-header-va-cac-the",
+  "file": "m02/03-header-va-cac-the.md",
+  "title": "Bài 3 · Header hồ sơ & các thẻ đầu tiên",
+  "size": 19324,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m02",
+  "n": "04",
+  "slug": "04-nut-cta-va-hoan-thien-menu",
+  "file": "m02/04-nut-cta-va-hoan-thien-menu.md",
+  "title": "Bài 4 · Nút CTA & hoàn thiện menu tĩnh",
+  "size": 14502,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành — M02"
+  ]
+ },
+ {
+  "m": "m03",
+  "n": "01",
+  "slug": "01-stateless-va-stateful",
+  "file": "m03/01-stateless-va-stateful.md",
+  "title": "Bài 1 · StatelessWidget vs StatefulWidget",
+  "size": 20247,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m03",
+  "n": "02",
+  "slug": "02-setstate-va-rebuild",
+  "file": "m03/02-setstate-va-rebuild.md",
+  "title": "Bài 2 · setState & rebuild — cơ chế bên trong",
+  "size": 10867,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m03",
+  "n": "03",
+  "slug": "03-lifecycle-callbacks-va-state-ownership",
+  "file": "m03/03-lifecycle-callbacks-va-state-ownership.md",
+  "title": "Bài 3 · Lifecycle, callback & state ở đâu",
+  "size": 12813,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành — M03"
+  ]
+ },
+ {
+  "m": "m04",
+  "n": "01",
+  "slug": "01-model-va-null-safety",
+  "file": "m04/01-model-va-null-safety.md",
+  "title": "Bài 1 · Vì sao UI cần model & null safety",
+  "size": 15837,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m04",
+  "n": "02",
+  "slug": "02-copywith-va-equality",
+  "file": "m04/02-copywith-va-equality.md",
+  "title": "Bài 2 · Immutability: copyWith, ==, hashCode",
+  "size": 17271,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m04",
+  "n": "03",
+  "slug": "03-noi-model-vao-menu",
+  "file": "m04/03-noi-model-vao-menu.md",
+  "title": "Bài 3 · Nối model vào menu",
+  "size": 17643,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m04",
+  "n": "04",
+  "slug": "04-unit-test-dau-tien",
+  "file": "m04/04-unit-test-dau-tien.md",
+  "title": "Bài 4 · Unit test đầu tiên",
+  "size": 12973,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m05",
+  "n": "01",
+  "slug": "01-future-async-await",
+  "file": "m05/01-future-async-await.md",
+  "title": "Bài 1 · Future, async & await",
+  "size": 14419,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m05",
+  "n": "02",
+  "slug": "02-futurebuilder",
+  "file": "m05/02-futurebuilder.md",
+  "title": "Bài 2 · FutureBuilder: loading → data/error",
+  "size": 19206,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m05",
+  "n": "03",
+  "slug": "03-async-main",
+  "file": "m05/03-async-main.md",
+  "title": "Bài 3 · async main() & bootstrap",
+  "size": 9815,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m06",
+  "n": "01",
+  "slug": "01-stream-la-gi",
+  "file": "m06/01-stream-la-gi.md",
+  "title": "Bài 1 · Stream ≠ Future",
+  "size": 12179,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m06",
+  "n": "02",
+  "slug": "02-streambuilder-trong-menu",
+  "file": "m06/02-streambuilder-trong-menu.md",
+  "title": "Bài 2 · StreamBuilder trong menu",
+  "size": 15018,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành"
+  ]
+ },
+ {
+  "m": "m06",
+  "n": "03",
+  "slug": "03-listen-cancel-streamcontroller",
+  "file": "m06/03-listen-cancel-streamcontroller.md",
+  "title": "Bài 3 · listen, cancel & StreamController",
+  "size": 11870,
+  "ai": false,
+  "last_h2": [
+   "## Cố ý chưa làm",
+   "## Điểm kiểm tra hoàn thành — kết M06"
+  ]
+ },
+ {
+  "m": "m07",
+  "n": "01",
+  "slug": "01-route-stack-va-push",
+  "file": "m07/01-route-stack-va-push.md",
+  "title": "Bài 1 · Route stack & Navigator.push",
+  "size": 12275,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m07",
+  "n": "02",
+  "slug": "02-game-screen-va-pop",
+  "file": "m07/02-game-screen-va-pop.md",
+  "title": "Bài 2 · GameScreen & pop",
+  "size": 9880,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m07",
+  "n": "03",
+  "slug": "03-senior-navigation-checkpoint",
+  "file": "m07/03-senior-navigation-checkpoint.md",
+  "title": "Bài 3 · Điều hướng của senior & checkpoint",
+  "size": 7285,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m08",
+  "n": "01",
+  "slug": "01-quiz-question-model",
+  "file": "m08/01-quiz-question-model.md",
+  "title": "Bài 1 · QuizQuestion & ngân hàng câu hỏi",
+  "size": 8791,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m08",
+  "n": "02",
+  "slug": "02-quiz-state-va-enum",
+  "file": "m08/02-quiz-state-va-enum.md",
+  "title": "Bài 2 · State của quiz & enum trạng thái",
+  "size": 11489,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m08",
+  "n": "03",
+  "slug": "03-render-options-va-flow",
+  "file": "m08/03-render-options-va-flow.md",
+  "title": "Bài 3 · Render danh sách & luồng tiếp",
+  "size": 13392,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m08",
+  "n": "04",
+  "slug": "04-widget-test-dau-tien",
+  "file": "m08/04-widget-test-dau-tien.md",
+  "title": "Bài 4 · Widget test đầu tiên",
+  "size": 14385,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m09",
+  "n": "01",
+  "slug": "01-game-phase-va-timer",
+  "file": "m09/01-game-phase-va-timer.md",
+  "title": "Bài 1 · GamePhase & Timer đếm ngược",
+  "size": 14946,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m09",
+  "n": "02",
+  "slug": "02-phase-flow",
+  "file": "m09/02-phase-flow.md",
+  "title": "Bài 2 · Máy trạng thái của phiên chơi",
+  "size": 11318,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m09",
+  "n": "03",
+  "slug": "03-showdialog-va-popuntil",
+  "file": "m09/03-showdialog-va-popuntil.md",
+  "title": "Bài 3 · showDialog & popUntil",
+  "size": 14849,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m09",
+  "n": "04",
+  "slug": "04-test-game-session",
+  "file": "m09/04-test-game-session.md",
+  "title": "Bài 4 · Test phiên game có Timer",
+  "size": 13834,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m10",
+  "n": "01",
+  "slug": "01-sharedpreferences-va-profile-store",
+  "file": "m10/01-sharedpreferences-va-profile-store.md",
+  "title": "Bài 1 · SharedPreferences & ProfileStore",
+  "size": 12185,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m10",
+  "n": "02",
+  "slug": "02-json-tomap-frommap",
+  "file": "m10/02-json-tomap-frommap.md",
+  "title": "Bài 2 · JSON & parse phòng thủ",
+  "size": 15951,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m10",
+  "n": "03",
+  "slug": "03-game-result-qua-pop",
+  "file": "m10/03-game-result-qua-pop.md",
+  "title": "Bài 3 · GameResult qua pop()",
+  "size": 12892,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m10",
+  "n": "04",
+  "slug": "04-ap-ket-qua-va-reset",
+  "file": "m10/04-ap-ket-qua-va-reset.md",
+  "title": "Bài 4 · Áp kết quả & reset",
+  "size": 15257,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m11",
+  "n": "01",
+  "slug": "01-vi-sao-setstate-khong-scale",
+  "file": "m11/01-vi-sao-setstate-khong-scale.md",
+  "title": "Bài 1 · Vì sao setState không scale",
+  "size": 14650,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m11",
+  "n": "02",
+  "slug": "02-notifylisteners-va-listenablebuilder",
+  "file": "m11/02-notifylisteners-va-listenablebuilder.md",
+  "title": "Bài 2 · notifyListeners & ListenableBuilder",
+  "size": 13439,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m11",
+  "n": "03",
+  "slug": "03-so-huu-vm-va-test",
+  "file": "m11/03-so-huu-vm-va-test.md",
+  "title": "Bài 3 · Sở hữu VM & unit test",
+  "size": 11385,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m12",
+  "n": "01",
+  "slug": "01-inheritedwidget-va-lookup",
+  "file": "m12/01-inheritedwidget-va-lookup.md",
+  "title": "Bài 1 · InheritedWidget & lookup",
+  "size": 16211,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m12",
+  "n": "02",
+  "slug": "02-read-vs-watch",
+  "file": "m12/02-read-vs-watch.md",
+  "title": "Bài 2 · read vs watch",
+  "size": 11531,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m12",
+  "n": "03",
+  "slug": "03-changenotifierprovider-va-scope",
+  "file": "m12/03-changenotifierprovider-va-scope.md",
+  "title": "Bài 3 · ChangeNotifierProvider & scope",
+  "size": 11496,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m13",
+  "n": "01",
+  "slug": "01-event-khong-phai-state",
+  "file": "m13/01-event-khong-phai-state.md",
+  "title": "Bài 1 · Event ≠ state",
+  "size": 13664,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m13",
+  "n": "02",
+  "slug": "02-event-bridge-trong-state",
+  "file": "m13/02-event-bridge-trong-state.md",
+  "title": "Bài 2 · Event bridge trong State",
+  "size": 14326,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m13",
+  "n": "03",
+  "slug": "03-snackbar-event-va-test",
+  "file": "m13/03-snackbar-event-va-test.md",
+  "title": "Bài 3 · SnackBar event & test",
+  "size": 14169,
+  "ai": false,
+  "last_h2": [
+   "## Scaffold đã retire",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "01",
+  "slug": "01-vi-sao-profilestore-chua-du",
+  "file": "m14/01-vi-sao-profilestore-chua-du.md",
+  "title": "Bài 1 · Vì sao ProfileStore chưa đủ — mental model repository",
+  "size": 6455,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa làm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "02",
+  "slug": "02-contract-abstract-interface-implements",
+  "file": "m14/02-contract-abstract-interface-implements.md",
+  "title": "Bài 2 · Contract trong Dart: abstract interface class, implements, factory create()",
+  "size": 9591,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "03",
+  "slug": "03-stream-state-behavior-subject-value-stream",
+  "file": "m14/03-stream-state-behavior-subject-value-stream.md",
+  "title": "Bài 3 · Stream cho state: BehaviorSubject & ValueStream",
+  "size": 8197,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "04",
+  "slug": "04-user-profile-repository-impl",
+  "file": "m14/04-user-profile-repository-impl.md",
+  "title": "Bài 4 · UserProfileRepositoryImpl: SharedPreferences + subject",
+  "size": 8581,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa làm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "05",
+  "slug": "05-hai-repo-con-lai-va-model-parity",
+  "file": "m14/05-hai-repo-con-lai-va-model-parity.md",
+  "title": "Bài 5 · Hai repo còn lại + UserSettingsData + UserProfileData parity",
+  "size": 8252,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "06",
+  "slug": "06-di-theo-contract-multiprovider-va-fake",
+  "file": "m14/06-di-theo-contract-multiprovider-va-fake.md",
+  "title": "Bài 6 · DI theo contract: MultiProvider, bootstrap, fake repositories",
+  "size": 10940,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa làm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m14",
+  "n": "07",
+  "slug": "07-menuviewmodel-noi-vao-stream",
+  "file": "m14/07-menuviewmodel-noi-vao-stream.md",
+  "title": "Bài 7 · MenuViewModel nối vào stream — retire MenuLoadState, xoá ProfileStore",
+  "size": 10223,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành — kết M14"
+  ]
+ },
+ {
+  "m": "m15",
+  "n": "01",
+  "slug": "01-vi-sao-state-dong",
+  "file": "m15/01-vi-sao-state-dong.md",
+  "title": "Bài 1 · Vì sao cần state đóng — finite variants vs trường rời rạc",
+  "size": 7557,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m15",
+  "n": "02",
+  "slug": "02-sealed-class",
+  "file": "m15/02-sealed-class.md",
+  "title": "Bài 2 · `sealed class` — tập đóng các variant",
+  "size": 7996,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m15",
+  "n": "03",
+  "slug": "03-switch-kiet-hop-pattern",
+  "file": "m15/03-switch-kiet-hop-pattern.md",
+  "title": "Bài 3 · `switch` kiệt hợp + object patterns — bóc payload ngay trong case",
+  "size": 7596,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m15",
+  "n": "04",
+  "slug": "04-seal-event-bridge",
+  "file": "m15/04-seal-event-bridge.md",
+  "title": "Bài 4 · Seal hoá event bridge — MenuUiEvent → MenuScreenUiEvent",
+  "size": 6803,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m15",
+  "n": "05",
+  "slug": "05-gamedialogstate-state-driven-ui",
+  "file": "m15/05-gamedialogstate-state-driven-ui.md",
+  "title": "Bài 5 · `GameDialogState` — dialog render theo state (state-driven UI)",
+  "size": 9093,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m16",
+  "n": "01",
+  "slug": "01-vi-sao-settings-persist",
+  "file": "m16/01-vi-sao-settings-persist.md",
+  "title": "Bài 1 · Vì sao settings phải sống qua repository",
+  "size": 7966,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m16",
+  "n": "02",
+  "slug": "02-setting-item-data-factory",
+  "file": "m16/02-setting-item-data-factory.md",
+  "title": "Bài 2 · SettingItemData — sealed family lái danh sách UI",
+  "size": 14400,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m16",
+  "n": "03",
+  "slug": "03-settings-view-model-dialog-scoped",
+  "file": "m16/03-settings-view-model-dialog-scoped.md",
+  "title": "Bài 3 · SettingsViewModel — VM sinh và chết cùng dialog",
+  "size": 21542,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m16",
+  "n": "04",
+  "slug": "04-settings-dialog-ui",
+  "file": "m16/04-settings-dialog-ui.md",
+  "title": "Bài 4 · Settings dialog — Switch row, chips, gear → event → dialog",
+  "size": 18248,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m16",
+  "n": "05",
+  "slug": "05-time-picker-synthesis",
+  "file": "m16/05-time-picker-synthesis.md",
+  "title": "Bài 5 · ListWheelScrollView picker + tests + tổng hợp M16",
+  "size": 18166,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành — TỔNG HỢP M16"
+  ]
+ },
+ {
+  "m": "m17",
+  "n": "01",
+  "slug": "01-vi-sao-l10n-gen",
+  "file": "m17/01-vi-sao-l10n-gen.md",
+  "title": "Bài 1 · Vì sao không viết cứng chữ — từ literal tới resource",
+  "size": 6129,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m17",
+  "n": "02",
+  "slug": "02-arb-gen-l10n-setup",
+  "file": "m17/02-arb-gen-l10n-setup.md",
+  "title": "Bài 2 · ARB + gen-l10n — dựng pipeline bản địa hoá",
+  "size": 15853,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m17",
+  "n": "03",
+  "slug": "03-materialapp-locale-streambuilder",
+  "file": "m17/03-materialapp-locale-streambuilder.md",
+  "title": "Bài 3 · MaterialApp.locale lái bởi settings stream",
+  "size": 14937,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m17",
+  "n": "04",
+  "slug": "04-di-chuyen-chu-sang-l10n",
+  "file": "m17/04-di-chuyen-chu-sang-l10n.md",
+  "title": "Bài 4 · Dời chữ sang AppLocalizations — migration toàn bộ UI",
+  "size": 17832,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m17",
+  "n": "05",
+  "slug": "05-synthesis-tests-tu-lam",
+  "file": "m17/05-synthesis-tests-tu-lam.md",
+  "title": "Bài 5 · Tổng hợp M17 — locale-switch test + tự thêm key mới",
+  "size": 10899,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành — TỔNG HỢP M17"
+  ]
+ },
+ {
+  "m": "m18",
+  "n": "01",
+  "slug": "01-vi-sao-overlay-khong-phai-route",
+  "file": "m18/01-vi-sao-overlay-khong-phai-route.md",
+  "title": "Bài 1 · Vì sao onboarding là overlay, không phải route",
+  "size": 4738,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m18",
+  "n": "02",
+  "slug": "02-step-state-sealed-onboarding",
+  "file": "m18/02-step-state-sealed-onboarding.md",
+  "title": "Bài 2 · Step state — sealed family + chuỗi ARB onboarding",
+  "size": 11764,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m18",
+  "n": "03",
+  "slug": "03-onboarding-view-model",
+  "file": "m18/03-onboarding-view-model.md",
+  "title": "Bài 3 · OnboardingViewModel — list bước như queue",
+  "size": 11610,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m18",
+  "n": "04",
+  "slug": "04-overlay-scope-va-menu-stack",
+  "file": "m18/04-overlay-scope-va-menu-stack.md",
+  "title": "Bài 4 · Overlay scope + overlay UI + Stack trong menu",
+  "size": 12831,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m18",
+  "n": "05",
+  "slug": "05-hoan-thien-tests-tu-lam",
+  "file": "m18/05-hoan-thien-tests-tu-lam.md",
+  "title": "Bài 5 · Hoàn thiện — widget test, regression, tự làm",
+  "size": 7681,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m19",
+  "n": "01",
+  "slug": "01-vi-sao-widget-khong-giu-noi-game",
+  "file": "m19/01-vi-sao-widget-khong-giu-noi-game.md",
+  "title": "Bài 1 · Vì sao widget không giữ nổi game",
+  "size": 7235,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m19",
+  "n": "02",
+  "slug": "02-data-game-moi-va-xe-man-cu",
+  "file": "m19/02-data-game-moi-va-xe-man-cu.md",
+  "title": "Bài 2 · Nền data mới + xé màn chơi cũ",
+  "size": 19380,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m19",
+  "n": "03",
+  "slug": "03-mapper-state-sang-screen-data",
+  "file": "m19/03-mapper-state-sang-screen-data.md",
+  "title": "Bài 3 · Mapper thuần: state → GameScreenData",
+  "size": 11061,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m19",
+  "n": "04",
+  "slug": "04-game-screen-view-model",
+  "file": "m19/04-game-screen-view-model.md",
+  "title": "Bài 4 · GameScreenViewModel — trái tim máy trạng thái",
+  "size": 21965,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m19",
+  "n": "05",
+  "slug": "05-man-hinh-moi-provider-bridge-popscope",
+  "file": "m19/05-man-hinh-moi-provider-bridge-popscope.md",
+  "title": "Bài 5 · Màn hình mới: provider + event bridge + PopScope",
+  "size": 18458,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m19",
+  "n": "06",
+  "slug": "06-tests-regression-tu-lam",
+  "file": "m19/06-tests-regression-tu-lam.md",
+  "title": "Bài 6 · Regression + tự làm + tổng kết M19",
+  "size": 6451,
+  "ai": false,
+  "last_h2": [
+   "## Tổng kết milestone",
+   "## Checkpoint cuối milestone"
+  ]
+ },
+ {
+  "m": "m20",
+  "n": "01",
+  "slug": "01-lifeline-la-luat-game",
+  "file": "m20/01-lifeline-la-luat-game.md",
+  "title": "Bài 1 · Lifeline là luật game, không phải cờ widget",
+  "size": 8459,
+  "ai": false,
+  "last_h2": [
+   "## Kiểm tra hiểu biết",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m20",
+  "n": "02",
+  "slug": "02-du-lieu-va-helper-lifeline",
+  "file": "m20/02-du-lieu-va-helper-lifeline.md",
+  "title": "Bài 2 · Nền data lifeline: state, dialog, helper thuần",
+  "size": 24806,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m20",
+  "n": "03",
+  "slug": "03-nam-muoi-nam-muoi-va-hoi-khan-gia",
+  "file": "m20/03-nam-muoi-nam-muoi-va-hoi-khan-gia.md",
+  "title": "Bài 3 · 50:50 và Hỏi khán giả: từ state tới thanh nút",
+  "size": 32785,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m20",
+  "n": "04",
+  "slug": "04-hoi-ai-va-dung-cuoc-choi",
+  "file": "m20/04-hoi-ai-va-dung-cuoc-choi.md",
+  "title": "Bài 4 · Hỏi AI và Dừng cuộc chơi: async mô phỏng + kết quả chốt",
+  "size": 26788,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m20",
+  "n": "05",
+  "slug": "05-tests-regression-tu-lam",
+  "file": "m20/05-tests-regression-tu-lam.md",
+  "title": "Bài 5 · Test lifeline, regression, và tự làm",
+  "size": 8655,
+  "ai": false,
+  "last_h2": [
+   "## Kiểm tra hiểu biết cuối milestone",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m21",
+  "n": "01",
+  "slug": "01-dialog-la-state-khong-phai-route",
+  "file": "m21/01-dialog-la-state-khong-phai-route.md",
+  "title": "Bài 1 · Dialog là state, không phải route",
+  "size": 9912,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m21",
+  "n": "02",
+  "slug": "02-game-dialog-layer",
+  "file": "m21/02-game-dialog-layer.md",
+  "title": "Bài 2 · GameDialogLayer — skeleton & backdrop",
+  "size": 29408,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m21",
+  "n": "03",
+  "slug": "03-animated-switcher-va-keyed-transitions",
+  "file": "m21/03-animated-switcher-va-keyed-transitions.md",
+  "title": "Bài 3 · AnimatedSwitcher & ValueKey — transition theo variant",
+  "size": 13841,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m21",
+  "n": "04",
+  "slug": "04-popscope-va-back-handling",
+  "file": "m21/04-popscope-va-back-handling.md",
+  "title": "Bài 4 · Cắt scaffold — PopScope, _handleRouteBack, mount layer",
+  "size": 14633,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m21",
+  "n": "05",
+  "slug": "05-tests-regression-tu-lam",
+  "file": "m21/05-tests-regression-tu-lam.md",
+  "title": "Bài 5 · Bổ sung test parity & tổng kết M21",
+  "size": 10549,
+  "ai": false,
+  "last_h2": [
+   "## Tổng kết M21 — mental model giữ lại",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m22",
+  "n": "01",
+  "slug": "01-ket-qua-la-ghi-db",
+  "file": "m22/01-ket-qua-la-ghi-db.md",
+  "title": "Bài 1 · Kết quả là ghi-DB, không phải route-pop",
+  "size": 7770,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint",
+   "## Tự làm — PREDICT"
+  ]
+ },
+ {
+  "m": "m22",
+  "n": "02",
+  "slug": "02-level-config",
+  "file": "m22/02-level-config.md",
+  "title": "Bài 2 · LevelConfig — bảng milestone-multiplier",
+  "size": 9357,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint",
+   "## Tự làm — PREDICT"
+  ]
+ },
+ {
+  "m": "m22",
+  "n": "03",
+  "slug": "03-menu-level-progress",
+  "file": "m22/03-menu-level-progress.md",
+  "title": "Bài 3 · MenuLevelProgress — view suy ra từ profile",
+  "size": 11467,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint",
+   "## Tự làm — RECOGNIZE→MODIFY"
+  ]
+ },
+ {
+  "m": "m22",
+  "n": "04",
+  "slug": "04-vm-save-mot-lan",
+  "file": "m22/04-vm-save-mot-lan.md",
+  "title": "Bài 4 · Save trong VM — hasSavedResult & 7 sửa + 1 xoá",
+  "size": 15913,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint",
+   "## Tự làm — DEBUG"
+  ]
+ },
+ {
+  "m": "m22",
+  "n": "05",
+  "slug": "05-regression-va-m23-boundary",
+  "file": "m22/05-regression-va-m23-boundary.md",
+  "title": "Bài 5 · Regression tổng & biên M23",
+  "size": 6289,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint cuối milestone",
+   "## Tự làm — PRODUCE (sandbox, không merge)"
+  ]
+ },
+ {
+  "m": "m23",
+  "n": "01",
+  "slug": "01-supabase-va-dart-define",
+  "file": "m23/01-supabase-va-dart-define.md",
+  "title": "Bài 1 · Supabase, dart-define & bức tường bảo mật",
+  "size": 18091,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m23",
+  "n": "02",
+  "slug": "02-init-co-dieu-kien",
+  "file": "m23/02-init-co-dieu-kien.md",
+  "title": "Bài 2 · Init có điều kiện & DI theo cấu hình",
+  "size": 20125,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m23",
+  "n": "03",
+  "slug": "03-leaderboard-repository",
+  "file": "m23/03-leaderboard-repository.md",
+  "title": "Bài 3 · LeaderboardRepository — query chain & row mapping",
+  "size": 16750,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m23",
+  "n": "04",
+  "slug": "04-viewmodel-va-stale-guard",
+  "file": "m23/04-viewmodel-va-stale-guard.md",
+  "title": "Bài 4 · LeaderboardDialogViewModel — 4 state & stale guard",
+  "size": 12929,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m23",
+  "n": "05",
+  "slug": "05-dialog-va-menu-row",
+  "file": "m23/05-dialog-va-menu-row.md",
+  "title": "Bài 5 · Dialog, menu row & RefreshIndicator",
+  "size": 18260,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m24",
+  "n": "01",
+  "slug": "01-session-model",
+  "file": "m24/01-session-model.md",
+  "title": "Bài 1 · Session model, AuthActionResult & guest mode",
+  "size": 21888,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m24",
+  "n": "02",
+  "slug": "02-supabase-auth-impl",
+  "file": "m24/02-supabase-auth-impl.md",
+  "title": "Bài 2 · AuthRepositoryImpl trên Supabase + Google v7 (+ Apple appendix)",
+  "size": 28730,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m24",
+  "n": "03",
+  "slug": "03-sync-seam-va-coordinator",
+  "file": "m24/03-sync-seam-va-coordinator.md",
+  "title": "Bài 3 · Sync seam + MenuAuthActionCoordinator",
+  "size": 20284,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m24",
+  "n": "04",
+  "slug": "04-dialog-vms-va-menu",
+  "file": "m24/04-dialog-vms-va-menu.md",
+  "title": "Bài 4 · Dialog VMs, single-flight & MenuViewModel nhận auth",
+  "size": 22147,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m24",
+  "n": "05",
+  "slug": "05-auth-ui",
+  "file": "m24/05-auth-ui.md",
+  "title": "Bài 5 · Header pill, auth dialog & UI event routing",
+  "size": 21533,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m25",
+  "n": "01",
+  "slug": "01-app-user-data-va-schema",
+  "file": "m25/01-app-user-data-va-schema.md",
+  "title": "Bài 1 · AppUserData — DTO biên local ↔ public.users",
+  "size": 21583,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m25",
+  "n": "02",
+  "slug": "02-merge-user-profile-for-sync",
+  "file": "m25/02-merge-user-profile-for-sync.md",
+  "title": "Bài 2 · mergeUserProfileForSync — luật merge local ↔ remote",
+  "size": 18303,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m25",
+  "n": "03",
+  "slug": "03-sync-repository-impl",
+  "file": "m25/03-sync-repository-impl.md",
+  "title": "Bài 3 · UserProfileSyncRepositoryImpl — fetch → merge → save → upsert",
+  "size": 21242,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m25",
+  "n": "04",
+  "slug": "04-main-di-va-game-vm",
+  "file": "m25/04-main-di-va-game-vm.md",
+  "title": "Bài 4 · Một dòng trong main + _syncSavedGameResult thật",
+  "size": 21021,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m25",
+  "n": "05",
+  "slug": "05-sync-tests-va-tong-ket",
+  "file": "m25/05-sync-tests-va-tong-ket.md",
+  "title": "Bài 5 · Test sync VM-level + tổng kết ",
+  "size": 17851,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint hoàn thành",
+   "## Tổng kết milestone (synthesis)"
+  ]
+ },
+ {
+  "m": "m26",
+  "n": "01",
+  "slug": "01-vi-sao-mutation-tay-dat-gioi-han",
+  "file": "m26/01-vi-sao-mutation-tay-dat-gioi-han.md",
+  "title": "Bài 1 · Vì sao VM mutation tay đã đạt giới hạn",
+  "size": 12121,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m26",
+  "n": "02",
+  "slug": "02-core-dre-primitives",
+  "file": "m26/02-core-dre-primitives.md",
+  "title": "Bài 2 · core/dre — contract + DreChangeNotifier",
+  "size": 15653,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m26",
+  "n": "03",
+  "slug": "03-game-state-actions-effects",
+  "file": "m26/03-game-state-actions-effects.md",
+  "title": "Bài 3 · GameState + actions + effects — hợp đồng game-DRE",
+  "size": 19893,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m26",
+  "n": "04",
+  "slug": "04-game-reducer",
+  "file": "m26/04-game-reducer.md",
+  "title": "Bài 4 · GameReducer — bảng transition thuần, chia theo flow",
+  "size": 24107,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m26",
+  "n": "05",
+  "slug": "05-vm-migration-va-bridges",
+  "file": "m26/05-vm-migration-va-bridges.md",
+  "title": "Bài 5 · VM migration + bridges — DreChangeNotifier thật",
+  "size": 19674,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m26",
+  "n": "06",
+  "slug": "06-regression-va-tong-ket",
+  "file": "m26/06-regression-va-tong-ket.md",
+  "title": "Bài 6 · Regression tests + tổng kết ",
+  "size": 18019,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint hoàn thành",
+   "## Tổng kết milestone (synthesis)"
+  ]
+ },
+ {
+  "m": "m27",
+  "n": "01",
+  "slug": "01-platform-boundary-va-dependencies",
+  "file": "m27/01-platform-boundary-va-dependencies.md",
+  "title": "Bài 1 · Ranh giới platform — UI không chạm plugin trực tiếp",
+  "size": 19430,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m27",
+  "n": "02",
+  "slug": "02-local-notification-service",
+  "file": "m27/02-local-notification-service.md",
+  "title": "Bài 2 · LocalNotificationService — contract + impl plugin",
+  "size": 21536,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m27",
+  "n": "03",
+  "slug": "03-settings-coordinator-permission-state",
+  "file": "m27/03-settings-coordinator-permission-state.md",
+  "title": "Bài 3 · Coordinator + permission-as-state — bật thông báo thật",
+  "size": 30239,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m27",
+  "n": "04",
+  "slug": "04-settings-wiring-version-onboarding",
+  "file": "m27/04-settings-wiring-version-onboarding.md",
+  "title": "Bài 4 · Wiring — DI scope, version row, onboarding xin quyền thật",
+  "size": 17943,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m27",
+  "n": "05",
+  "slug": "05-share-chain-dre-effect",
+  "file": "m27/05-share-chain-dre-effect.md",
+  "title": "Bài 5 · Share chain — cưỡi effects-stream M26",
+  "size": 23242,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m27",
+  "n": "06",
+  "slug": "06-regression-va-tong-ket",
+  "file": "m27/06-regression-va-tong-ket.md",
+  "title": "Bài 6 · Regression + tổng kết — app đã ra khỏi lồng Dart",
+  "size": 13448,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm — tổng milestone",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m28",
+  "n": "01",
+  "slug": "01-nen-mong-tokens-assets",
+  "file": "m28/01-nen-mong-tokens-assets.md",
+  "title": "Bài 1 · Nền móng — dependencies, assets, design tokens",
+  "size": 25916,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m28",
+  "n": "02",
+  "slug": "02-chrome-chung-pill-kinh-nen",
+  "file": "m28/02-chrome-chung-pill-kinh-nen.md",
+  "title": "Bài 2 · Chrome chung — pill button, nút kính SVG, nền màn",
+  "size": 19414,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m28",
+  "n": "03",
+  "slug": "03-custompainter-animationcontroller-dong-ho",
+  "file": "m28/03-custompainter-animationcontroller-dong-ho.md",
+  "title": "Bài 3 · CustomPainter + AnimationController — đồng hồ đếm ngược",
+  "size": 27962,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m28",
+  "n": "04",
+  "slug": "04-trigger-motion-so-tien-nhay",
+  "file": "m28/04-trigger-motion-so-tien-nhay.md",
+  "title": "Bài 4 · Trigger-based motion — số tiền đếm nhảy + reduce-motion",
+  "size": 25186,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m28",
+  "n": "05",
+  "slug": "05-be-mat-game-va-lop-dialog",
+  "file": "m28/05-be-mat-game-va-lop-dialog.md",
+  "title": "Bài 5 · Bề mặt game + lớp dialog — answers, question, dialogs",
+  "size": 32048,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m28",
+  "n": "06",
+  "slug": "06-hoi-tu-iconasset-atomic-swap",
+  "file": "m28/06-hoi-tu-iconasset-atomic-swap.md",
+  "title": "Bài 6 · Hội tụ — iconAsset pipeline, atomic swap, regression",
+  "size": 32405,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint hoàn thành",
+   "## Tổng kết milestone"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "01",
+  "slug": "01-nen-mong-assets-tokens-arb",
+  "file": "m29/01-nen-mong-assets-tokens-arb.md",
+  "title": "Bài 01 — Nền móng đủ: 50 asset, `AppAssets`/`OnboardingTokens` verbatim, l10n đồng bộ",
+  "size": 24156,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "02",
+  "slug": "02-settings-chrome-iconasset",
+  "file": "m29/02-settings-chrome-iconasset.md",
+  "title": "Bài 02 — Settings chrome: `iconAsset`, `_SettingIconBadge`, và cái chết của monolith",
+  "size": 26227,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "03",
+  "slug": "03-duong-ong-leaderboard",
+  "file": "m29/03-duong-ong-leaderboard.md",
+  "title": "Bài 03 — Leaderboard pipeline: DTO có asset, mapper deterministic, snapshot có pin",
+  "size": 24194,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "04",
+  "slug": "04-be-mat-menu",
+  "file": "m29/04-be-mat-menu.md",
+  "title": "Bài 04 — Bề mặt menu: 4 card hồ sơ, CTA gradient, và decomposition theo file",
+  "size": 23373,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "05",
+  "slug": "05-lop-dialog-menu",
+  "file": "m29/05-lop-dialog-menu.md",
+  "title": "Bài 05 — Lớp dialog của menu: dialog là STATE, không phải event (trọng tâm)",
+  "size": 31811,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "06",
+  "slug": "06-visual-onboarding",
+  "file": "m29/06-visual-onboarding.md",
+  "title": "Bài 06 — Onboarding visual: header-config theo bước, overlay ba tầng-AnimatedSwitcher, và cái chết của MenuTokens",
+  "size": 26172,
+  "ai": false,
+  "last_h2": [
+   "## Ta cố ý chưa thêm",
+   "## Checkpoint hoàn thành"
+  ]
+ },
+ {
+  "m": "m29",
+  "n": "07",
+  "slug": "07-hoi-tu-quet-cuoi",
+  "file": "m29/07-hoi-tu-quet-cuoi.md",
+  "title": "Bài 07 — Hội tụ & quét cuối: `main.dart` verbatim, previews appendix, release-kit, và gì thì CHƯA kiểm chứng",
+  "size": 28808,
+  "ai": false,
+  "last_h2": [
+   "## Checkpoint hoàn thành",
+   "## Sau-M29 — đọc kỳ cuối"
+  ]
+ }
+]
