@@ -6,10 +6,10 @@
 | Local workspace | `D:/vibe_coding/flutter/flutter-course-accelerator-ai` |
 | Step-26 audited baseline | `9323e57` |
 | Step-26A release commit | `79249c6275a876b4f403522d80187588276c4e82` |
-| Step-27 closeout commit | `<set at commit time>` |
+| Step-27 closeout commit | `b4633c59e1a4f2e2a7d20b34c9468b74904a5fd0` |
 | main SHA after integration | `79249c6275a876b4f403522d80187588276c4e82` (fast-forward) |
 | origin/main before | `a451cef5b29aabe246115c6869bcc6688ab46956` |
-| origin/main after push | `<set at push time>` |
+| origin/main after push | `b4633c59e1a4f2e2a7d20b34c9468b74904a5fd0` |
 | Reviewed content revision (reported) | `3c62ec07839270` — sha256 concat worktree-bytes, pre-commit, EOL-state-bound |
 | Reviewed content revision (EOL-invariant) | `a9ab104c665a0605` — sha256 concat LF/blob bytes, reproducible on any checkout |
 | Learner lessons | 132 |
