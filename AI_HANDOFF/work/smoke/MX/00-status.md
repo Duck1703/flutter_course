@@ -1,0 +1,25 @@
+# MX — Workflow Status (SMOKE RUN — not a real milestone)
+
+Current state: MILESTONE_COMPLETE (simulated)
+Remediation cycles: impl 1 · content 1 · site 0
+
+## Transition log (append-only)
+
+- 2026-10-05 MILESTONE_PLANNED → BRIEF_READY — Atlas — 01-brief.md r1
+- 2026-10-05 BRIEF_READY → IMPLEMENTATION_IN_PROGRESS — Flux accepted
+- 2026-10-05 IMPLEMENTATION_IN_PROGRESS → IMPLEMENTATION_QA — 02-* r1
+- 2026-10-05 IMPLEMENTATION_QA → IMPLEMENTATION_IN_PROGRESS — Argus FAIL (QA-IMPL-001: unverified VERIFIED claim)
+- 2026-10-05 [NEGATIVE TEST] attempted IMPLEMENTATION_QA → IMPLEMENTATION_APPROVED with FAIL artifact present — refused per WORKFLOW-CONTRACT.md §2
+- 2026-10-05 IMPLEMENTATION_IN_PROGRESS → IMPLEMENTATION_QA — 02-* r2
+- 2026-10-05 IMPLEMENTATION_QA → IMPLEMENTATION_APPROVED — Argus PASS + Atlas approval
+- 2026-10-05 IMPLEMENTATION_APPROVED → CONTENT_IN_PROGRESS — Lumen
+- 2026-10-05 CONTENT_IN_PROGRESS → CONTENT_QA — 04-* + lessons/
+- 2026-10-05 CONTENT_QA → CONTENT_IN_PROGRESS — Argus FAIL (QA-CONT-001: unexplained first appearance)
+- 2026-10-05 CONTENT_IN_PROGRESS → CONTENT_QA — resubmission
+- 2026-10-05 CONTENT_QA → CONTENT_APPROVED — Argus PASS + Atlas approval
+- 2026-10-05 CONTENT_APPROVED → SITE_IN_PROGRESS — 06-* issued, Forge accepted
+- 2026-10-05 SITE_IN_PROGRESS → SITE_QA — simulated integration report
+- 2026-10-05 SITE_QA → SITE_APPROVED — Argus PASS + Atlas approval
+- 2026-10-05 SITE_APPROVED → MILESTONE_COMPLETE — 08-* final verdict
+
+Isolation check: zero writes outside AI_HANDOFF/work/smoke/MX/ — verified.

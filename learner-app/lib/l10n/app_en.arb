@@ -1,0 +1,194 @@
+{
+  "@@locale": "en",
+  "appTitle": "AI Millionaire",
+  "settingsSemanticLabel": "Settings",
+  "leaderboardSemanticLabel": "Leaderboard",
+  "startGameButton": "Start Game",
+  "accountSemanticLabel": "Account",
+  "menuGuestName": "Guest",
+  "menuGuestSyncHint": "Sign in to sync",
+  "menuSyncedStatus": "Synced",
+  "syncProgressTitle": "Sync Your Progress",
+  "syncProgressDescription": "Use your phone account to sync progress across devices.",
+  "signInWithGoogleButton": "Sign in with Google",
+  "signInWithAppleButton": "Sign in with Apple",
+  "signInWithEmailButton": "Sign in with Email",
+  "continueAsGuestButton": "Continue as Guest",
+  "emailFieldLabel": "Email",
+  "passwordFieldLabel": "Password",
+  "confirmPasswordFieldLabel": "Confirm Password",
+  "backButton": "Back",
+  "signInButton": "Sign in",
+  "createAccountButton": "Create Account",
+  "enterEmailPasswordError": "Enter your email and password.",
+  "enterValidEmailError": "Enter a valid email address.",
+  "confirmPasswordError": "Confirm your password.",
+  "passwordMinLengthError": "Use at least 6 characters for your password.",
+  "passwordsDoNotMatchError": "Passwords do not match.",
+  "accountTitle": "Account",
+  "signOutPrompt": "Sign out and return this device to the guest profile?",
+  "signOutButton": "Sign out",
+  "profileLevel": "Level {level}",
+  "@profileLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "totalEarningsLabel": "Total earnings",
+  "leaderboardTitle": "Leaderboard",
+  "leaderboardEmptyMessage": "No leaderboard data yet",
+  "leaderboardLoadErrorMessage": "Unable to load leaderboard",
+  "leaderboardLoadingMessage": "Loading leaderboard...",
+  "retryButton": "Retry",
+  "rankSemanticLabel": "Rank {rank}",
+  "@rankSemanticLabel": {
+    "placeholders": {
+      "rank": {
+        "type": "int"
+      }
+    }
+  },
+  "gamesJoinedLabel": "Played",
+  "gamesWonLabel": "Won",
+  "menuWinRateLabel": "Win rate",
+  "nextButton": "Next",
+  "gameOverTitle": "Game Over",
+  "moneyLadderTitle": "Money Ladder",
+  "exitGameTitle": "Exit Game?",
+  "exitGameMessage": "Your progress will be lost. Are you sure you want to exit?",
+  "exitGameButton": "Exit Game",
+  "continuePlayingButton": "Continue Playing",
+  "aiExplanationsTitle": "AI Explanations",
+  "understandButton": "Understand",
+  "fiftyFiftySemanticLabel": "50:50",
+  "askAudienceSemanticLabel": "Ask the Audience",
+  "askAiSemanticLabel": "Ask AI",
+  "walkAwaySemanticLabel": "Walk Away",
+  "exitGameSemanticLabel": "Exit Game",
+  "optionSemanticLabel": "Option {label}, {answer}",
+  "@optionSemanticLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "selectedStateLabel": "Selected",
+  "correctStateLabel": "Correct",
+  "incorrectStateLabel": "Incorrect",
+  "prizeAmountSemanticLabel": "Prize amount {amount}",
+  "@prizeAmountSemanticLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "timeRemainingSemanticLabel": "Time remaining {time}",
+  "@timeRemainingSemanticLabel": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "walkAwayTitle": "Walk Away?",
+  "walkAwayMessage": "You''ll take home your current winnings and end the game. This cannot be undone.",
+  "confirmWalkAwayButton": "Confirm Walk Away",
+  "keepPlayingButton": "Keep Playing",
+  "aiAssistantTitle": "AI Assistant",
+  "audienceHelpTitle": "Audience Help",
+  "aiThinkingMessage": "AI is thinking...",
+  "youEarnedLabel": "You earned",
+  "congratulationsTitle": "Congratulations",
+  "playAgainButton": "Play Again",
+  "menuButton": "Menu",
+  "settingsTitle": "Settings",
+  "settingsSectionLanguage": "Language",
+  "settingsSectionAudio": "Sound & haptics",
+  "settingsSectionNotifications": "Notifications",
+  "settingsSectionAccount": "Account",
+  "doneButton": "Done",
+  "confirmButton": "Confirm",
+  "cancelButton": "Cancel",
+  "settingsLoadErrorMessage": "Unable to load settings",
+  "settingsUpdateErrorMessage": "Unable to update settings",
+  "settingsNotificationTimeUpdateErrorMessage": "Unable to update notification time",
+  "settingsGuestSyncHint": "Sign in to sync progress & join the leaderboard",
+  "soundSetting": "Sound",
+  "musicSetting": "Music",
+  "hapticSetting": "Haptic Feedback",
+  "notificationsSetting": "Notifications",
+  "notificationTimeSetting": "Notification Time",
+  "settingsNotificationsHint": "Once a day",
+  "enableNotificationsButton": "Enable Notifications",
+  "getStartedButton": "Get Started",
+  "maybeLaterButton": "Maybe Later",
+  "onboardingWelcomeTitle": "Welcome to AI Quiz!",
+  "onboardingWelcomeDescription": "Test your knowledge with AI questions, earn rewards, and climb the leaderboard. Pick a language to begin.",
+  "onboardingNotificationTitle": "Your Daily Reminder",
+  "onboardingNotificationDescription": "One reminder a day so you never miss a round. No spam — change the time or turn it off anytime.",
+  "onboardingNotificationTimeLabel": "Daily reminder time",
+  "onboardingNotificationTimeHint": "Change it in Settings",
+  "onboardingReadyTitle": "You''re All Set!",
+  "onboardingReadyDescription": "Your first round is waiting. Good luck!",
+  "onboardingReadyQuestionsLabel": "questions",
+  "onboardingReadyLifelinesLabel": "lifelines",
+  "onboardingReadyLadderLabel": "prize ladder",
+  "onboardingSkipIntroButton": "Skip intro",
+  "shareResultButton": "Share Result",
+  "shareResultMessage": "I won {amount} in AI Millionaire!",
+  "@shareResultMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "shareVictoryResultMessage": "I won {amount} in AI Millionaire! {message}",
+  "@shareVictoryResultMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "resultCopiedSnackBar": "Result copied to clipboard",
+  "settingsNotificationPermissionRequiredMessage": "Notification permission required",
+  "closeButton": "Close",
+  "hourPickerSemanticLabel": "Hour picker",
+  "languageSetting": "Language",
+  "menuExpToNextLevel": "{exp} EXP to Level {level}",
+  "@menuExpToNextLevel": {
+    "placeholders": {
+      "exp": {
+        "type": "String"
+      },
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "menuExperienceLabel": "Experience",
+  "menuLeaderboardEntrySubtitle": "See this week''s top 10",
+  "menuLevelShort": "LEVEL",
+  "menuMaxLevelReached": "Max level reached",
+  "minutePickerSemanticLabel": "Minute picker",
+  "saveButton": "Save",
+  "settingsIconSemanticLabel": "{label} icon",
+  "@settingsIconSemanticLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  }
+}

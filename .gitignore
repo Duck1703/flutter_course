@@ -1,0 +1,44 @@
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+**/doc/api/
+.migration/
+
+# Android signing & local config — never commit
+**/android/key.properties
+**/android/local.properties
+**/*.jks
+**/*.keystore
+local.properties
+
+# iOS
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Runner.xcworkspace
+
+# Web (Astro site)
+web/node_modules/
+web/dist/
+web/.astro/
+web/.pagefind/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Env & secrets — supplied via dart-defines, never committed
+.env
+.env.*
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
