@@ -1,11 +1,17 @@
 # Current State
 
 Project: AI Millionaire — guided Flutter course
-Phase: Step 27 — release closeout — COMPLETE.
+Phase: Step 28 — production verification + Vercel canonicalization —
+COMPLETE.
 M01–M29 course complete; Steps 21–26A pedagogy audit/remediation chain
 closed; release gate CLEARED (non-blocking editorial notes only);
 accepted content integrated to `main` and pushed to `origin/main`.
-M30 not started.
+Production: `https://flutter-opal.vercel.app` — canonical Vercel
+project `flutter` (`prj_smy4y3CCRwMu66TTPDoZYoA7GKzc`), GitHub
+`main` auto-deploy CONFIRMED (Step-28 push `1a38e5b` redeployed
+automatically). Duplicate project `flutter_course`
+(`prj_lcAhw4Ps0CMLYOxSsVsIJTeB5Mhy`) also auto-deploys same source —
+cleanup recommended, not deleted. M30 not started.
 
 ## Completed
 
@@ -686,12 +692,32 @@ M30 not started.
   for manual or connected deployment. Artifacts:
   `AI_HANDOFF/work/step-27-release-closeout/`.
   Report: `report/STEP-27-RELEASE-CLOSEOUT.md`.
+- Deployment hotfix (unnumbered): `676c448` removed the direct
+  Windows-only `@rollup/rollup-win32-x64-msvc` devDependency that broke
+  Vercel Linux builds (`EBADPLATFORM`). Build PASS, 167 pages.
+- Step 28: **Production verification + Vercel canonicalization** —
+  COMPLETE. Production `flutter-opal.vercel.app` verified live
+  (real-browser smoke M01/M12/M21/M26/M29 + nav + mobile 375px +
+  desktop 1440px + Pagefind search functional); production bytes
+  byte-identical to local build of accepted main; no internal
+  artifacts/local paths/secrets exposed. Metadata commit `1a38e5b`
+  set `site:` (canonical URL + sitemap now emitted, 166 URLs) and
+  added `robots.txt`/`favicon.svg`. Git auto-deploy CONFIRMED on both
+  projects; canonical = `flutter` + `flutter-opal.vercel.app`;
+  `flutter_course` = duplicate (cleanup recommended, deferred).
+  `VERCEL_TOKEN` cannot read either project (different scope) — API
+  fields recorded from human-supplied deployment metadata.
+  Regression after change: analyze clean, 396/396 tests, build web
+  PASS, Astro 167 pages. Artifacts:
+  `AI_HANDOFF/work/step-28-production-verification/`.
+  Report: `report/STEP-28-PRODUCTION-VERIFICATION-VERCEL-CANONICALIZATION.md`.
 
 ## Next recommended task
-Course M01–M29 `RELEASE_READY_WITH_NOTES`; source release closed
-(`origin/main` synced at the Step-27 closeout state). Options for the
-next human decision: post-release editorial polish backlog
-(`AI_HANDOFF/work/step-27-release-closeout/post-release-editorial-backlog.md`),
-production deployment (Vercel static — no existing configuration),
-production monitoring / learner feedback, or project archival.
+Course M01–M29 `RELEASE_READY_WITH_NOTES`; production VERIFIED and
+CANONICALIZED at `https://flutter-opal.vercel.app` (auto-deploy from
+`main` confirmed). Recommended: STEP 29 — production observation +
+learner feedback baseline. Optional deferred cleanup: duplicate Vercel
+project `flutter_course` (see step-28 artifact 09). Post-release
+editorial polish backlog remains at
+`AI_HANDOFF/work/step-27-release-closeout/post-release-editorial-backlog.md`.
 M30 does not exist on the roadmap.
