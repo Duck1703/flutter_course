@@ -12,10 +12,10 @@ sidebar:
   IconData` → `iconAsset: String` + mapper emit `AppAssets` —
   một field DTO đổi phá *đồng thời* old-screen (`Icon(data.icon)`),
   `game_screen_view_model_test` (`icon: IconData(0)` ×2), và
-  mapper (`Icons.*`) → không có trạng-thái-nửa-chừng nào compile
+  mapper (`Icons.*`) → không có trạng thái nửa chừng nào compile
   được, nên toàn bộ land trong một bài.
 - Port `GameFeatureButton` + `GameFeatureButtonBar` — lifeline
-  SVG trên painter gradient-xoay + hai-vòng-ripple, `Ticker
+  SVG trên painter gradient-xoay + hai vòng ripple, `Ticker
   ProviderStateMixin`×2 + `Listenable.merge`, `AnimatedOpacity`
   0.38 + `AnimatedScale` 0.94.
 - Port `GameScreenBody` + `GameScreen` thin-shell senior —
@@ -72,31 +72,31 @@ sidebar:
 ## Bạn đã biết gì
 
 - `AnimationController`×2 + `TickerProviderStateMixin` +
-  `didUpdateWidget` + `dispose` (F-38/F-40, Bài 3) — feature
+ `didUpdateWidget` + `dispose` (Bài 3) — feature
   button dùng y hệt (gradient 9000ms + ripple 520ms).
 - `CustomPainter` + `Paint`/`Path`/`drawCircle`/`shouldRepaint`
-  (F-39, Bài 3) — painter circle-gradient + 2-vòng-ripple.
-- `SvgPicture.asset` + `colorFilter srcIn` (F-42, Bài 2) —
+ (Bài 3) — painter circle-gradient + 2-vòng ripple.
+- `SvgPicture.asset` + `colorFilter srcIn` (Bài 2) —
   `widget.data.iconAsset` là String path đến SVG.
-- `AnimatedOpacity`/`AnimatedScale`/`AnimatedBuilder` (F-41/
-  F-29, Bài 5) — enabled/disabled motion + merge listenable.
+- `AnimatedOpacity`/`AnimatedScale`/`AnimatedBuilder`
+(Bài 5) — enabled/disabled motion + merge listenable.
 - `ChangeNotifierProvider` + `context.read`/`context.watch`
-  (F-18/F-17, A-07 — M14) — screen tạo VM y hệt `MenuScreen`.
+ (M14) — screen tạo VM y hệt `MenuScreen`.
 - `PopScope` + `unawaited` + `SharePlus`/`Clipboard`/`RenderBox`
-  (F-27, F-35 — M19/M27) — share-path giữ nguyên từ M27.
-- `GameDialogState` sealed + `switch` (A-21, D-26/27 — M20/21)
+ (M19/M27) — share-path giữ nguyên từ M27.
+- `GameDialogState` sealed + `switch` (M20/21)
   — `onShareResult`/dismiss/terminal rules y hệt layer mới B5.
 - `localizedTestApp`/`MultiProvider` test-host + fake repos
-  (F-14/A-11 — M14+) — `pumpGame` là shape đó cho screen mới.
+ (M14+) — `pumpGame` là shape đó cho screen mới.
 
-## Mental model mới — "DTO đổi-shape là giao-dịch nguyên tử"
+## Mental model mới — "DTO đổi shape là giao dịch nguyên tử"
 
 > **Atomic DTO migration.** `GameFeatureButtonData` là *hợp
 > đồng* giữa mapper (emit) và widget (đọc). Đổi
 > `final IconData icon` → `final String iconAsset` vỡ hợp đồng
 > theo hai chiều cùng lúc — compiler báo đỏ ở *mọi* call-site
-> một lượt, không nửa-chừng. Giá trị của việc này: compile
-> lỗi **là** bản-đồ-migration — `flutter analyze` liệt kê đúng
+> một lượt, không nửa chừng. Giá trị của việc này: compile
+> lỗi **là** bản đồ migration — `flutter analyze` liệt kê đúng
 > mọi chỗ phải sửa.
 
 Và pattern `Listenable.merge`:
@@ -112,7 +112,7 @@ AnimatedBuilder(
 ```
 
 Một `AnimatedBuilder` nghe *hai* controller cùng lúc — gradient
-xoay liên tục *và* ripple một-shot cùng trigger rebuild, thay
+xoay liên tục *và* ripple một shot cùng trigger rebuild, thay
 vì hai `AnimatedBuilder` lồng nhau. `Listenable.merge` trả một
 `Listenable` ảo "bất kỳ nguồn nào tick đều fire".
 
@@ -126,23 +126,23 @@ DTO nhưng widget render localized — giữ y hệt senior.
 | Construct | Vai trò |
 |---|---|
 | `final String iconAsset` thay `final IconData icon` | DTO field — `String` path qua `AppAssets`, render `SvgPicture.asset` (pipeline B2/B5); data-layer không cần `material.dart` nữa (file mới không import gì) |
-| `GameFeatureButtonType.walkAway \|\| GameFeatureButtonType.exitGame =>` | **or-pattern** trong switch-expression — hai case chung nhánh gradient đỏ `[red700, red500]` (D-27 reuse) |
+| `GameFeatureButtonType.walkAway \|\| GameFeatureButtonType.exitGame =>` | **or-pattern** trong switch-expression — hai case chung nhánh gradient đỏ `[red700, red500]` (reuse) |
 | `colors.map((c) => c.withValues(alpha: 0.3)).toList(growable: false)` | disabled-gradient — map mọi màu sang alpha 0.3 thay vì đổi màu |
-| `unawaited(_afterExit((vm) => vm.backToMenu()))` | fire-and-forget `Future` có-ý-thức (D-09 reuse) |
+| `unawaited(_afterExit((vm) => vm.backToMenu()))` | fire-and-forget `Future` có ý thức (reuse) |
 | `_terminalActionPending` flag | re-entrancy guard — double-tap "CHƠI LẠI" chỉ trigger một reset (test 'rapid terminal play again taps only trigger one reset') |
 
 ## Flutter cần dùng
 
 | API | Vai trò |
 |---|---|
-| `ChangeNotifierProvider<GameScreenViewModel>(create: (c) => GameScreenViewModel(…)..startNewGame(), child: …)` | screen tự-new VM — `create` callback đọc repos qua `context.read` (scope M22); `..startNewGame()` cascade khởi phiên |
+| `ChangeNotifierProvider<GameScreenViewModel>(create: (c) => GameScreenViewModel(…)..startNewGame(), child: …)` | screen tự new VM — `create` callback đọc repos qua `context.read` (scope M22); `..startNewGame()` cascade khởi phiên |
 | `AnnotatedRegion<SystemUiOverlayStyle>(value: .light)` | status-bar sáng — LIGHT mới: declarative overlay-style cho system chrome |
 | `Stack` 4 lớp: `Positioned.fill(GameScreenBackground)` + `SafeArea(Column)` + `GameDialogLayer` | composition cuối — background dưới, cột top-bar/body/feature-bar giữa, dialog-layer trên |
 | `Listenable.merge([_gradientController, _rippleController])` | một `AnimatedBuilder` nghe hai ticker — LIGHT mới |
 | `ui.Gradient.linear(start, end, colors)` trong painter | gradient xoay — `start`/`end` là `center ± direction*radius` theo `cos(rotation)`/`sin(rotation)` (dart:ui `Gradient`, khác `LinearGradient` widget) |
 | `ClipOval` + `AnimatedBuilder` + `CustomPaint(painter:)` | painter-background *dưới* icon SVG — `CustomPaint.painter` (không `foregroundPainter` B3) vẽ *sau* child |
-| `MediaQuery.disableAnimations` trong `_afterExit` | chờ `dialogMotionLong` cho terminal animate-out — honor reduce-motion (giây-thứ-ba senior honor: sau money+layer) |
-| `tester.view.physicalSize`/`tester.ensureVisible`/`find.byWidgetPredicate` | test helpers — pumpGame scroll tới `GameAnswerOption` ngoài viewport (F-14 reuse) |
+| `MediaQuery.disableAnimations` trong `_afterExit` | chờ `dialogMotionLong` cho terminal animate-out — honor reduce-motion (giây thứ ba senior honor: sau money+layer) |
+| `tester.view.physicalSize`/`tester.ensureVisible`/`find.byWidgetPredicate` | test helpers — pumpGame scroll tới `GameAnswerOption` ngoài viewport (reuse) |
 
 ## Ví dụ độc lập — DTO-migration atomic (DartPad)
 
@@ -180,12 +180,12 @@ mọi call-site (constructor + `Icon(imageVector = …)` →
 Kotlin `@DrawableRes Int` fail *compile* khi resource thiếu;
 `String iconAsset` chỉ là `String` — gõ sai path compile *xanh*
 rồi `SvgPicture.asset` throw runtime. `AppAssets` constants +
-asset-dir-khai-đúng (Bài 1) là đệm duy nhất — không có `R.`
+asset dir khai đúng (Bài 1) là đệm duy nhất — không có `R.`
 generated-class nào gánh.
 
 **DO NOT ASSUME — `TickerProviderStateMixin` ≠
 `rememberCoroutineScope` + `animate*AsState`.** Compose
-`animateFloatAsState(enabled)` tự-animate khi prop đổi và
+`animateFloatAsState(enabled)` tự animate khi prop đổi và
 không cần dispose; `GameFeatureButton` new *hai* controller
 tay, lái `repeat()`/`forward(from:0)`/`reset()`, `dispose()`
 tay, và *không* đọc `disableAnimations` (parity cố ý — sheen/
@@ -208,15 +208,17 @@ hai `State<Float>`.
 
 Atomic — **tất cả land cùng lúc**.
 
-:::caution[Trạng thái giữa-chừng không compile — cố ý]
+:::caution[Trạng thái giữa chừng không compile — cố ý]
 Sau **Bước 1** (DTO đổi `icon`→`iconAsset` + mapper emit
 `AppAssets`), `flutter analyze` **sẽ đỏ** — và phải đỏ:
 screen cũ đọc `data.icon` (getter đã mất) + vm-test cũ truyền
-`icon: IconData(0)` (param đã mất). Đây là *bản-đồ-migration*
+`icon: IconData(0)` (param đã mất). Đây là *bản đồ migration*
 mà compiler liệt kê — đi hết Bước 1→6 rồi mới analyze. Đừng
-hoàn-nguyên giữa chừng vì thấy đỏ; đỏ ở đây là bằng chứng
+hoàn nguyên giữa chừng vì thấy đỏ; đỏ ở đây là bằng chứng
 contract đã đổi đúng. Checkpoint xanh chỉ tồn tại ở cuối bài.
 :::
+
+**PHẦN A — chuẩn bị contract.**
 
 **Bước 1 — DTO + mapper (`icon` → `iconAsset`).**
 
@@ -272,7 +274,9 @@ GameFeatureButtonData _feature(
 
 Ngay sau bước này `analyze` đỏ ở: screen cũ (`Icon(data.icon)`),
 vm-test (`icon: IconData(0)` ×2) — compiler *chỉ* đúng các
-chỗ phải sửa; đó là bản-đồ-migration.
+chỗ phải sửa; đó là bản đồ migration.
+
+**PHẦN B — atomic flip.**
 
 **Bước 2 — lifeline widgets mới.**
 
@@ -356,11 +360,11 @@ viewport thấp) → `ConstrainedBox(minHeight: maxHeight)` +
 `Center` + `DesignFrame` + `Column(min, [GameMoneyAmount,
 GameQuestionPanel, GameAnswerOptionList(questionIndex:)])`.
 `GameAnswerOptionList` nhận `questionIndex: data.question.
-currentQuestionIndex` — **đó là trigger A-39** lái stagger
+currentQuestionIndex` — **đó là trigger ** lái stagger
 replay mỗi câu mới.
 
 **Bước 4 — `lib/screens/game_screen.dart` rewrite** (629d →
-201d, verbatim senior). Ba đổi-kiến-trúc:
+201d, verbatim senior). Ba đổi kiến trúc:
 
 1. `GameScreen` thành `StatelessWidget` chỉ tạo provider —
    toàn bộ state/logic nhảy vào `_GameScreenEventBridge
@@ -397,6 +401,8 @@ replay mỗi câu mới.
 `_handleUiEvent` giữ share-path M27 nguyên (`SharePlus.instance.
 share(ShareParams(…, sharePositionOrigin: box…))` + catch→
 `Clipboard`+snackbar) — không đổi.
+
+**PHẦN C — dọn dẹp + xác nhận.**
 
 **Bước 5 — xoá hai file cũ + sửa vm-test + ui-events-test.**
 
@@ -462,30 +468,30 @@ expect(find.text('THANG TIỀN THƯỞNG'), findsOneWidget);
 + `dismissMoneyLadder` (assert `'MONEY LADDER'` → tap CTA
 `'UNDERSTAND'`), `answerState`/`answerOption` predicate-finders,
 `fake` repos (`FakeGameProfileRepository`/`FakeAuthRepository`/
-`FakeUserProfileSyncRepository` — A-11 reuse).
+`FakeUserProfileSyncRepository` — reuse).
 
 `test/widgets/game_screen_test.dart` **rewrite** (14→14, same
 count, shape mới): `pumpGame` + real-15-question-bank +
 `predicate` finders + `ensureVisible` cho ô ngoài viewport +
 dialog asserts HOA (vd `GameConfirmWalkAwayDialogView` type-
-finder). Không còn `GameScreen(viewModel: …)` — VM nội-bộ.
+finder). Không còn `GameScreen(viewModel: …)` — VM nội bộ.
 
-`test/widgets/game_screen_flow_test.dart` (+7): intro-ladder-
-trước-countdown, route-back-không-dismiss-intro, correct→
+`test/widgets/game_screen_flow_test.dart` (+7): intro-ladder
+trước countdown, route back không dismiss intro, correct→
 explanation→advance, wrong→game-over, lifelines-dialog-
 behavior, ladder-pauses/resumes-countdown, money-tap→ladder +
 route-back→exit.
 
 `test/widgets/game_screen_result_flow_test.dart` (+8):
-terminal-không-dismissible+reset, play-again-auto-sync-auth,
+terminal không dismissible+reset, play-again-auto-sync-auth,
 menu-action-waits-exit-motion (2500ms+→`GAME OVER` → tap
-`MENU` → wait), reduced-motion-play-again-không-wait, rapid-
-double-tap-một-reset, all-correct→victory, +2.
+`MENU` → wait), reduced motion play again không wait, rapid-
+double tap một reset, all-correct→victory, +2.
 
 `test/widgets/game_feature_button_test.dart` (+5): gradient
 colors đúng mapper (`test` thuần), 48px-circle + 24px-icon,
 enabled/disabled `_stateMotion` values (opacity/scale),
-tap-semantics+call-handler enabled, disabled-không-tap.
+tap-semantics+call-handler enabled, disabled không tap.
 
 **Bước 7 — regression.**
 
@@ -501,7 +507,7 @@ flutter build web   → PASS
    `import 'package:flutter/material.dart'` *gì cả* sau đổi
    — `IconData` là *lý do duy nhất* data-layer cần material.
    Giữ cả hai field ("an toàn") sẽ kéo material vào DTO mãi
-   mãi + hai nguồn-sự-thật icon. Atomic-swap = một nguồn.
+   mãi + hai nguồn sự thật icon. Atomic-swap = một nguồn.
 2. **`GameScreen(viewModel:)` ctor-override không còn.** Test
    cũ truyền fake-VM qua ctor; bản senior tạo VM *trong*
    `ChangeNotifierProvider.create` — test inject qua
@@ -509,18 +515,18 @@ flutter build web   → PASS
    Đây là "screen owns its VM" — y hệt `MenuScreen`.
 3. **`semanticLabel` field tồn tại nhưng không render.**
    Mapper emit `semanticLabel` vào DTO, nhưng `GameFeatureButton`
-   render `l10n.*SemanticLabel` tự-tính từ `type` — senior
+   render `l10n.*SemanticLabel` tự tính từ `type` — senior
    verbatim. Field nằm sẵn cho consumer khác; đừng "dọn" nó.
 4. **`transformHitTests` + `IgnorePointer` phối hợp.** Layer
    `IgnorePointer(ignoring: hidden)` + transition
-   `transformHitTests: false` — dialog-đang-ra không bắt tap
-   *và* khi hidden toàn-layer không chặn game.
+   `transformHitTests: false` — dialog đang ra không bắt tap
+   *và* khi hidden toàn layer không chặn game.
 5. **Scaffold retire là một lần cuối.** `_DialogShareButton`
    (M27), `_GameTopBar`/`_GameFeatureButton`/`_GameAnswerButton`
    (M20), layer+views cũ — tất cả là *declared scaffolds*:
    sinh ra để giữ compile-green khi chưa có senior-visual,
    chết khi senior-visual land. Đây là lifecycle scaffold
-   (A-13) ở quy mô milestone.
+ ở quy mô milestone.
 
 ## Chạy và quan sát
 
@@ -541,7 +547,7 @@ kiểm chứng visual *hoàn toàn* bằng widget test + `build web`;
 không ai chạy app nhìn pixel thật trên device/emulator.
 **`REAL_DEVICE_PLATFORM_CHECK: NOT_PERFORMED`** (kế thừa
 M27) — share-sheet/notification thật không chạy trên thiết
-bị trong pipeline này. Ghi verbatim, không claim-đã-làm.
+bị trong pipeline này. Ghi verbatim, không claim đã làm.
 
 ## Thử nghiệm
 
@@ -554,32 +560,32 @@ không? Và tại sao đó là anti-pattern dù compile được?
 <summary>Đáp án</summary>
 
 **Analyze xanh** (hai field không xung đột) — nhưng là anti-
-pattern *hai nguồn-sự-thật*: `GameFeatureButtonData` giờ mang
+pattern *hai nguồn sự thật*: `GameFeatureButtonData` giờ mang
 `icon: IconData` + `iconAsset: String` — ai emit cái nào?
 Mapper phải điền *cả hai* (`Icons.percent` + path) → DTO
-kéo `material.dart` mãi + mọi widget phải chọn-đọc-một-trong-
+kéo `material.dart` mãi + mọi widget phải chọn đọc một trong-
 hai (nếu widget A đọc `icon`, widget B đọc `iconAsset`, chúng
 có thể lệch nhau khi một bên quên update). Atomic-swap giữ
-*một* field → compiler báo đỏ đúng-mọi-chỗ-cần-sửa một lượt;
-song-song giữ compile-xanh nhưng đẻ bug đồng-bộ. Đây là lý
-do "đổi hết hoặc không đổi" — không có trạng-thái-giữa là
-điểm *mạnh* của strongly-typed DTO, không phải bất-tiện.
+*một* field → compiler báo đỏ đúng mọi chỗ cần sửa một lượt;
+song song giữ compile-xanh nhưng đẻ bug đồng bộ. Đây là lý
+do "đổi hết hoặc không đổi" — không có trạng thái giữa là
+điểm *mạnh* của strongly-typed DTO, không phải bất tiện.
 </details>
 
 ## Lỗi hay gặp
 
 1. **Đổi DTO trước, sửa consumer sau** — `flutter analyze`
-   đỏ giữa-chừng là *đúng* (đó là bản-đồ); đừng hoàn-nguyên
+   đỏ giữa chừng là *đúng* (đó là bản đồ); đừng hoàn nguyên
    vì "đỏ" — cứ đi hết các site compiler liệt kê.
 2. **Quên bỏ `import material` trong vm-test/mapper** — file
    không còn `IconData`/`Icons.*` → `unused_import` lint.
-3. **Giữ `_DialogShareButton`/views cũ "phòng-khi"** — dead
+3. **Giữ `_DialogShareButton`/views cũ "phòng khi"** — dead
    code; `GameDialogButton` thật đã cover share; xoá để
-   không còn hai đường-render.
+   không còn hai đường render.
 4. **`const GameScreen()` với fake-VM cũ** — ctor `viewModel:`
-   đã mất; phải inject repo qua `MultiProvider` (VM tự-new
+   đã mất; phải inject repo qua `MultiProvider` (VM tự new
    trong `create:`).
-5. **Assert title tiếng-Việt-thường** — views `toUpperCase()`
+5. **Assert title tiếng-Việt thường** — views `toUpperCase()`
    → test phải assert `'THANG TIỀN THƯỞNG'`/`'MENU'`/
    `'GAME OVER'`; sai-case = finder-miss.
 6. **Nghĩ `Listenable.merge` dispose giùm controller** — nó
@@ -632,21 +638,21 @@ test('walkAway maps to red lifeline gradient', () {
 });
 ```
 
-Đây là "test qua public contract": màu là token (A-38), type-
-switch là hành-vi — không cần mở private.
+Đây là "test qua public contract": màu là token, type-
+switch là hành vi — không cần mở private.
 </details>
 
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** vì sao `icon`→`iconAsset` phải atomic thay vì giữ
-  cả hai? — **Đáp:** hai field = hai nguồn-sự-thật (mapper
-  phải điền cả hai, widget phải chọn-đọc — lệch nhau được);
+  cả hai? — **Đáp:** hai field = hai nguồn sự thật (mapper
+  phải điền cả hai, widget phải chọn đọc — lệch nhau được);
   atomic giữ một field → compiler liệt kê mọi call-site phải
   sửa, DTO không kéo `material.dart`.
 - **Hỏi:** `GameScreen` mới lấy VM từ đâu nếu không qua ctor?
   — **Đáp:** `ChangeNotifierProvider(create:)` trong chính
   screen — `create` đọc repos bằng `context.read` từ scope;
-  test inject repo-fakes qua `MultiProvider`, VM tự-new.
+  test inject repo-fakes qua `MultiProvider`, VM tự new.
 - **Hỏi:** `Listenable.merge` làm gì? — **Đáp:** gộp hai
   `Listenable` (gradient + ripple controller) thành một nguồn
   tick — một `AnimatedBuilder` rebuild khi *bất kỳ* cái nào
@@ -668,15 +674,15 @@ switch là hành-vi — không cần mở private.
 ## Ta cố ý chưa thêm
 
 - `MenuTokens` → `AppTokens` cho menu/onboarding/settings/
-  leaderboard — **M29** (FR-32 còn lại).
+ leaderboard — **M29** (còn lại).
 - `SettingItemData.icon: IconData` → `iconAsset` — **M29**
-  (FR-30); pipeline `SvgPicture` đã sẵn.
+; pipeline `SvgPicture` đã sẵn.
 - `AppAssets` 58-const còn lại + files — **M29** (subset-policy).
 - `SettingsDialogShell`/`OnboardingGameButton`/`MenuDialog
   Backdrop`/`LevelProgressCard`/account-row visual — **M29**
-  (FR-28-visual/FR-30/FR-32).
+ (-visual).
 - `MenuDialogLayer` + `MenuDialogSettings/Auth/SignOut`
-  transport — **M29** (FR-29).
+ transport — **M29**.
 - `game_dialog_shell_header_test.dart` +
   `game_pill_button_glow_test.dart` — senior có, learner không
   port (declared gap — cover gián tiếp qua layer/screen test).
@@ -711,19 +717,19 @@ switch là hành-vi — không cần mở private.
 Quay lại 5 câu trong `index.md`:
 
 1. `screenDesignWidth = 375` + `DesignFrame` — một khung thiết
-   kế cố định, căn giữa; tokens là nguồn-đúng (A-38).
+ kế cố định, căn giữa; tokens là nguồn đúng.
 2. `AnimationController` = ticker mình sở hữu (`vsync`,
-   `forward/repeat`, `dispose`) vs implicit widget tự-tween
-   theo prop (F-38 vs F-41).
+   `forward/repeat`, `dispose`) vs implicit widget tự tween
+ theo prop (vs).
 3. `CustomPainter` vẽ qua `Canvas`/`Paint`/`Path` trong
-   `paint(Canvas, Size)`; `shouldRepaint` quyết skip (F-39).
+ `paint(Canvas, Size)`; `shouldRepaint` quyết skip.
 4. `animationTrigger` int-gate: chỉ `> old` mới animate —
-   data-đổi ≠ transition (A-39); `questionIndex` cũng là
+ data đổi ≠ transition; `questionIndex` cũng là
    trigger cho answer-stagger.
-5. `icon`→`iconAsset` atomic: DTO đổi-shape phá mọi call-site
-   cùng lúc — compiler là bản-đồ-migration, giữ-hai-field là
-   anti-pattern hai-nguồn-sự-thật.
+5. `icon`→`iconAsset` atomic: DTO đổi shape phá mọi call-site
+   cùng lúc — compiler là bản đồ migration, giữ hai field là
+   anti-pattern hai nguồn sự thật.
 
 M28 đóng visual-parity phần game: `309/309`, `flutter analyze`
-sạch, `flutter build web` PASS — phần-còn-lại (menu/settings/
+sạch, `flutter build web` PASS — phần còn lại (menu/settings/
 onboarding/leaderboard visuals + `MenuDialogLayer`) là M29.

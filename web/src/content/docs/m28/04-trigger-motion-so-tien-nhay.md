@@ -1,6 +1,6 @@
 ---
 title: "Bài 4 · Trigger-based motion — số tiền đếm nhảy + reduce-motion"
-description: "`animationTrigger` int-gate (A-39): widget chỉ animate khi trigger *tăng* — amount đổi vì nhiều lý do, chỉ transition mới xứng animation. `GameMoneyAmountMotion` — `SingleTickerProviderStateMixin` + `didUpdateWidget` gate + `forward(from:0)` + interpolated digits qua `_AmountTemplate`/`_intAmount`/`_formatGrouped` + glitch cyan/magenta `ShaderMask`/`Transform.translate`. `GameMoneyAmount` gate `MediaQuery.disableAnimations` → `Duration.zero` (F-30 reuse — hành vi này honor). Ladder CTA `TextButton.styleFrom`+`shrinkWrap`+`WidgetStatePropertyAll`, ladder dialog `LayoutBuilder`+`FittedBox`+`toUpperCase`. +6 test → 276."
+description: "`animationTrigger` int-gate : widget chỉ animate khi trigger *tăng* — amount đổi vì nhiều lý do, chỉ transition mới xứng animation. `GameMoneyAmountMotion` — `SingleTickerProviderStateMixin` + `didUpdateWidget` gate + `forward(from:0)` + interpolated digits qua `_AmountTemplate`/`_intAmount`/`_formatGrouped` + glitch cyan/magenta `ShaderMask`/`Transform.translate`. `GameMoneyAmount` gate `MediaQuery.disableAnimations` → `Duration.zero` (reuse — hành vi này honor). Ladder CTA `TextButton.styleFrom`+`shrinkWrap`+`WidgetStatePropertyAll`, ladder dialog `LayoutBuilder`+`FittedBox`+`toUpperCase`. +6 test → 276."
 sidebar:
   label: "Bài 4 · trigger motion"
   order: 4
@@ -8,12 +8,12 @@ sidebar:
 
 ## Mục tiêu
 
-- Phát biểu mental model **A-39**: *trigger-based animation* —
+- Phát biểu mental model: *trigger-based animation*
   widget không animate theo `amount` đổi (data đổi vì nhiều lý
   do: load lại, reset, cập nhật nền); nó animate khi
-  `animationTrigger` **tăng** — một tín hiệu đếm-đơn-điệu từ
+  `animationTrigger` **tăng** — một tín hiệu đếm đơn điệu từ
   DTO nói "vừa có transition thật".
-- Thấy `didUpdateWidget` (F-40 từ Bài 3) ở vai trò *gate*:
+- Thấy `didUpdateWidget` (từ Bài 3) ở vai trò *gate*:
   `widget.animationTrigger > oldWidget.animationTrigger &&
   widget.duration > Duration.zero` → `_controller.forward(from:0)`;
   ngược lại `amount` đổi → `_controller.value = 1` (snap).
@@ -37,21 +37,21 @@ sidebar:
   cũ chỉ `Text(data.amount)` trần, chưa ai đọc trigger.
 - `formatGameMoney` trong `view_models/game/support/game_money_
   formatter.dart` sản ra `'$1,000'` — chuỗi đã format; motion
-  widget phải *tự* bóc-số-ra để nội suy.
+  widget phải *tự* bóc số ra để nội suy.
 - Money hiển thị trong `_GameTopBar` scaffold cũ dạng text —
   không pill vàng, không glow, không đếm nhảy.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
-- Đây là bài kiểm-tra-thật của F-38/F-40: không concept mới nào
+- Đây là bài kiểm tra thật của /: không concept mới nào
   nặng — chỉ một `AnimationController` + một `didUpdateWidget`
-  gate + curve. Nếu Bài 3 hiểu, bài này đọc-trôi; nếu chưa,
+  gate + curve. Nếu Bài 3 hiểu, bài này đọc trôi; nếu chưa,
   đây là chỗ phát hiện.
-- `animationTrigger` là pattern **kiến trúc** (A-39) — nó giải
+- `animationTrigger` là pattern **kiến trúc** — nó giải
   quyết "data đổi ≠ muốn animate". Pattern này tái xuất ở
   answer-list (`questionIndex` làm trigger — Bài 5) và là
   chuẩn senior cho mọi one-shot-motion.
-- Reduce-motion đúng-chỗ: đây là một trong **ba** nơi senior
+- Reduce-motion đúng chỗ: đây là một trong **ba** nơi senior
   honor `disableAnimations` (money→zero, reveal-blink→tắt,
   dialog-transition→0ms) — so sánh trực tiếp với pulse Bài 3
   *không* honor (parity cố ý).
@@ -63,28 +63,28 @@ sidebar:
 ## Bạn đã biết gì
 
 - `AnimationController` + `SingleTickerProviderStateMixin` +
-  `dispose` (F-38, Bài 3) — một controller duy nhất → `Single`.
-- `didUpdateWidget(covariant old)` (F-40, Bài 3) — đây là nơi
+ `dispose` (Bài 3) — một controller duy nhất → `Single`.
+- `didUpdateWidget(covariant old)` (Bài 3) — đây là nơi
   nó làm *gate*, không chỉ sync.
-- `AnimatedBuilder` + `Curves.*` (F-29, M21) — `AnimatedBuilder`
+- `AnimatedBuilder` + `Curves.*` (M21) — `AnimatedBuilder`
   rebuild theo controller; `Curves.easeOutCubic.transform(value)`
   biến 0→1 thành 0→1-cong (đã thấy `switchInCurve` cùng curve).
-- `MediaQuery` + `disableAnimations` (F-30, M21) — layer dialog
+- `MediaQuery` + `disableAnimations` (M21) — layer dialog
   cũ đã gate duration bằng nó; đây là cùng một API ở widget.
 - `ShaderMask` + `BlendMode.srcIn` — cùng blend với
-  `ColorFilter.mode` Bài 2 (F-42): `srcIn` = giữ alpha nguồn,
+ `ColorFilter.mode` Bài 2 : `srcIn` = giữ alpha nguồn,
   thay RGB — ở đây thay bằng *gradient* qua `shaderCallback`.
 - `RegExp` + `replaceAll`/`indexOf`/`lastIndexOf` + `StringBuffer`
   — string parsing (Dart core, chưa có registry row riêng).
 - `TextButton.styleFrom` + `WidgetStateProperty*` —
   style nút Material (chưa có registry row riêng);
   `MaterialTapTargetSize.shrinkWrap` là
-  mới-nhẹ (LIGHT).
+  mới nhẹ (LIGHT).
 
-## Mental model mới — "trigger tăng = tín hiệu animate" (A-39)
+## Mental model mới — "trigger tăng = tín hiệu animate" 
 
-> **A-39 — Trigger-based animation.** Widget nhận *hai* input:
-> `amount` (data đích) + `animationTrigger` (int đếm-đơn-điệu
+> ** — Trigger-based animation.** Widget nhận *hai* input:
+> `amount` (data đích) + `animationTrigger` (int đếm đơn điệu
 > từ DTO). Animate **chỉ khi** `trigger > oldTrigger` —
 > `amount` đổi mà trigger đứng yên nghĩa là "data refresh
 > nền, không phải transition mới" → snap thẳng. Trigger reset
@@ -128,11 +128,11 @@ là nó hoạt với mọi định dạng tiền (`$`, `đ`, `K`).
 
 | Construct | Vai trò |
 |---|---|
-| `widget.animationTrigger > oldWidget.animationTrigger` | **A-39** — so int-đếm-đơn-điệu; `>` (không `!=`) là trọng tâm: reset về 0 không phải trigger |
+| `widget.animationTrigger > oldWidget.animationTrigger` | — so int đếm đơn điệu; `>` (không `!=`) là trọng tâm: reset về 0 không phải trigger |
 | `widget.duration > Duration.zero` | `Duration` so `>` được (implements `Comparable`) — gate reduce-motion thứ hai |
 | `_controller.forward(from: 0)` | `forward(from:)` = re-arm: reset `value` rồi chạy — gọn hơn `..value=0..forward()` (Bài 3) |
 | `_controller.duration = _motionDuration` | controller `duration` *gán lại được* — didUpdateWidget cập nhật trước khi quyết animate |
-| `_AmountTemplate.fromAmount` factory + `format` | record-hóa prefix/suffix — `factory` bóc chữ số đầu/cuối |
+| `_AmountTemplate.fromAmount` factory + `format` | record hóa prefix/suffix — `factory` bóc chữ số đầu/cuối |
 | `RegExp(r'\d')` / `RegExp(r'[^0-9]')` | `r'…'` raw-string — `\d` không cần escape `\\d` |
 | `Curves.easeOutCubic.transform(_controller.value)` | `Curve.transform(t)` — biến linear-0→1 thành eased-0→1, dùng *giá trị* chứ không gắn vào Tween |
 
@@ -140,14 +140,14 @@ là nó hoạt với mọi định dạng tiền (`$`, `đ`, `K`).
 
 | API | Vai trò |
 |---|---|
-| `SingleTickerProviderStateMixin` | một controller duy nhất → mixin nhẹ (F-38 reuse) |
-| `MediaQuery.of(context).disableAnimations` | đọc ở **cha** (`GameMoneyAmount`) → prop `duration` cho con — tách phát-hiện/phản-ứng |
+| `SingleTickerProviderStateMixin` | một controller duy nhất → mixin nhẹ (reuse) |
+| `MediaQuery.of(context).disableAnimations` | đọc ở **cha** (`GameMoneyAmount`) → prop `duration` cho con — tách phát hiện/phản ứng |
 | `AnimatedBuilder(animation: _controller, builder: …)` | rebuild mỗi frame tick — bên trong `Stack` xếp glitch-layers + text chính |
-| `ShaderMask(blendMode: BlendMode.srcIn, shaderCallback: …)` | tô `Text` bằng `LinearGradient` cam (`0xFFFF6F00`→`0xFFFF8F00`) — `srcIn` giữ alpha chữ, đổi màu theo shader (F-42 reuse ở dạng shader) |
+| `ShaderMask(blendMode: BlendMode.srcIn, shaderCallback: …)` | tô `Text` bằng `LinearGradient` cam (`0xFFFF6F00`→`0xFFFF8F00`) — `srcIn` giữ alpha chữ, đổi màu theo shader (reuse ở dạng shader) |
 | `Transform.translate(offset: …, child: …)` | lệch glitch-layer theo `intensity` — cyan `(3·i, -0.8·i)`, magenta ngược — *không* đổi layout, chỉ đổi paint |
 | `Stack(clipBehavior: Clip.none)` | glitch-layer tràn ra ngoài pill — `Clip.none` cho phép vẽ quá bounds |
-| `TextButton.styleFrom({tapTargetSize: shrinkWrap, overlayColor: WidgetStatePropertyAll(…)})` | CTA trong ladder — `shrinkWrap` bỏ 48pt tap-target mặc định (CTA nằm trong bảng, không phải nút đứng), `WidgetStatePropertyAll` một-màu-mọi-state |
-| `LayoutBuilder` + `FittedBox` | ladder dialog co-theo-chiều-cao: `FittedBox` scale bảng xuống khi viewport thấp |
+| `TextButton.styleFrom({tapTargetSize: shrinkWrap, overlayColor: WidgetStatePropertyAll(…)})` | CTA trong ladder — `shrinkWrap` bỏ 48pt tap-target mặc định (CTA nằm trong bảng, không phải nút đứng), `WidgetStatePropertyAll` một màu mọi state |
+| `LayoutBuilder` + `FittedBox` | ladder dialog co theo chiều cao: `FittedBox` scale bảng xuống khi viewport thấp |
 
 ## Ví dụ độc lập — trigger-gate thu nhỏ (DartPad)
 
@@ -207,7 +207,7 @@ không cần biết *vì sao*.
 
 **DO NOT ASSUME — `disableAnimations` không tự tắt
 `AnimationController`.** `MediaQuery.of(context).disableAnimations`
-là *flag đọc-thủ-công* — controller vẫn chạy nếu bạn forward();
+là *flag đọc thủ công* — controller vẫn chạy nếu bạn forward();
 senior gate nó bằng cách truyền `Duration.zero` từ cha +
 double-check `duration > Duration.zero` trong `didUpdateWidget`.
 Khác Android `animator_duration_scale` (hệ thống tự scale) —
@@ -248,7 +248,7 @@ class _GameMoneyAmountMotionState extends State<GameMoneyAmountMotion>
   }
 ```
 
-Gate trong `didUpdateWidget` (A-39 đúng-nghĩa):
+Gate trong `didUpdateWidget` (đúng nghĩa):
 
 ```dart
   @override
@@ -310,7 +310,7 @@ nhưng con normalize về 260). `build`:
     );
 ```
 
-Glitch = hai `Text` cùng-content tô `0x9900E5FF`/`0x99FF00FF`
+Glitch = hai `Text` cùng content tô `0x9900E5FF`/`0x99FF00FF`
 + `Transform.translate` lệch theo `intensity` — chỉ hiện khi
 đang chạy (`intensity > 0`), biến mất khi settle.
 
@@ -343,7 +343,7 @@ giữ format `'$2,000'` ↔ int `2000` hai chiều.
 ```
 
 `_MoneyPill` = `DecoratedBox` vàng `_yellow500` + hai
-`BoxShadow` (trắng-mờ + vàng-đổ) + `ClipRRect` bọc `Stack`
+`BoxShadow` (trắng mờ + vàng đổ) + `ClipRRect` bọc `Stack`
 (`Positioned.fill` `_MoneyPillGlow` + `GameMoneyAmountMotion`
 giữa). Truyền `data.amount`/`data.animationTrigger`/`duration`
 xuống motion widget.
@@ -394,8 +394,8 @@ thiết bị thật.
 :::note
 Test này lần đầu dùng `tester.getSemantics(finder)` +
 `matchesSemantics(label:…)` — API đọc semantics-node trực tiếp
-(khác `find.bySemanticsLabel` chỉ *tìm* node). Concept F-43
-semantics-nâng được đặt tên chính thức ở Bài 5 (LIGHT).
+(khác `find.bySemanticsLabel` chỉ *tìm* node). Concept 
+semantics nâng được đặt tên chính thức ở Bài 5 (LIGHT).
 :::
 
 **Bước 6 — verify.**
@@ -417,8 +417,8 @@ flutter test     → +276: All tests passed!
    `_displayAmount` trả `_amountTemplate.format(countStart +
    delta.round())` khi `value < 1` → người nhìn thấy `$1,500`
    giữa chừng; `if (value >= 1) return widget.amount` chốt đúng
-   chuỗi-đích ở cuối. Test nên assert *sau-settle* (`pumpAnd
-   Settle`) hoặc assert *không-đầu-không-cuối* ở midpoint —
+   chuỗi đích ở cuối. Test nên assert *sau-settle* (`pumpAnd
+   Settle`) hoặc assert *không đầu không cuối* ở midpoint —
    đừng assert `$1,500` chính xác (làm test brittle theo curve).
 3. **`_controller` khởi đầu `value: 1`.** "Đã settle" là mặc
    định — mount đầu không đếm; chỉ `forward(from: 0)` khi
@@ -438,7 +438,7 @@ flutter test     → +276: All tests passed!   (270 + 6)
 
 `GameMoneyAmount`/`…Ladder…` chưa có consumer trong screen —
 consumer đến Bài 5 (layer money-ladder) + Bài 6 (top-bar/body).
-`game_money_ladder_dialog` chỉ biên dịch vì nó tự-chứa trong
+`game_money_ladder_dialog` chỉ biên dịch vì nó tự chứa trong
 `FittedBox`/`LayoutBuilder` — caller thật ở layer Bài 5.
 
 ## Thử nghiệm
@@ -458,21 +458,21 @@ nhận `findsOneWidget` → FAIL. `>` là đúng vì trigger chỉ
 *tăng* mới báo transition; reset về 0 là "xóa trigger" —
 không animate. (Test `'…unchanged'` vẫn xanh vì trigger 1→1
 không `!=` cũng không `>`.) Đây là lý do senior chọn `>` chứ
-không `!=`/`>=`: đơn-điệu-tăng là contract, reset là ngoại-lệ.
+không `!=`/`>=`: đơn điệu tăng là contract, reset là ngoại lệ.
 </details>
 
 ## Lỗi hay gặp
 
 1. **Animate theo `amount` đổi** — `amount` đổi khi load lại/
-   reset/re-map nền; gate phải là `trigger >` — data-đổi không
-   đồng nghĩa transition-mới.
+   reset/re-map nền; gate phải là `trigger >` — data đổi không
+   đồng nghĩa transition mới.
 2. **`!=` thay `>`** — trigger reset 1→0 sẽ animate (nhầm);
    test `'…resets'` bắt đúng lỗi này.
-3. **Assert giá-trị-giữa-chừng** — `$1,500` phụ thuộc curve +
+3. **Assert giá trị giữa chừng** — `$1,500` phụ thuộc curve +
    timing; assert `≠ đầu ∧ ≠ cuối` (test senior) hoặc sau
-   `pumpAndSettle`, không assert chính-xác-midpoint.
+   `pumpAndSettle`, không assert chính xác midpoint.
 4. **Quên `_controller.value = 1` nhánh else** — `amount` đổi
-   không-trigger mà giá trị controller vẫn <1 (đang chạy dở)
+   không trigger mà giá trị controller vẫn <1 (đang chạy dở)
    → `_displayAmount` vẫn trả nội suy → text không snap.
 5. **Gate reduce-motion trong `initState` duy nhất** — duration
    đổi *lúc chạy* (user bật setting giữa chừng) cần
@@ -507,9 +507,9 @@ ai render kết quả → test assert `$2,000` + `glitch finds
 Nothing` vẫn xanh. (b) Gate `duration > zero` trong
 `shouldAnimate` là *tối ưu + phòng thủ*: nó giữ `_countStart`
 /`_amountTemplate`/`_controller` khỏi bị dirty bởi những
-trigger-tăng-mà-không-render (và tránh ticker chạy vô ích).
-Bỏ nó không vỡ test *này* nhưng làm lệch contract A-39 —
-"duration là điều-kiện-của-animate, không chỉ của-render".
+trigger tăng mà không render (và tránh ticker chạy vô ích).
+Bỏ nó không vỡ test *này* nhưng làm lệch contract
+"duration là điều kiện của animate, không chỉ của render".
 Đây là ví dụ "test xanh ≠ code đúng hợp đồng" — hai gate
 (build + didUpdateWidget) cùng tồn tại vì chúng bảo vệ hai
 thứ khác nhau.
@@ -531,8 +531,8 @@ thứ khác nhau.
   `shouldAnimate` gate `duration > zero` giữ controller
   không forward.
 - **Hỏi:** `_displayAmount` trả `widget.amount` khi nào? —
-  **Đáp:** khi `_controller.value >= 1` (settled) — chuỗi-đích
-  chính-xác; giữa chừng nó trả `_amountTemplate.format(nội
+  **Đáp:** khi `_controller.value >= 1` (settled) — chuỗi đích
+  chính xác; giữa chừng nó trả `_amountTemplate.format(nội
   suy)` với `$` + `,` giữ nguyên.
 - **Hỏi:** `SingleTicker…` đủ không, hay cần `TickerProvider…`?
   — **Đáp:** đủ — một controller duy nhất; Bài 3 cần
@@ -544,13 +544,13 @@ thứ khác nhau.
   — **Bài 6**.
 - `GameMoneyLadderDialogView` mở từ `GameDialogLayer` —
   **Bài 5** (layer mới gọi nó).
-- `GameDialogMoneyRow` (hàng tiền căn-giữa-với-coin) — **Bài 5**
+- `GameDialogMoneyRow` (hàng tiền căn giữa với coin) — **Bài 5**
   trong `game_dialog_shell.dart` (test `game_dialog_money_row_
   test` 4 case).
 - Pulse/ripple `disableAnimations`-gate — **không thêm**: parity
   cố ý (senior không honor ở hai chỗ đó).
 - `CurvedAnimation`/`Interval` stagger — **Bài 5** answer-list.
-- `formatGameMoney` giải-kỹ — đã cover ở M19; ở đây chỉ cần
+- `formatGameMoney` giải kỹ — đã cover ở M19; ở đây chỉ cần
   biết nó sản `'$1,000'`.
 
 ## Checkpoint hoàn thành

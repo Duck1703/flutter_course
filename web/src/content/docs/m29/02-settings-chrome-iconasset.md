@@ -1,6 +1,6 @@
 ---
 title: "Bài 02 — Settings chrome: `iconAsset`, `_SettingIconBadge`, và cái chết của monolith"
-description: "FR-30 converge: `SettingItemData.icon` (IconData) → `iconAsset` (String) — data layer đổi type icon, UI layer đổi cách vẽ (gradient badge + SvgPicture). Port verbatim ~11 file settings chrome: `SettingsDialogShell` (LayoutBuilder clamp + header sheen + close), `SettingsCard` (4 section + `_rowsFor` sealed switch + `v$appVersion` + QzdsGameButton save), `SettingsSection`, `SettingSwitchRow`, `SettingTimePickerRow`, `SettingsAccountRow` (auth row — FR-28 residual), `MenuSettingsDialog` + scope (`_SettingsTimePickerOverlay` foregroundOverlay — nested overlay pattern), `NotificationTimePickerDialog`/`TimePickerWheels`/`WheelPicker`. Monolith `settings_dialog.dart` 461 dòng xoá. FR-31 phụ: ARB sentence-case + `.toUpperCase()` tại render. +4 test: 313/313."
+description: "Converge: `SettingItemData.icon` (IconData) → `iconAsset` (String) — data layer đổi type icon, UI layer đổi cách vẽ (gradient badge + SvgPicture). Port verbatim ~11 file settings chrome: `SettingsDialogShell` (LayoutBuilder clamp + header sheen + close), `SettingsCard` (4 section + `_rowsFor` sealed switch + `v$appVersion` + QzdsGameButton save), `SettingsSection`, `SettingSwitchRow`, `SettingTimePickerRow`, `SettingsAccountRow` (auth row — residual), `MenuSettingsDialog` + scope (`_SettingsTimePickerOverlay` foregroundOverlay — nested overlay pattern), `NotificationTimePickerDialog`/`TimePickerWheels`/`WheelPicker`. Monolith `settings_dialog.dart` 461 dòng xoá. phụ: ARB sentence-case + `.toUpperCase()` tại render. +4 test: 313/313."
 sidebar:
   order: 2
   label: Settings chrome iconAsset
@@ -19,7 +19,7 @@ Sau bài này bạn sẽ:
 - Biết mẫu **data-layer trước, UI-layer sau**: đổi type ở
   `sealed class` DTO rồi để compile error dẫn đường tới mọi
   consumer — một lần nữa, sealed-family là công cụ điều phối
-  refactor (D-27).
+ refactor.
 - Đọc được anatomy của một dialog "senior-grade" phân mảnh:
   shell (khung + header + close) → card (sections + save) →
   section (nhóm tiêu đề) → row (switch/time-picker) — mỗi file
@@ -28,7 +28,7 @@ Sau bài này bạn sẽ:
   time-picker dialog *bên trong* — không qua route, mà qua
   `foregroundOverlay` slot của `MenuDialogBackdrop` + một
   `ModalBarrier` thứ hai.
-- Nắm convention FR-31: **ARB giữ sentence-case, `.toUpperCase()`
+- Nắm convention: **ARB giữ sentence-case, `.toUpperCase()`
   ở render** — vì casing là quyết định trình bày, không phải
   quyết định nội dung.
 
@@ -52,8 +52,8 @@ senior lib/widgets/menu/settings/:
        time-picker×3 — mỗi file một trách nhiệm
 ```
 
-FR-30 trong fidelity register ghi đúng hai chữ "icon IconData"
-nhưng kéo theo toàn bộ chênh lệch chrome. Và FR-28-residual:
+ Mục fidelity tương ứng ghi đúng hai chữ "icon IconData"
+nhưng kéo theo toàn bộ chênh lệch chrome. Và phần residual còn dở:
 trong app senior, đăng nhập/đăng xuất không chỉ nấp sau avatar
 menu — `SettingsAccountRow` đưa hành động tài khoản vào ngay
 settings dialog.
@@ -73,13 +73,13 @@ là path asset, không phải glyph font**.
 
 | Đã học | Ở đâu | Nhắc ngắn |
 |---|---|---|
-| **D-27** sealed class + exhaustive switch | M15, M22 | `SettingItemData` đã là sealed 2-variant; `_rowsFor` switch không cần `default` |
-| **F-42** `SvgPicture.asset` + `ColorFilter` | M28 | Game icon đã SVG hoá; settings là vùng `IconData` sót lại |
-| **A-15** Dialog-scoped VM | M16 | `SettingsViewModel` sống/chết cùng dialog subtree qua `ChangeNotifierProvider(create:)` trong scope |
-| **A-37** Permission-as-state | M27 | `effectiveNotificationEnabled = setting && hasPermission` — quyền OS là input của render |
-| **F-24** `ListWheelScrollView` | M16 | `WheelPicker`/`TimePickerWheels` — drum-picker giờ:phút |
-| **A-38** Token nguồn-duy-nhất | M28·01 | `AppTokens.settingsIconGradient`, `qzdsIconBadgeSm`… đã có sẵn từ nền móng |
-| **A-40** Quy trình sweep | M29·01 | Đọc → diff → port verbatim → verify |
+| sealed class + exhaustive switch | M15, M22 | `SettingItemData` đã là sealed 2-variant; `_rowsFor` switch không cần `default` |
+| `SvgPicture.asset` + `ColorFilter` | M28 | Game icon đã SVG hoá; settings là vùng `IconData` sót lại |
+| Dialog-scoped VM | M16 | `SettingsViewModel` sống/chết cùng dialog subtree qua `ChangeNotifierProvider(create:)` trong scope |
+| Permission-as-state | M27 | `effectiveNotificationEnabled = setting && hasPermission` — quyền OS là input của render |
+| `ListWheelScrollView` | M16 | `WheelPicker`/`TimePickerWheels` — drum-picker giờ:phút |
+| Token nguồn duy nhất | M28·01 | `AppTokens.settingsIconGradient`, `qzdsIconBadgeSm`… đã có sẵn từ nền móng |
+| Quy trình sweep | M29·01 | Đọc → diff → port verbatim → verify |
 
 ## Mental model củng cố — "DTO sealed chỉ đường, monolith nát thành lớp"
 
@@ -89,10 +89,10 @@ Hai pattern cũ gặp nhau ở đây:
 icon` thành `String iconAsset` ở base class sealed: compiler
 lập tức chỉ mọi constructor call, mọi `item.icon` consumer.
 Bạn không "tìm chỗ cần sửa" — compiler liệt kê hộ. Đây là lý
-do sealed + `final` field là nền refactor an toàn (D-26/D-27).
+do sealed + `final` field là nền refactor an toàn.
 
-**2. Monolith → decomposition theo trục "đổi-vì-lý-do-gì"** —
-461 dòng `settings_dialog.dart` trộn 5 lý-do-đổi: khung dialog
+**2. Monolith → decomposition theo trục "đổi vì lý do gì"** —
+461 dòng `settings_dialog.dart` trộn 5 lý do đổi: khung dialog
 (shell), nội dung (card), nhóm (section), một dòng (row), tài
 khoản (account). Senior tách mỗi trách nhiệm một file — và bản
 thân *tên file* trở thành documentation.
@@ -101,21 +101,21 @@ thân *tên file* trở thành documentation.
 
 | Dart | Vai trò ở đây | Xem lại |
 |---|---|---|
-| `String iconAsset` thay `IconData icon` | DTO mang path, UI quyết định render | mới (FR-30) |
-| `if (item.subtitle case final subtitle?)` | if-case destructuring — chỉ render dòng phụ khi có | D-48 |
-| `switch (item) { SettingSwitchItemData() => … SettingTimePickerItemData() => … }` | switch-expression kiệt hợp trên sealed → row tương ứng | D-27 |
+| `String iconAsset` thay `IconData icon` | DTO mang path, UI quyết định render | mới |
+| `if (item.subtitle case final subtitle?)` | if-case destructuring — chỉ render dòng phụ khi có | |
+| `switch (item) { SettingSwitchItemData() => … SettingTimePickerItemData() => … }` | switch-expression kiệt hợp trên sealed → row tương ứng | |
 | `'v$appVersion'` | interpolation hiển thị version; rỗng → ẩn row | cơ bản M01 |
-| `label.toUpperCase()` | casing tại render, không tại ARB | FR-31 |
+| `label.toUpperCase()` | casing tại render, không tại ARB | |
 
 ## Flutter cần dùng
 
 | Flutter | Vai trò ở đây | Xem lại |
 |---|---|---|
-| `SvgPicture.asset(path, semanticsLabel:)` | icon SVG trong badge + header | F-42 |
+| `SvgPicture.asset(path, semanticsLabel:)` | icon SVG trong badge + header | |
 | `LinearGradient` trên `Container` | badge enabled/disabled — màu trạng thái là *gradient khác*, không phải opacity | mới tại đây |
-| `LayoutBuilder` + `ConstrainedBox(maxHeight:)` + `SingleChildScrollView` | dialog co theo viewport thay vì overflow | F-07 |
-| `ModalBarrier(dismissible: false)` trong `foregroundOverlay` | time-picker chặn tap-xuống-dialog-dưới | nested overlay |
-| `ListWheelScrollView` | drum giờ/phút | F-24 |
+| `LayoutBuilder` + `ConstrainedBox(maxHeight:)` + `SingleChildScrollView` | dialog co theo viewport thay vì overflow | |
+| `ModalBarrier(dismissible: false)` trong `foregroundOverlay` | time-picker chặn tap xuống dialog dưới | nested overlay |
+| `ListWheelScrollView` | drum giờ/phút | |
 | `Switch` + `WidgetStateProperty.resolveWith` | track/thumb/outline theo trạng thái | M16 |
 
 ## Ví dụ độc lập — iconAsset chạy qua sealed family
@@ -157,7 +157,7 @@ void main() {
 :::note[Android / Compose bridge — "vector drawable vs font glyph"]
 - **SIMILARITY**: `IconData`→`iconAsset` giống chuyển từ
   `Icons.Default.*` (font glyph) sang `painterResource(R.drawable
-  .speaker)` — asset riêng của app, giàu màu, giống-hệt-senior.
+.speaker)` — asset riêng của app, giàu màu, giống hệt senior.
 - **IMPORTANT DIFFERENCE**: `SvgPicture.asset` nhận *path
   string* — mất compile-time safety của `IconData` (typo path
   chỉ lỗi runtime). Bù lại bằng `AppAssets` const catalogue
@@ -177,7 +177,7 @@ void main() {
 | `lib/widgets/menu/settings/setting_switch_row.dart` | `_SettingIconBadge` — badge gradient + SVG, enabled/disabled |
 | `lib/widgets/menu/settings/settings_dialog_shell.dart` | shell: LayoutBuilder clamp, header vàng + `headerSheen`, close button |
 | `lib/widgets/menu/settings/settings_card.dart` | 4 `SettingsSection` + `_rowsFor` sealed switch + `v$appVersion` + `QzdsGameButton` done |
-| `lib/widgets/menu/settings/settings_account_row.dart` | auth row — FR-28 residual converge |
+| `lib/widgets/menu/settings/settings_account_row.dart` | auth row — residual converge |
 | `lib/widgets/menu/settings/menu_settings_dialog_scope.dart` | `ChangeNotifierProvider(create:)` + `_SettingsTimePickerOverlay` foregroundOverlay |
 | `lib/widgets/menu/settings/{notification_time_picker_dialog,time_picker_wheels,wheel_picker}.dart` | picker stack — ListWheel drum |
 | *(deleted)* `lib/widgets/menu/settings_dialog.dart` (learner, 461d) | monolith retire — zero import sau port |
@@ -246,9 +246,9 @@ return [
 ];
 ```
 
-Lưu ý `collection-if`: row chọn-giờ **chỉ tồn tại** khi
+Lưu ý `collection-if`: row chọn giờ **chỉ tồn tại** khi
 notification effective — danh sách item đã là "view" của trạng
-thái, UI không phải `if` lần nữa (render-by-state, A-14).
+thái, UI không phải `if` lần nữa (render-by-state).
 
 ### Bước 3 — `_SettingIconBadge`: icon là design, không phải glyph
 
@@ -295,7 +295,7 @@ Ba điểm dễ trượt:
   screen reader đọc "Sound icon" qua `settingsIconSemanticLabel`
   (key mới Bài 01).
 
-### Bước 4 — Shell: khung có-clip, header có-sheen
+### Bước 4 — Shell: khung có clip, header có sheen
 
 ```dart
 // learner-app/lib/widgets/menu/settings/settings_dialog_shell.dart (trích)
@@ -332,7 +332,7 @@ Comment senior (verbatim) giải thích vì sao card dùng
 `clipBehavior` thay `border`: *"A border here would inset the
 header by a pixel while it kept the card's radius, and the two
 off-centre arcs leave a rim that thickens at the corners."* —
-đây là kiểu comment "vì sao KHÔNG làm cách hiển-nhiên" đáng
+đây là kiểu comment "vì sao KHÔNG làm cách hiển nhiên" đáng
 giá nhất của verbatim port.
 
 ### Bước 5 — Card: `_rowsFor` switch kiệt hợp + casing tại render
@@ -369,10 +369,10 @@ List<Widget> _rowsFor(Set<SettingType> types) => [
 ];
 ```
 
-:::caution[FR-31: casing là render, không phải content]
+:::caution[casing là render, không phải content]
 Learner cũ có ARB `"settingsTitle": "SETTINGS"` — casing nướng
 vào nội dung. Senior: `"settingsTitle": "Settings"` +
-`.toUpperCase()` ở widget. Khác biệt có-kỷ-luật: một nơi
+`.toUpperCase()` ở widget. Khác biệt có kỷ luật: một nơi
 (`dialog`) muốn HOA, nơi khác (menu item) muốn thường — ARB
 giữ *ngữ nghĩa*, widget giữ *trình bày*. Batch này đi kèm **31
 diff về casing value**: mọi key kiểu 'START GAME' →
@@ -424,7 +424,7 @@ dialog-VM (`timePickerVisible`) render vào slot
 `ModalBarrier(dismissible: false)` **thứ hai** phủ lên. Tap
 ngoài picker bị barrier chặn (không lan tới backdrop-dismiss
 của settings); `GestureDetector(onTap:(){})` trong card nuốt
-tap. Đây là A-21 áp vào chính nó một lớp nữa — overlay là
+tap. Đây là áp vào chính nó một lớp nữa — overlay là
 widget trong Stack, do state quyết định.
 :::
 
@@ -453,7 +453,7 @@ chỉ là "đóng" — không có dirty-state để commit.
 
 **5. `_snackBarText` là switch-expression kiệt hợp** trên
 `SettingsSnackBarMessage` 4-variant — thêm enum mới quên nhánh
-= compile error (D-27 ở event-enum, không chỉ ở class).
+= compile error (ở event-enum, không chỉ ở class).
 
 **6. `didLoadSettings` guard trong event-bridge** —
 `_attachViewModel` chạy ở `didChangeDependencies` (có thể chạy
@@ -475,7 +475,7 @@ grep -rn "\.icon\b" lib/widgets/menu/settings/ # → chỉ iconAsset
 ```
 
 Quan sát trên app: mở Settings → icon loa/nhạc/rung là SVG
-trong badge tím-vàng gradient; tắt một switch → badge của nó
+trong badge tím vàng gradient; tắt một switch → badge của nó
 chuyển gradient xám; mở Notification Time → nền mờ blur lần
 hai, tap ngoài picker không đóng được settings.
 
@@ -485,8 +485,8 @@ hai, tap ngoài picker không đóng được settings.
 |---|---|---|
 | Đổi `_SettingIconBadge` disabled thành `Opacity(0.4)` bọc badge | Nhìn giống không? | Không — Opacity làm mờ cả icon lẫn viền bo; gradient xám chỉ đổi nền badge, icon SVG vẫn nét. Test pixel khác; designer nhìn khác |
 | Bỏ `ModalBarrier(dismissible:false)` khỏi `_SettingsTimePickerOverlay` | Tap ngoài picker làm gì? | Tap lan xuống `MenuDialogBackdrop` → settings dialog dismiss *dưới* picker đang mở — trạng thái vô lý. Barrier thứ hai là bắt buộc |
-| Trả `iconAsset: AppAssets.iconSpeaker` cho time-picker item | Compile? | Compile ngon — `iconAsset` chỉ là String; nhầm icon là lỗi *visual*, không phải lỗi type. Catalogue giảm typo nhưng không ngăn nhầm-semantics — factory comment theo `SettingType` giúp review |
-| Để ARB `"settingsTitle": "SETTINGS"` bỏ `.toUpperCase()` | Có lỗi? | Không lỗi — nhưng ngày một nơi khác cần "Settings" thường lại phải thêm key trùng-nghĩa. Convention tách nội-dung/trình-bày tồn tại vì ngày đó |
+| Trả `iconAsset: AppAssets.iconSpeaker` cho time-picker item | Compile? | Compile ngon — `iconAsset` chỉ là String; nhầm icon là lỗi *visual*, không phải lỗi type. Catalogue giảm typo nhưng không ngăn nhầm semantics — factory comment theo `SettingType` giúp review |
+| Để ARB `"settingsTitle": "SETTINGS"` bỏ `.toUpperCase()` | Có lỗi? | Không lỗi — nhưng ngày một nơi khác cần "Settings" thường lại phải thêm key trùng nghĩa. Convention tách nội dung/trình bày tồn tại vì ngày đó |
 
 ## Lỗi hay gặp
 
@@ -496,7 +496,7 @@ hai, tap ngoài picker không đóng được settings.
 | `item.icon` còn sót → compile error | quên field-swap ở một consumer | để `flutter analyze` liệt kê — đừng sửa bằng trí nhớ |
 | Time-picker mở mà tap ngoài đóng cả settings | thiếu `ModalBarrier`/`GestureDetector` nuốt tap | foregroundOverlay cần cả hai: barrier chặn + opaque tap trong card |
 | Badge disabled vẫn tím | dùng `Opacity` thay gradient khác | disabled là `LinearGradient` xám riêng — verbatim `_SettingIconBadge` |
-| `'SETTINGS'` trong ARB vẫn hard-coded HOA | chưa áp FR-31 convention | ARB sentence-case + `.toUpperCase()` tại render (`settings_card.dart:48`) |
+| `'SETTINGS'` trong ARB vẫn hard-coded HOA | chưa áp convention | ARB sentence-case + `.toUpperCase()` tại render (`settings_card.dart:48`) |
 
 ## Tự làm
 
@@ -523,7 +523,7 @@ bắt buộc cho overlay lồng.
 
 **DEBUG** — Tester báo: "switch Notifications bật nhưng icon
 chuông vẫn xám". Đọc `buildSettingItems` + `SettingsViewModel
-.effectiveNotificationEnabled`, tìm nguyên nhân đúng-senior.
+.effectiveNotificationEnabled`, tìm nguyên nhân đúng senior.
 
 :::note[Gợi ý]
 `isEnabled` của row notification không đến trực tiếp từ
@@ -534,11 +534,11 @@ chuông vẫn xám". Đọc `buildSettingItems` + `SettingsViewModel
 <summary>Đáp án</summary>
 
 `isEnabled: effectiveNotificationEnabled` = `notificationEnabled
-&& _hasNotificationPermission` (A-37). Người dùng bật switch
+&& _hasNotificationPermission`. Người dùng bật switch
 nhưng OS từ chối quyền → `hasPermission=false` → effective=false
 → badge xám + snackbar `notificationPermissionRequired`. Đây
 là *hành vi đúng*, không phải bug: switch hiển thị trạng thái
-effective, không hiển thị mong-muốn.
+effective, không hiển thị mong muốn.
 
 </details>
 
@@ -581,7 +581,7 @@ refactor này là bước tự nhiên.
 **H: Vì sao icon là `String` chứ không phải `IconData`?** —
 Vì icon senior là SVG asset riêng, không phải Material glyph.
 DTO chỉ mang *tham chiếu* (path); widget quyết định *render*
-(`SvgPicture` + badge). Tách tham-chiếu/render là cùng một
+(`SvgPicture` + badge). Tách tham chiếu/render là cùng một
 nguyên tắc với ARB-phrase/render-casing.
 
 **H: `settings_dialog.dart` 461 dòng đi đâu?** — Bị xoá sau
@@ -592,13 +592,13 @@ vững — điều kiện xoá là *zero reference*, không phải cảm giác
 
 **H: `ModalBarrier` thứ hai trong overlay khác `ModalBarrier`
 của route ở chỗ nào?** — Không khác về bản chất — cùng widget;
-khác ở chủ-sở-hữu: nó do dialog-scope render trong Stack (in-
-tree, A-21), không do `showDialog` route inject.
+khác ở chủ sở hữu: nó do dialog-scope render trong Stack (in-
+tree), không do `showDialog` route inject.
 
 **H: Vì sao `Switch` + `GestureDetector` cùng gọi `onToggle`?** —
 Row-tap và switch-drag đều là "đổi trạng thái" — senior cho cả
 row là hit-target (`HitTestBehavior.opaque`), switch là affordance
-trực quan; hai đường kích-hoạt, một intent.
+trực quan; hai đường kích hoạt, một intent.
 
 ## Ta cố ý chưa thêm
 
@@ -611,20 +611,20 @@ trực quan; hai đường kích-hoạt, một intent.
   (permission, coordinator, app-version seam). Batch này đổi
   *chrome*, không đổi *state machine*.
 - **Không thêm test cho từng row nhỏ** — coverage đi qua 6
-  case `menu_settings_dialog_test` (dialog-level); row-đơn-lẻ
+  case `menu_settings_dialog_test` (dialog-level); row đơn lẻ
   được bao phủ gián tiếp — convention senior.
 
 ## Checkpoint hoàn thành
 
 - [x] `setting_item_data.dart`: `String iconAsset` — sealed
-      family giữ nguyên shape (D-27), equality đổi theo field.
+ family giữ nguyên shape, equality đổi theo field.
 - [x] `_SettingIconBadge`: `SvgPicture.asset` trong gradient
       badge; enabled/disabled = **hai gradient**, không opacity.
 - [x] ~11 file settings chrome verbatim; monolith
       `settings_dialog.dart` (461d) xoá, zero import.
 - [x] `_SettingsTimePickerOverlay` + `ModalBarrier(dismissible:
       false)` — nested overlay pattern.
-- [x] FR-31 phụ: ARB sentence-case, `.toUpperCase()` tại
+- [x] phụ: ARB sentence-case, `.toUpperCase()` tại
       render; 31 value-diff về casing.
 - [x] `flutter analyze` clean · `flutter test` **313/313**
       (+4: menu_settings 6 + picker 3 − test cũ retire).

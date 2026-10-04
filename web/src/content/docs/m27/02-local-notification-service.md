@@ -1,6 +1,6 @@
 ---
 title: "Bài 2 · LocalNotificationService — contract + impl plugin"
-description: "File verbatim senior: contract 5 method (`initialize`/`hasPermission`/`requestPermission`/`scheduleDaily`/`cancelDaily`) + impl bọc `FlutterLocalNotificationsPlugin` — lazy init, `tz.initializeTimeZones` + `FlutterTimezone` + UTC fallback, `resolvePlatformSpecificImplementation<T>` per-platform permission (D-47), `zonedSchedule` id 1001 + `DateTimeComponents.time` + `inexactAllowWhileIdle` (F-36), `_nextDailyTime` rollover +1 ngày. Fake counters + `throwOn*` cho test. +0 → 254."
+description: "File verbatim senior: contract 5 method (`initialize`/`hasPermission`/`requestPermission`/`scheduleDaily`/`cancelDaily`) + impl bọc `FlutterLocalNotificationsPlugin` — lazy init, `tz.initializeTimeZones` + `FlutterTimezone` + UTC fallback, `resolvePlatformSpecificImplementation<T>` per-platform permission, `zonedSchedule` id 1001 + `DateTimeComponents.time` + `inexactAllowWhileIdle`, `_nextDailyTime` rollover +1 ngày. Fake counters + `throwOn*` cho test. +0 → 254."
 sidebar:
   label: "Bài 2 · notification service"
   order: 2
@@ -15,11 +15,11 @@ sidebar:
   method, và vì sao `_setLocalTimeZone` nuốt lỗi thành UTC.
 - Hiểu `resolvePlatformSpecificImplementation<T>()` — "hỏi plugin
   xem platform hiện tại có impl T không" — trả `null` khi không
-  khớp (D-47 nửa hai).
+ khớp (nửa hai).
 - Đọc được chữ ký `zonedSchedule`: một notification id cố định
   (`1001`), `matchDateTimeComponents: DateTimeComponents.time` =
   lặp hằng ngày cùng giờ đồng hồ, `inexactAllowWhileIdle` =
-  thân-pin (F-36).
+ thân pin.
 - Viết `FakeLocalNotificationService` (counters + `throwOn*`) vào
   `test/helpers/` — đối tượng thay OS trong mọi test sau này.
 - +0 test (service + fake là nền — chưa ai gọi) → **254/254**.
@@ -38,19 +38,19 @@ per-platform, permission API khác nhau giữa Android/iOS/macOS,
 `zonedSchedule` cần `TZDateTime` của múi giờ thiết bị. Nếu rải
 mấy dòng này vào VM/widget: (1) ai đọc VM cũng phải hiểu plugin;
 (2) test VM phải chạy plugin thật (không thể — không có OS);
-(3) đổi plugin = sửa khắp app. Ranh giới A-35 cô lập hết vào một
+(3) đổi plugin = sửa khắp app. Ranh giới cô lập hết vào một
 file — file này là *bộ phiên dịch* duy nhất giữa "ngôn ngữ app"
 (`scheduleDaily(hour: h, minute: m)`) và "ngôn ngữ plugin"
 (`zonedSchedule(id: 1001, scheduledDate: TZDateTime…)`).
 
 ## Bạn đã biết gì
 
-- Contract `abstract interface class` + impl `implements` (A-35 —
+- Contract `abstract interface class` + impl `implements` (
   Bài 1); fake counters (Bài 1 ví dụ độc lập).
-- `kIsWeb` là hằng biên dịch (D-47 — Bài 1).
+- `kIsWeb` là hằng biên dịch (Bài 1).
 - `static const` cho hằng nội bộ class + named-required
-  parameter (D-04); null-coalescing `??`/`??=` (D-03).
-- `Future<void>` + `await` chain (D-09); `try/catch` nuốt lỗi có
+ parameter; null-coalescing `??`/`??=`.
+- `Future<void>` + `await` chain; `try/catch` nuốt lỗi có
   chủ đích (đã thấy ở M22 save boundary).
 
 ## Mental model mới — "một file = một bộ phiên dịch platform"
@@ -81,7 +81,7 @@ Giới hạn: impl vẫn *tin* plugin — nếu `zonedSchedule` throw (web
 | `import '…' as tz` + **hai** file cùng prefix | `data/latest_all.dart` (database múi giờ) + `timezone.dart` (API) cùng alias `tz` — `tz.initializeTimeZones()`, `tz.TZDateTime`, `tz.local`, `tz.setLocalLocation` |
 | `FlutterTimezone.getLocalTimezone()` | đọc múi giờ thật của OS → `timeZone.identifier` → `tz.getLocation` |
 | `tz.TZDateTime(tz.local, y, m, d, h, min)` | thời điểm *có múi giờ* — `zonedSchedule` đòi kiểu này, không nhận `DateTime` |
-| `resolvePlatformSpecificImplementation<T>()` | method của plugin: trả instance kiểu `T` nếu platform hiện tại khớp, `null` nếu không — gate per-platform (D-47) |
+| `resolvePlatformSpecificImplementation<T>()` | method của plugin: trả instance kiểu `T` nếu platform hiện tại khớp, `null` nếu không — gate per-platform |
 | `_isInitialized` flag + early-return | lazy-init idempotent — mọi public method `await initialize()` đầu tiên, init chỉ chạy một lần |
 | `scheduled.isAfter(now)` + `add(Duration(days:1))` | rollover: giờ đã qua (hoặc đúng bằng) → sang ngày mai |
 
@@ -92,9 +92,9 @@ Giới hạn: impl vẫn *tin* plugin — nếu `zonedSchedule` throw (web
 | `FlutterLocalNotificationsPlugin` | instance plugin — ctor injectable (`{plugin}` param) để test/mock được |
 | `InitializationSettings(android:…, iOS:…, macOS:…)` | per-platform init; `DarwinInitializationSettings(request*Permission: false)` = *không* xin quyền lúc init — xin sau bằng `requestPermission()` |
 | `AndroidInitializationSettings('@mipmap/ic_launcher')` | icon mặc định của notification Android |
-| `AndroidNotificationDetails(channelId, channelName, channelDescription:, importance:, priority:)` | channel Android 8+ — tạo-một-lần-vĩnh-viễn theo `channelId`; `Importance.high` → heads-up |
+| `AndroidNotificationDetails(channelId, channelName, channelDescription:, importance:, priority:)` | channel Android 8+ — tạo một lần vĩnh viễn theo `channelId`; `Importance.high` → heads-up |
 | `zonedSchedule(id:, title:, body:, scheduledDate:, notificationDetails:, androidScheduleMode:, matchDateTimeComponents:, payload:)` | đặt lịch — `matchDateTimeComponents: DateTimeComponents.time` biến nó thành **lặp hằng ngày theo giờ đồng hồ** |
-| `AndroidScheduleMode.inexactAllowWhileIdle` | OS được dời giờ để tiết kiệm pin, vẫn gửi khi máy ngủ (doze) — senior chọn thân-pin, không cần giờ chính xác |
+| `AndroidScheduleMode.inexactAllowWhileIdle` | OS được dời giờ để tiết kiệm pin, vẫn gửi khi máy ngủ (doze) — senior chọn thân pin, không cần giờ chính xác |
 | `payload` | chuỗi data đi kèm notification (`'daily_quiz'`) — senior không có tap-handler; chỉ là metadata |
 
 ## Ví dụ độc lập — rollover `_nextDailyTime` (DartPad)
@@ -119,7 +119,7 @@ void main() {
 }
 ```
 
-Ba case cuối chính là bài tập dự-đoán ở cuối bài — chú ý case
+Ba case cuối chính là bài tập dự đoán ở cuối bài — chú ý case
 "đúng bằng": `!isAfter` bao gồm cả bằng → đặt đúng giờ hiện tại
 vẫn nhảy sang ngày mai (senior chấp nhận — không có "bắn ngay").
 
@@ -153,7 +153,7 @@ duy nhất.
 ## Build it step by step
 
 **Bước 1 — `lib/services/local_notification_service.dart`** (file
-mới — verbatim senior; comment header ghi rõ ranh giới A-35).
+mới — verbatim senior; comment header ghi rõ ranh giới).
 
 Phần contract — năm method là toàn bộ "ngôn ngữ" app được phép
 nói về notification:
@@ -229,7 +229,7 @@ Init lazy + timezone (verbatim):
 ```
 
 Permission — `hasPermission` chỉ hỏi Android (senior không wire
-check cho iOS/macOS — coi như "granted-cho-tới-khi-request");
+check cho iOS/macOS — coi như "granted cho tới khi request");
 `requestPermission` resolve lần lượt Android → iOS → macOS, hết
 impl nào khớp thì fallback `!kIsWeb`:
 
@@ -434,7 +434,7 @@ file này là nền cho Bài 3.
    giờ OS; lỗi (web/máy lạ) → `catch` → `tz.UTC` — **degrade sang
    UTC chứ không crash**: notification vẫn hẹn được, chỉ lệch múi.
 3. **`scheduleDaily` gọi `cancelDaily()` trước** — cùng id `1001`
-   nên schedule-mới = ghi-đè; huỷ trước làm idempotent rõ ràng
+   nên schedule mới = ghi đè; huỷ trước làm idempotent rõ ràng
    (đổi giờ không tạo notification thứ hai).
 4. **`resolvePlatformSpecificImplementation<T>` là gate type.**
    Plugin trả instance kiểu `T` nếu platform hiện tại khớp —
@@ -472,8 +472,8 @@ notification sẽ hiện mỗi ngày?
 <details>
 <summary>Đáp án</summary>
 
-Vẫn **một** — `zonedSchedule(id: 1001, …)` cùng id ghi-đè lịch cũ,
-không nhân đôi. `cancelDaily()` trước không chống nhân-đôi (id cố
+Vẫn **một** — `zonedSchedule(id: 1001, …)` cùng id ghi đè lịch cũ,
+không nhân đôi. `cancelDaily()` trước không chống nhân đôi (id cố
 định đã chống) — nó làm **ý đồ rõ ràng + phòng plugin nào đó trên
 platform nào đó treat same-id là "đã tồn tại" và bỏ qua**. Senior
 viết defensive; cố ý giữ verbatim thay vì "tối ưu" bỏ.
@@ -511,7 +511,7 @@ thành `isBefore` (chỉ khi nhỏ hơn) thì case 14:30 khác gì?
 - `nextDailyTime(now, 9, 0)` → **09:00 ngày 2/6** (đã qua → +1
   ngày).
 - `nextDailyTime(now, 14, 30)` → **14:30 ngày 2/6** — `!isAfter`
-  gồm cả bằng → đúng-giờ-hiện-tại cũng cuộn sang mai.
+  gồm cả bằng → đúng giờ hiện tại cũng cuộn sang mai.
 
 Đổi sang `isBefore(now)`: case bằng → `scheduled.isBefore(now)` =
 false → **giữ 14:30 hôm nay** → notification bắn *ngay lập tức*
@@ -522,8 +522,8 @@ hiện tại = "ngày mai lúc đó", không phải "bắn ngay".
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** vì sao `scheduleDaily` `await cancelDaily()` trước? —
-  **Đáp:** id `1001` cố định → huỷ-trước đảm bảo re-schedule là
-  ghi-đè sạch, đổi giờ không tích luỹ notification.
+  **Đáp:** id `1001` cố định → huỷ trước đảm bảo re-schedule là
+  ghi đè sạch, đổi giờ không tích luỹ notification.
 - **Hỏi:** trên web `requestPermission()` trả gì, vì sao? —
   **Đáp:** `false` — ba `resolvePlatformSpecificImplementation`
   đều `null` → rơi vào `return !kIsWeb`.

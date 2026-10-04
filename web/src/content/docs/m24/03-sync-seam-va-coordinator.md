@@ -1,34 +1,34 @@
 ---
 title: "Bài 3 · Sync seam + MenuAuthActionCoordinator"
-description: "Vì sao contract UserProfileSyncRepository ship ở M24 mà impl để M25: ProfileSyncStateData (Idle/InProgress/Failed) + UserProfileSyncRepositoryDisabled no-op + ctor shape đúng senior. Coordinator giữ chuỗi signIn*→loadAuthState→authenticated-guard→syncUserProfile và signOut→resetUserProfile (FR-11). +0 test → 201."
+description: "Vì sao contract UserProfileSyncRepository ship ở M24 mà impl để M25: ProfileSyncStateData (Idle/InProgress/Failed) + UserProfileSyncRepositoryDisabled no-op + ctor shape đúng senior. Coordinator giữ chuỗi signIn*→loadAuthState→authenticated-guard→syncUserProfile và signOut→resetUserProfile. +0 test → 201."
 sidebar:
-  label: "Bài 3 · sync seam + coordinator"
-  order: 3
+ label: "Bài 3 · sync seam + coordinator"
+ order: 3
 ---
 
 ## Mục tiêu
 
 - Giải thích được chiến thuật **"contract trước, impl sau"**: M24 ship
-  `UserProfileSyncRepository` + `ProfileSyncStateData` + impl
-  `UserProfileSyncRepositoryDisabled` (no-op) để *call-site* của
-  coordinator đúng ngay hôm nay; `UserProfileSyncRepositoryImpl`
-  (merge + upsert `public.users`) là **M25**.
+ `UserProfileSyncRepository` + `ProfileSyncStateData` + impl
+ `UserProfileSyncRepositoryDisabled` (no-op) để *call-site* của
+ coordinator đúng ngay hôm nay; `UserProfileSyncRepositoryImpl`
+ (merge + upsert `public.users`) là **M25**.
 - Port `MenuAuthActionCoordinator` — một lớp duy nhất giữ hai chuỗi:
-  `signIn* → loadAuthState → (guard authenticated) → syncUserProfile`
-  và `signOut → resetUserProfile` (hành vi nút reset M10 sống lại ở
-  đây — **FR-11** converge).
+ `signIn* → loadAuthState → (guard authenticated) → syncUserProfile`
+ và `signOut → resetUserProfile` (hành vi nút reset M10 sống lại ở
+ đây — converge).
 - Hiểu guard quan trọng: repo báo **success nhưng session vẫn guest**
-  → trả `failure('Sign in failed: no active session.')` — "sign-in
-  không tạo được session thì không tính là đăng nhập".
+ → trả `failure('Sign in failed: no active session.')` — "sign-in
+ không tạo được session thì không tính là đăng nhập".
 - Không thêm test mới ở bài này (coverage đến qua dialog VM ở Bài 4)
-  → suite giữ **201/201**.
+ → suite giữ **201/201**.
 
 ## Bạn đang ở đâu
 
 - Bài 2: `AuthRepositoryImpl` + DI + scope đã vào; suite 201/201.
-  `main()` chọn `Disabled`/`Supabase` auth repo theo config.
+ `main()` chọn `Disabled`/`Supabase` auth repo theo config.
 - Chưa ai GỌI các method sign-*: repo chỉ được fake dùng trong test.
-  Bài này dựng nơi gọi đầu tiên — coordinator — và seam sync nó cần.
+ Bài này dựng nơi gọi đầu tiên — coordinator — và seam sync nó cần.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -47,24 +47,23 @@ cùng tư duy `DisabledLeaderboardRepository` của M23 — seam có ý thức.
 **② Vì sao cần coordinator riêng thay vì VM gọi repo?** Vì "sign-in"
 thật sự là CHUỖI nhiều bước có thứ tự, và có HAI dialog VM
 (`MenuAuthDialogViewModel`, `MenuSignOutDialogViewModel` — Bài 4)
-cùng cần nó. Nếu mỗi VM tự viết chuỗi → hai nửa-chuỗi trôi dạt.
+cùng cần nó. Nếu mỗi VM tự viết chuỗi → hai nửa chuỗi trôi dạt.
 Coordinator giữ chuỗi một chỗ; VM chỉ lo "single-flight + dịch kết
 quả sang event". Đó là phân chia senior: coordinator trả
 `AuthActionResult`, VM quyết dismiss/snackbar.
 
 ## Bạn đã biết gì
 
-- `AuthSessionData`/`AuthActionResult`/`AuthRepository` (Bài 1 —
-  D-43, D-44, A-25); impl + fake (Bài 2).
-- `UserProfileRepository` local + `resetUserProfile()` (M14 — A-06):
-  profile local sống trong SharedPreferences, stream là truth.
-- `BehaviorSubject.seeded` + `ValueStream` (A-08); sealed union +
-  exhaustive switch (D-26/D-27); `typedef Function()` param (Bài 2);
-  `is!`/`is` type check + object pattern (D-27).
-- DI conditional + `AppDependencyScope` provider (A-24/A-07);
-  `debugPrint` có-nhãn cho luồng async (D-17 qua `unawaited`).
+- `AuthSessionData`/`AuthActionResult`/`AuthRepository` (Bài 1); impl + fake (Bài 2).
+- `UserProfileRepository` local + `resetUserProfile()` (M14):
+ profile local sống trong SharedPreferences, stream là truth.
+- `BehaviorSubject.seeded` + `ValueStream`; sealed union +
+ exhaustive switch; `typedef Function()` param (Bài 2);
+ `is!`/`is` type check + object pattern.
+- DI conditional + `AppDependencyScope` provider;
+ `debugPrint` có nhãn cho luồng async (qua `unawaited`).
 
-## Mental model mới — "coordinator giữ chuỗi, stream giữ state" (A-26)
+## Mental model mới — "coordinator giữ chuỗi, stream giữ state" 
 
 ```text
 MenuAuthActionCoordinator  = chỗ DUY NHẤT biết "sau sign-in làm gì"
@@ -84,28 +83,27 @@ ProfileSyncStateData       = trạng thái job sync (Idle/InProgress/
 Ba điểm dễ nhầm, khắc ngay:
 
 1. **`loadAuthState()` không phải sign-in lần hai.** Nó là "đọc lại
-   session hiện tại" — impl thật đọc `client.auth.currentUser`, fake
-   trả `subject.value`. Sau `signIn*` thành công, coordinator hỏi
-   lại nguồn truth thay vì TIN result.
+ session hiện tại" — impl thật đọc `client.auth.currentUser`, fake
+ trả `subject.value`. Sau `signIn*` thành công, coordinator hỏi
+ lại nguồn truth thay vì TIN result.
 2. **Result-success ≠ session-authenticated.** Hai kênh tách bạch
-   (Bài 1): repo có thể trả `success` mà stream vẫn guest (impl lỗi,
-   fake script nhầm, hoặc sign-up confirm-email). Guard `session is!
+ (Bài 1): repo có thể trả `success` mà stream vẫn guest (impl lỗi, fake script nhầm, hoặc sign-up confirm-email). Guard `session is!
    AuthSessionAuthenticated` là nơi hai kênh được đối chiếu — sign-in
-   mà không có session thì BÁO LỖI, không im lặng coi như xong.
+ mà không có session thì BÁO LỖI, không im lặng coi như xong.
 3. **Sign-up có nhánh riêng CÓ LÝ DO.** Confirm-email: `success` mà
-   guest là kết quả ĐÚNG — user phải check mail trước khi có session.
-   Vì thế `signUpWithEmail` không guard-fail: nó trả result gốc và
-   CHỈ sync nếu session authenticated. Một guard chung cho cả hai
-   sẽ biến luồng hợp lệ thành lỗi giả — đây là khác biệt senior
-   verbatim giữa `_signInAndSync` và `signUpWithEmail`.
+ guest là kết quả ĐÚNG — user phải check mail trước khi có session.
+ Vì thế `signUpWithEmail` không guard-fail: nó trả result gốc và
+ CHỈ sync nếu session authenticated. Một guard chung cho cả hai
+ sẽ biến luồng hợp lệ thành lỗi giả — đây là khác biệt senior
+ verbatim giữa `_signInAndSync` và `signUpWithEmail`.
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
 |---|---|
-| `Future<R> Function()` param | truyền "hành động sign-in" vào `_signInAndSync` — method-tearoff như closure (D-06 áp dụng) |
+| `Future<R> Function()` param | truyền "hành động sign-in" vào `_signInAndSync` — method-tearoff như closure (áp dụng) |
 | `x is! T` (negated type test) | guard "không authenticated → fail sớm" — đọc ngược của `is` |
-| `switch` expression trả String | `_sessionLabel` cho debug log — D-27 |
+| `switch` expression trả String | `_sessionLabel` cho debug log — |
 | `Future<void>` no-op body `async {}` | Disabled impl trả về ngay — method rỗng hợp lệ của contract |
 
 ## Ví dụ độc lập — chuỗi 3 bước trong 20 dòng
@@ -168,7 +166,7 @@ khách". Tài khoản Supabase vẫn tồn tại; đăng nhập lại khôi ph�
 **Bước 1 — `lib/data/profile/profile_sync_state_data.dart`** (44
 dòng, verbatim): sealed `ProfileSyncStateData` → `ProfileSyncIdle` /
 `ProfileSyncInProgress` / `ProfileSyncFailed(message)` — mỗi variant
-có `==`/`hashCode` (D-05). Stream seeded `Idle`; `InProgress`/
+có `==`/`hashCode`. Stream seeded `Idle`; `InProgress`/
 `Failed` do impl thật emit khi upsert chạy — **M25** mới có consumer,
 M24 chỉ cần model tồn tại đúng shape.
 
@@ -250,7 +248,7 @@ Future<AuthActionResult> _signInAndSync(
 ```
 
 Và `signOut` (`:134-146`): `result.isSuccess` →
-`_userProfileRepository.resetUserProfile()` — FR-11: hành vi nút
+`_userProfileRepository.resetUserProfile()` — : hành vi nút
 reset M10 sống lại đúng nghĩa "sign-out → thiết bị về hồ sơ khách",
 không còn là nút bấm trên menu.
 
@@ -341,22 +339,22 @@ hợp lệ mặc định". Đúng tinh thần `DisabledAuthRepository` seed Gues
 ## Lỗi hay gặp
 
 1. **Tin `AuthActionResult.success` là "đã đăng nhập".** Result chỉ
-   nói action không lỗi — guard đọc lại session mới là bản án. Bỏ
-   guard = bug lặng (exercise dưới).
+ nói action không lỗi — guard đọc lại session mới là bản án. Bỏ
+ guard = bug lặng (exercise dưới).
 2. **Gọi `syncUserProfile` với `AuthSessionData`.** Chữ ký đòi
-   `AuthSessionAuthenticated` — compiler bắt ngay; `is`/`is!` check
-   không phải formalism, nó là type-level precondition.
-3. **Áp guard sign-in cho sign-up.** Success-không-session của
-   sign-up (confirm-email) là hợp lệ — nhánh riêng của
-   `signUpWithEmail` tồn tại đúng vì thế.
+ `AuthSessionAuthenticated` — compiler bắt ngay; `is`/`is!` check
+ không phải formalism, nó là type-level precondition.
+3. **Áp guard sign-in cho sign-up.** Success không session của
+ sign-up (confirm-email) là hợp lệ — nhánh riêng của
+ `signUpWithEmail` tồn tại đúng vì thế.
 4. **Gọi `resetUserProfile()` kể cả khi sign-out fail.** Chuỗi chỉ
-   chạy `if (result.isSuccess)` — sign-out fail thì profile giữ nguyên
-   (test Bài 4 khóa điều này: "failed sign out … preserves profile").
+ chạy `if (result.isSuccess)` — sign-out fail thì profile giữ nguyên
+ (test Bài 4 khóa điều này: "failed sign out … preserves profile").
 5. **Đặt impl sync thật vào `main()` sớm.** `main()` cố ý LUÔN
-   Disabled ở M24 — đổi sớm sẽ gọi `public.users` khi RLS/schema
-   chưa theo kịp (M25 mới làm).
+ Disabled ở M24 — đổi sớm sẽ gọi `public.users` khi RLS/schema
+ chưa theo kịp (M25 mới làm).
 
-## Tự làm — DEBUG + PREDICT (bắt buộc, ca trồng-bug thật)
+## Tự làm — DEBUG + PREDICT (bắt buộc, ca trồng bug thật)
 
 **Setup** — tạo file scratch `test/m24_coordinator_guard_exercise_test.dart`
 (chỉ để exercise — sẽ xoá sau, không tính vào suite 224):
@@ -439,23 +437,23 @@ milestone.
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** vì sao `syncUserProfile` nhận `AuthSessionAuthenticated`
-  thay vì `AuthSessionData`? — **Đáp:** sync chỉ có nghĩa với phiên
-  thật; kiểu hẹp ép caller `is`-check trước khi gọi — precondition
-  ở type level, không phải convention.
+ thay vì `AuthSessionData`? — **Đáp:** sync chỉ có nghĩa với phiên
+ thật; kiểu hẹp ép caller `is`-check trước khi gọi — precondition
+ ở type level, không phải convention.
 - **Hỏi:** hai chỗ sign-in và sign-up khác nhau thế nào trong việc
-  xử lý "success nhưng guest"? — **Đáp:** sign-in → failure
-  `'no active session'` (không session = không đăng nhập); sign-up →
-  trả result gốc + chỉ sync nếu authenticated (confirm-email hợp lệ).
+ xử lý "success nhưng guest"? — **Đáp:** sign-in → failure
+ `'no active session'` (không session = không đăng nhập); sign-up →
+ trả result gốc + chỉ sync nếu authenticated (confirm-email hợp lệ).
 - **Hỏi:** `resetUserProfile()` được gọi từ đâu trong M24, và nó
-  thay thế cái gì? — **Đáp:** `MenuAuthActionCoordinator.signOut()`
-  sau sign-out success — semantics nút "ĐẶT LẠI HỒ SƠ" M10, giờ là
-  FR-11 converge (Bài 5 mới xoá nút vật lý).
+ thay thế cái gì? — **Đáp:** `MenuAuthActionCoordinator.signOut()`
+ sau sign-out success — semantics nút "ĐẶT LẠI HỒ SƠ" M10, giờ là
+ converge (Bài 5 mới xoá nút vật lý).
 
 ## Ta cố ý chưa thêm
 
 - `UserProfileSyncRepositoryImpl` — merge local↔remote + upsert
-  `public.users` + emit InProgress/Failed lên `syncStateStream`:
-  **M25** (khi đó `main()` đổi một dòng `Disabled` → `Impl`).
+ `public.users` + emit InProgress/Failed lên `syncStateStream`:
+ **M25** (khi đó `main()` đổi một dòng `Disabled` → `Impl`).
 - Dialog VM tiêu thụ coordinator — **Bài 4**; UI gọi chúng — **Bài 5**.
 - Consumer của `syncStateStream` (progress UI/sync status) — **M25+**.
 - Realtime sync, conflict resolution nâng cao — senior không có.
@@ -463,14 +461,14 @@ milestone.
 ## Checkpoint hoàn thành
 
 - [ ] `profile_sync_state_data.dart` sealed 3 variant;
-  contract + `UserProfileSyncRepositoryDisabled` (seed `ProfileSyncIdle`,
-  `syncUserProfile` no-op) tồn tại.
+ contract + `UserProfileSyncRepositoryDisabled` (seed `ProfileSyncIdle`,
+ `syncUserProfile` no-op) tồn tại.
 - [ ] `menu_auth_action_coordinator.dart` có `_signInAndSync` với
-  guard `is! AuthSessionAuthenticated → failure('Sign in failed: no
+ guard `is! AuthSessionAuthenticated → failure('Sign in failed: no
   active session.')`, sign-up branch riêng, `signOut → resetUserProfile()`.
 - [ ] `AppDependencyScope` + `main()` có `profileSyncRepository`
-  (LUÔN `UserProfileSyncRepositoryDisabled()`); 4 call-site truyền
-  `FakeUserProfileSyncRepository()`.
+ (LUÔN `UserProfileSyncRepositoryDisabled()`); 4 call-site truyền
+ `FakeUserProfileSyncRepository()`.
 - [ ] `flutter analyze` sạch; `flutter test` **201/201**.
-- [ ] DEBUG exercise: trồng-bug → scratch test đỏ đúng
-  `isSuccess` assert → khôi phục → xanh → file scratch đã xoá.
+- [ ] DEBUG exercise: trồng bug → scratch test đỏ đúng
+ `isSuccess` assert → khôi phục → xanh → file scratch đã xoá.

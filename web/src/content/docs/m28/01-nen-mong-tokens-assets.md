@@ -1,6 +1,6 @@
 ---
 title: "Bài 1 · Nền móng — dependencies, assets, design tokens"
-description: "Hai dep đúng pin senior (flutter_svg ^2.3.0, google_fonts ^8.1.0) + hai asset-dir + 7 SVG + 1 PNG. `AppAssets` subset 8 const cố ý (còn lại → M29). `AppTokens` 318 dòng verbatim — spacing/icon/radius/motion/màu/typography GoogleFonts + `screenDesignWidth = 375` + `DesignFrame`. `surfaceGlow`/`FillBoxGradientTransform` + `headerSheen`. 6 ARB key semantics mới + regen gen-l10n. A-38 CORE: tokens là nguồn-đúng-duy-nhất. +0 test → 259."
+description: "Hai dep đúng pin senior (flutter_svg ^2.3.0, google_fonts ^8.1.0) + hai asset-dir + 7 SVG + 1 PNG. `AppAssets` subset 8 const cố ý (còn lại → M29). `AppTokens` 318 dòng verbatim — spacing/icon/radius/motion/màu/typography GoogleFonts + `screenDesignWidth = 375` + `DesignFrame`. `surfaceGlow`/`FillBoxGradientTransform` + `headerSheen`. 6 ARB key semantics mới + regen gen-l10n. CORE: tokens là nguồn đúng duy nhất. +0 test → 259."
 sidebar:
   label: "Bài 1 · tokens & assets"
   order: 1
@@ -8,12 +8,12 @@ sidebar:
 
 ## Mục tiêu
 
-- Nêu được bài toán-cảm-nhận: mọi màu/khoảng-cách/cỡ-chữ đang
+- Nêu được bài toán cảm nhận: mọi màu/khoảng cách/cỡ chữ đang
   nằm rải rác trong `MenuTokens` (bộ token tự sinh M14) và hardcode
-  trong widget — không ai ngăn hai nút cùng-vai-trò dùng hai màu
+  trong widget — không ai ngăn hai nút cùng vai trò dùng hai màu
   khác nhau.
-- Phát biểu mental model **A-38**: design token là
-  *nguồn-đúng-duy-nhất* — widget đọc `AppTokens.*`, không bao giờ
+- Phát biểu mental model: design token là
+  *nguồn đúng duy nhất* — widget đọc `AppTokens.*`, không bao giờ
   tự nghĩ ra `Color(0xFF…)` hay `SizedBox(height: 44)` trần.
 - Thêm đúng 2 dependency senior (`flutter_svg`, `google_fonts`)
   + 2 asset-dir vào `pubspec.yaml`, copy 7 SVG + 1 PNG.
@@ -56,10 +56,10 @@ sidebar:
 - `google_fonts` fetch font *lúc runtime* (không bundle trong
   assets) — hiểu ngay từ đầu để không bất ngờ khi offline lần
   đầu render ra font hệ thống (parity senior — không "sửa").
-- Thứ tự asset-trước-widget là bắt buộc: `Image.asset`/
+- Thứ tự asset trước widget là bắt buộc: `Image.asset`/
   `SvgPicture.asset` fail lúc *runtime* nếu pubspec thiếu khai
   báo dir — nhưng `flutter analyze`/`flutter test` không bắt.
-  Bài này đặt nền cho lỗi-ở-runtime đó.
+  Bài này đặt nền cho lỗi ở runtime đó.
 
 ## Bạn đã biết gì
 
@@ -68,19 +68,19 @@ sidebar:
 - `import` + `export` — barrel file export lại file khác
   để consumer chỉ cần một import (Dart `export` cơ bản — chưa
   có registry row riêng).
-- `static const` trên class (D-04) — `MenuTokens.spacingMd`
+- `static const` trên class — `MenuTokens.spacingMd`
   chính là shape này; `AppTokens` cùng pattern, quy mô lớn hơn.
 - `LinearGradient`/`RadialGradient` — đã dùng trong
   `MenuTokens.cardBackground`/`accentCyan` decorations
   (chưa có registry row riêng — reuse từ code M-menu).
-- ARB + `flutter gen-l10n` + placeholder `{name}` (D-31, F-25)
+- ARB + `flutter gen-l10n` + placeholder `{name}` 
   — pipeline i18n M17 y nguyên.
-- `BoxConstraints`/`ConstrainedBox`/`Center` (F-07) — layout
+- `BoxConstraints`/`ConstrainedBox`/`Center` — layout
   primitives đã quen.
 
-## Mental model mới — "tokens là nguồn-đúng-duy-nhất" (A-38, CORE)
+## Mental model mới — "tokens là nguồn đúng duy nhất" (CORE)
 
-> **A-38 — Design tokens as single source of truth.** Mọi giá
+> ** — Design tokens as single source of truth.** Mọi giá
 > trị visual dùng lại (màu, spacing, radius, icon-size, motion
 > duration, typography, design-width) sống trong *một* class
 > `static const` / `static get` — `AppTokens`. Widget *đọc*;
@@ -116,11 +116,11 @@ Một cặp song hành:
 | Construct | Vai trò |
 |---|---|
 | `export 'app_assets.dart';` | re-export — consumer của `app_design_tokens.dart` thấy luôn `AppAssets` + `surfaceGlow` mà không import thêm (barrel `export` — chưa có registry row). File tokens có 2 export ở dòng 4–5 |
-| `static const double/Color/Duration` | token constants — compile-time, không instance (D-04 reuse) |
-| `static TextStyle get body3 => GoogleFonts.beVietnamPro(…)` | getter thay const — `TextStyle` không const được vì `GoogleFonts.*` là factory runtime (D-04 biến thể) |
+| `static const double/Color/Duration` | token constants — compile-time, không instance (reuse) |
+| `static TextStyle get body3 => GoogleFonts.beVietnamPro(…)` | getter thay const — `TextStyle` không const được vì `GoogleFonts.*` là factory runtime (biến thể) |
 | `Color(0x14FFFFFF)` | ARGB hex: hai chữ số đầu là alpha — `0x14` ≈ 8% → `white08`, `0x1A` ≈ 10% → `white10`… đọc tên là biết alpha |
-| `color.withValues(alpha: color.a * edgeOpacity)` | API mới của `Color` — `withValues` thay `withOpacity` (deprecated): nhân-alpha giữ nguyên RGB; `color.a` đọc kênh alpha 0..1 |
-| `Matrix4.identity()..translateByDouble(…)` | cascade trên `Matrix4` — build phép biến hình affine cho `GradientTransform` (LIGHT — chưa cần thông ma trận, chỉ cần hiểu "dịch-gốc → scale → dịch-lại") |
+| `color.withValues(alpha: color.a * edgeOpacity)` | API mới của `Color` — `withValues` thay `withOpacity` (deprecated): nhân alpha giữ nguyên RGB; `color.a` đọc kênh alpha 0..1 |
+| `Matrix4.identity()..translateByDouble(…)` | cascade trên `Matrix4` — build phép biến hình affine cho `GradientTransform` (LIGHT — chưa cần thông ma trận, chỉ cần hiểu "dịch gốc → scale → dịch lại") |
 | `enum QzdsButtonScale { compact, large }` | hai preset kích thước pill — Bài 2 dùng `scale` để chọn padding/font |
 
 ## Flutter cần dùng
@@ -130,7 +130,7 @@ Một cặp song hành:
 | `pubspec.yaml` `dependencies:` | `flutter_svg: ^2.3.0` — render SVG (`SvgPicture.asset`, Bài 2); `google_fonts: ^8.1.0` — `GoogleFonts.beVietnamPro` type ramp (fetch runtime, không bundle) |
 | `pubspec.yaml` `flutter.assets:` | khai báo **thư mục** asset — `assets/images/icons/` + `assets/images/backgrounds/`; thiếu dir → `Image.asset`/`SvgPicture.asset` throw lúc *runtime* (analyze không bắt) |
 | `ConstrainedBox(BoxConstraints(maxWidth: …))` | giới trên chiều rộng — `DesignFrame` bọc nó trong `Center` |
-| `RadialGradient(transform: …)` | `transform` xoay/co giãn không-gian gradient trước khi vẽ — `FillBoxGradientTransform` kéo tròn-thành-elip |
+| `RadialGradient(transform: …)` | `transform` xoay/co giãn không gian gradient trước khi vẽ — `FillBoxGradientTransform` kéo tròn thành elip |
 | `GradientTransform.transform(bounds, {textDirection})` | override trả `Matrix4` (hoặc `null` = không transform) — hook duy nhất của class |
 | `GoogleFonts.beVietnamPro(fontSize: …, fontWeight: …, color: …)` | trả `TextStyle` dùng font BeVietnamPro — fetch qua mạng lần đầu, cache sau; senior verbatim (không bundle font) |
 | `Image.asset` / `SvgPicture.asset` (preview) | đọc asset đã khai báo — Bài 2 render thật |
@@ -172,7 +172,7 @@ object gộp một chỗ.** Trên Android bạn đặt spacing trong
 `res/values/dimens.xml`, màu trong theme/`Color.kt`; Compose đọc
 `MaterialTheme.colorScheme`/`dimensionResource`. `AppTokens`
 gom *tất cả* (màu + spacing + radius + motion + typography) vào
-một file Dart — gần với một `object AppTheme` khổng-lồ hơn là
+một file Dart — gần với một `object AppTheme` khổng lồ hơn là
 resource XML.
 
 **IMPORTANT DIFFERENCE — token Dart là *code*, không phải
@@ -183,7 +183,7 @@ resource-lookup; `static const` inline thẳng vào binary. Muốn
 download font lúc runtime, khác hẳn `res/font/bevietnam.ttf`
 bundled: **không có fallback offline ngoài font hệ thống**.
 
-**DO NOT ASSUME — `assets:` trong pubspec ≠ `res/` tự-đóng-gói.**
+**DO NOT ASSUME — `assets:` trong pubspec ≠ `res/` tự đóng gói.**
 Flutter chỉ ship file nằm dưới dir đã khai báo *verbatim*;
 thiếu dòng `- assets/images/backgrounds/` thì `Image.asset` throw
 `Unable to load asset` lúc chạy — `flutter analyze` *không* bắt
@@ -200,6 +200,23 @@ viết, gõ sai là lỗi runtime.
 | `lib/core/surface_glow_gradient.dart` (72 dòng) | **verbatim-port** — `FillBoxGradientTransform` + `surfaceGlow` + `headerSheen` |
 | `lib/widgets/common/design_frame.dart` (20 dòng) | **verbatim-port** — `Center` + `ConstrainedBox(maxWidth: 375)` |
 | `lib/core/app_assets.dart` (73 dòng, ~66 const) | learner port **subset 8 const** — chỉ asset thực shipped; ~58 const còn lại → M29 cùng widget của chúng |
+
+:::tip[Suy ra trước — lookup layer `AppAssets` + `AppTokens`]
+Trước khi thấy 318 dòng verbatim, tự thiết kế lớp tra cứu:
+
+1. **`AppAssets` cần gì?** 8 file asset — nên là gì: `const String`
+   path đầy đủ, hay base-dir + tên file ghép lại? Gõ một `class` với
+   8 const theo tên bạn chọn — so với senior ngay sau.
+2. **Tại sao không `Image.asset` trực tiếp?** Widget vẫn có thể gọi
+   path string trần — chuyện gì hỏng khi asset đổi tên / đổi dir /
+   thêm variant? Viện dẫn *ví dụ đổi tên* cụ thể.
+3. **Token vs tham số widget.** `screenDesignWidth = 375` sống ở
+   `AppTokens` hay truyền vào `DesignFrame`? — suy luận từ "ai
+   được phép đổi nó, và đổi một chỗ hay mọi chỗ?".
+4. **`IconAsset` tới SVG thế nào?** `GameFeatureButton` nhận
+   `IconAsset` — ai biến nó thành `SvgPicture`: widget, mapper,
+   hay `AppAssets` tự render?
+:::
 
 ## Build it step by step
 
@@ -541,7 +558,7 @@ void main() {
 ```
 
 Đây đúng cách `AppAssets` sẽ mọc ở M29: const mới *và* file
-mới cùng một bước, không const-mồi.
+mới cùng một bước, không const mồi.
 </details>
 
 ## Kiểm tra hiểu biết
@@ -569,9 +586,9 @@ mới cùng một bước, không const-mồi.
 ## Ta cố ý chưa thêm
 
 - Bất kỳ widget nào **dùng** `AppTokens`/`AppAssets`/`DesignFrame`
-  — Bài 2/3/5/6 mới có consumer; bài này compile-độc-lập.
+  — Bài 2/3/5/6 mới có consumer; bài này compile độc lập.
 - `MenuTokens` → `AppTokens` migration cho widget cũ — **M29**
-  (FR-32 phần còn lại); hai bộ token cùng tồn tại tạm thời.
+ (phần còn lại); hai bộ token cùng tồn tại tạm thời.
 - `AppAssets` 58 const còn lại + asset files tương ứng — **M29**
   (chính sách subset).
 - Test cho tokens/assets — senior cũng không test const file;

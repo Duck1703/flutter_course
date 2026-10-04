@@ -1,6 +1,6 @@
 ---
 title: "Bài 1 · Ranh giới platform — UI không chạm plugin trực tiếp"
-description: "Felt problem: app chưa nói chuyện được với OS — switch thông báo chỉ ghi flag, onboarding giả vờ granted, không share, không version. Mental model 'UI không chạm plugin trực tiếp' (A-35): widget→VM→contract→impl→plugin→OS. +5 dep đúng pin senior; manifest 2 uses-permission + 2 receiver verbatim; `kIsWeb` fallback + `resolvePlatformSpecificImplementation` (D-47). +0 test → 254."
+description: "Felt problem: app chưa nói chuyện được với OS — switch thông báo chỉ ghi flag, onboarding giả vờ granted, không share, không version. Mental model 'UI không chạm plugin trực tiếp' : widget→VM→contract→impl→plugin→OS. +5 dep đúng pin senior; manifest 2 uses-permission + 2 receiver verbatim; `kIsWeb` fallback + `resolvePlatformSpecificImplementation`. +0 test → 254."
 sidebar:
   label: "Bài 1 · ranh giới platform"
   order: 1
@@ -8,10 +8,10 @@ sidebar:
 
 ## Mục tiêu
 
-- Nêu được bài toán-cảm-nhận: ba chỗ trong app *giả vờ* nói chuyện
+- Nêu được bài toán cảm nhận: ba chỗ trong app *giả vờ* nói chuyện
   với OS — switch thông báo chỉ persist flag, nút onboarding tự
   trả `granted`, không có nút share, không có hàng version.
-- Phát biểu mental model **A-35**: mọi đường ra OS đi qua một
+- Phát biểu mental model: mọi đường ra OS đi qua một
   service contract ở biên — `widget → VM → abstract contract →
   impl bọc plugin → plugin → OS`; không ai `import` plugin ngoài
   file impl.
@@ -20,9 +20,9 @@ sidebar:
 - Dán verbatim 2 `uses-permission` + 2 `receiver` vào
   `AndroidManifest.xml` — hiểu `POST_NOTIFICATIONS` là runtime
   permission (Android 13+), `RECEIVE_BOOT_COMPLETED` nuôi receiver
-  đặt-lại-lịch-sau-reboot.
+  đặt lại lịch sau reboot.
 - Hiểu `kIsWeb` là **hằng biên dịch** — compiler xoá hẳn nhánh
-  chết — khác hẳn `Platform.is*` runtime check (D-47 phần một;
+ chết — khác hẳn `Platform.is*` runtime check (phần một;
   phần `resolvePlatformSpecificImplementation` xem kỹ ở Bài 2).
 - +0 test → suite giữ **254/254** (deps + manifest, chưa có code
   mới nào dùng chúng).
@@ -48,7 +48,7 @@ Mở `settings_view_model.dart` nhánh `SettingType.notifications`:
 cùng `_saveSettings(copyWith)` với ba switch âm thanh — khác biệt
 duy nhất là tên field. Người dùng bật "Thông báo", thoát app,
 đến 20:00 hôm sau… không có gì xảy ra. Flag đã persist đúng
-(M14/M16), nhưng persist-chỉ-là-ghi-nhớ: **không ai đặt báo thức
+(M14/M16), nhưng persist chỉ là ghi nhớ: **không ai đặt báo thức
 với OS cả**. Tương tự nút share không tồn tại, version không có
 chỗ đứng. Câu hỏi kiến trúc thật sự: *code phía OS nên sống ở
 đâu?* — và senior trả lời bằng một ranh giới rõ, không phải bằng
@@ -57,20 +57,20 @@ chỗ đứng. Câu hỏi kiến trúc thật sự: *code phía OS nên sống �
 ## Bạn đã biết gì
 
 - `abstract interface class` + `implements` — contract thuần,
-  không code chia sẻ (M14 — D-19); `sealed`/`final class` variant
-  (D-26/D-27).
+ không code chia sẻ (M14); `sealed`/`final class` variant
+.
 - DI by contract: `Provider<Contract>.value` + `context.read<T>()`
-  (M12/M14 — F-17, F-21, A-07); conditional DI `client == null ?
-  Disabled : Impl` trong `main()` (M23 — A-24).
-- Fake repo + counters thay thế impl thật trong test (M14 — A-11);
+ (M12/M14); conditional DI `client == null ?
+ Disabled : Impl` trong `main` (M23).
+- Fake repo + counters thay thế impl thật trong test (M14);
   `test/helpers/` chứa fakes dùng chung.
-- VM dialog-scoped + UI event một-lần qua broadcast stream
-  (M13/M16 — A-05, A-15). `Future.wait` sẽ là *construct mới* ở
-  Bài 3 — nền `Future`/`await` của D-09 (M05) là đủ.
+- VM dialog-scoped + UI event một lần qua broadcast stream
+ (M13/M16). `Future.wait` sẽ là *construct mới* ở
+ Bài 3 — nền `Future`/`await` của (M05) là đủ.
 - pubspec/dep pin + `flutter pub get` (M01 toolchain, đã dùng
   từ M14 `rxdart`/M23 `supabase_flutter`).
 
-## Mental model mới — "UI không chạm plugin trực tiếp" (A-35, CORE)
+## Mental model mới — "UI không chạm plugin trực tiếp" (CORE)
 
 ```text
   Widget            ViewModel          Contract              Impl            Plugin        OS
@@ -109,7 +109,7 @@ plugin tồn tại.
 
 | Construct | Vai trò |
 |---|---|
-| `kIsWeb` (`package:flutter/foundation.dart`) | **hằng `const` biên dịch** — compiler thế giá trị *trước khi* build (trong `if (kIsWeb)` nhánh chết bị xoá hẳn). Trong service này nó xuất hiện dạng **giá trị**: `return !kIsWeb` = "không platform impl nào resolve được → granted, *trừ* web → denied" (D-47 — mới). Khác `Platform.isAndroid` của `dart:io`: runtime check, và `dart:io` không tồn tại trên web |
+| `kIsWeb` (`package:flutter/foundation.dart`) | **hằng `const` biên dịch** — compiler thế giá trị *trước khi* build (trong `if (kIsWeb)` nhánh chết bị xoá hẳn). Trong service này nó xuất hiện dạng **giá trị**: `return !kIsWeb` = "không platform impl nào resolve được → granted, *trừ* web → denied" (mới). Khác `Platform.isAndroid` của `dart:io`: runtime check, và `dart:io` không tồn tại trên web |
 | `?` nullable + `!= null` gate | `resolvePlatformSpecificImplementation<T>()` trả `null` trên platform không khớp generic — mẫu "hỏi plugin có impl Android không" (chi tiết Bài 2) |
 | `Future<bool>` trả `?? true` | plugin trả `null` (platform cũ không cần quyền) → mặc định granted |
 | `import '…/foo.dart' as tz` | prefix import cho `timezone` — hai file `data/latest_all.dart` + `timezone.dart` cùng prefix `tz` (Bài 2) |
@@ -201,7 +201,7 @@ thiếu Notification API), còn `zonedSchedule` trên web throw
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
 |---|---|
 | `pubspec.yaml` — 5 pin `flutter_local_notifications`/`package_info_plus`/`timezone`/`flutter_timezone`/`share_plus` | learner pin y hệt version |
-| `lib/services/local_notification_service.dart` | contract + impl — ranh giới A-35 nguyên mẫu (Bài 2 port verbatim) |
+| `lib/services/local_notification_service.dart` | contract + impl — ranh giới nguyên mẫu (Bài 2 port verbatim) |
 | `lib/core/app_dependency_scope.dart` — `Provider<LocalNotificationService>.value` | service đăng ký theo *kiểu contract* như mọi repo (Bài 4) |
 | `android/app/src/main/AndroidManifest.xml` dòng 2–3 + receiver `ScheduledNotification(Boot)Receiver` | manifest copy verbatim — hai permission + hai receiver |
 
@@ -292,7 +292,7 @@ nguyên: chưa file Dart nào import plugin — bước này chỉ đặt nền.
    khai báo là có, không cần hỏi.
 3. **`kIsWeb` là hằng, không phải hàm.** `const kIsWeb` được
    compiler thế bằng `true`/`false` *trước khi* build — trong
-   `if (kIsWeb) …` nhánh chết bị xoá hẳn (D-47). Nhưng đừng nhầm:
+ `if (kIsWeb) …` nhánh chết bị xoá hẳn. Nhưng đừng nhầm:
    `flutter_local_notifications` đi kèm **web impl federated** —
    `initialize()`/`cancel()` trên web chạy được (initialize trả
    `false` khi trình duyệt thiếu Notification API — không throw),
@@ -334,14 +334,14 @@ milestone là `NOT_PERFORMED` được ghi thành warning riêng (Bài 6).
 ## Lỗi hay gặp
 
 1. **Cho rằng khai manifest = có quyền** — `POST_NOTIFICATIONS` chỉ
-   là điều-kiện-để-được-xin; OS vẫn hỏi user lúc chạy.
+   là điều kiện để được xin; OS vẫn hỏi user lúc chạy.
 2. **Dùng `Platform.isAndroid` trên code chạy web** — `dart:io`
    không tồn tại trên web → lỗi biên dịch; `kIsWeb`/`defaultTarget-
-   Platform` (foundation) mới là API đúng tầng (D-47).
+ Platform` (foundation) mới là API đúng tầng.
 3. **Đặt receiver sai package** — class name của receiver phải
    verbatim `com.dexterous.flutterlocalnotifications.*`; đổi chữ
    nào là OS không tìm thấy class → notification mất sau reboot.
-4. **Nghĩ permission là một-lần-vĩnh-viễn** — user có thể thu hồi
+4. **Nghĩ permission là một lần vĩnh viễn** — user có thể thu hồi
    trong Settings của OS bất cứ lúc nào; app phải query lại mỗi
    lần mở settings (Bài 3 — `hasPermission` trong `Future.wait`).
 
@@ -402,7 +402,7 @@ thật: impl bất kỳ thoả contract thay thế được — call-site đứn
 - **Hỏi:** vì sao `context.read<LocalNotificationService>()` (Bài
   4) trả được impl plugin? — **Đáp:** đăng ký theo kiểu *contract*
   `Provider<LocalNotificationService>.value` — widget hỏi interface,
-  scope trả bất kỳ impl nào đã đặt (F-21/A-07 reuse).
+ scope trả bất kỳ impl nào đã đặt (reuse).
 - **Hỏi:** `kIsWeb` khác `Platform.isAndroid` ở hai điểm nào? —
   **Đáp:** (1) `kIsWeb` là `const` biên dịch → nhánh chết bị xoá
   (tree-shake); (2) `Platform` thuộc `dart:io` — không tồn tại
@@ -414,7 +414,7 @@ thật: impl bất kỳ thoả contract thay thế được — call-site đứn
 - **Hỏi:** vì sao test dùng fake counters thay vì mở notification
   thật? — **Đáp:** unit/widget test không có OS; deterministic
   counters (`scheduleCount`, `lastHour`) assert được ý định đúng
-  mà không cần thiết bị (A-11 áp cho service).
+ mà không cần thiết bị (áp cho service).
 
 ## Ta cố ý chưa thêm
 

@@ -1,6 +1,6 @@
 ---
 title: "Bài 01 — Nền móng đủ: 50 asset, `AppAssets`/`OnboardingTokens` verbatim, l10n đồng bộ"
-description: "Trước khi sửa bất kỳ pixel nào, sweep cuối bắt đầu bằng nền móng: ship đủ 50 file `assets/images/` của senior; `app_assets.dart` verbatim 45 const (kể cả ~10 const senior-ship-nhưng-không-reference — byte-parity); `onboarding_design_tokens.dart` verbatim (`OnboardingTokens` delegate→`AppTokens`, không redeclare literal); +11 ARB key senior, −2 dead key learner; `gen-l10n` regen. Mental model mới A-40: quy trình đối chiếu senior — đọc → diff → port → verify. +0 test: 309/309."
+description: "Trước khi sửa bất kỳ pixel nào, sweep cuối bắt đầu bằng nền móng: ship đủ 50 file `assets/images/` của senior; `app_assets.dart` verbatim 45 const (kể cả ~10 const senior ship nhưng không reference — byte-parity); `onboarding_design_tokens.dart` verbatim (`OnboardingTokens` delegate→`AppTokens`, không redeclare literal); +11 ARB key senior, −2 dead key learner; `gen-l10n` regen. Mental model mới : quy trình đối chiếu senior — đọc → diff → port → verify. +0 test: 309/309."
 sidebar:
   order: 1
   label: Nền móng assets/tokens/l10n
@@ -16,7 +16,7 @@ Sau bài này bạn sẽ:
   **nền móng** (asset, token, l10n) trước khi đụng vào bất kỳ
   widget nào — nếu nền còn thiếu, mọi file UI port sau đó sẽ
   thiếu tham chiếu và build đỏ.
-- Nắm được **quy trình đối chiếu senior (A-40)**: đọc file
+- Nắm được **quy trình đối chiếu senior **: đọc file
   senior → `diff` → port verbatim (sau rename + comment VI) →
   verify bằng `analyze`/`test`/`grep` — và áp dụng nó cho cả
   asset file lẫn file Dart.
@@ -25,9 +25,9 @@ Sau bài này bạn sẽ:
   "vừa đủ dùng" mà là **byte-parity** — learner và senior nhìn
   cùng một catalogue.
 - Thấy được mẫu **token-delegate**: `OnboardingTokens` chỉ định
-  nghĩa giá trị thật-sự-riêng; giá trị nào đã có ở `AppTokens`
+  nghĩa giá trị thật sự riêng; giá trị nào đã có ở `AppTokens`
   thì `static const x = AppTokens.y` — một literal chỉ sống ở
-  một nơi (A-38).
+ một nơi.
 - Biết cộng/trừ ARB key có kỷ luật: **+11 key senior** (menu
   level + settings chrome), **−2 dead key learner**
   (`questionCounter`, `gameRoomTitle` — zero usage), regen
@@ -84,14 +84,14 @@ Bạn **không cần** ôn lại — nhưng bài này đứng trên vai của:
 
 | Đã học | Ở đâu | Nhắc ngắn |
 |---|---|---|
-| **A-38** Design tokens là nguồn-sự-thật duy nhất | M28·01 | `AppTokens` chứa mọi literal visual; widget không tự viết `Color(0xFF…)` |
-| **A-13** Teaching-scaffold lifecycle | M12 trở đi | Interim code (subset `AppAssets` "vừa đủ") có vòng đời: xuất hiện → phục vụ → retire khi full-version đến |
-| **D-31** ARB file = nguồn-sự-thật localization | M17 | Key/placeholder/metadata sống ở `app_en.arb`/`app_vi.arb`; `AppLocalizations` là *generated* — sửa ARB xong phải `flutter gen-l10n` regen, không sửa tay |
-| **F-25** `AppLocalizations.of(context)` | M17 | Widget đọc chữ qua accessor generated — key mới chỉ dùng được sau khi regen |
-| **D-01/D-04** `static const` catalogue | M01, M03 | `AppAssets` là class chỉ-chứa-const — path tập trung, typo = compile error thay vì runtime "asset not found" |
-| **A-13** dead-key hygiene | M23·07 | Key không còn ai dùng phải được xoá — nếu không ARB phình và 2 ngôn ngữ lệch nhau (grep zero-usage trước khi xoá) |
+| Design tokens là nguồn sự thật duy nhất | M28·01 | `AppTokens` chứa mọi literal visual; widget không tự viết `Color(0xFF…)` |
+| Teaching-scaffold lifecycle | M12 trở đi | Interim code (subset `AppAssets` "vừa đủ") có vòng đời: xuất hiện → phục vụ → retire khi full-version đến |
+| ARB file = nguồn sự thật localization | M17 | Key/placeholder/metadata sống ở `app_en.arb`/`app_vi.arb`; `AppLocalizations` là *generated* — sửa ARB xong phải `flutter gen-l10n` regen, không sửa tay |
+| `AppLocalizations.of(context)` | M17 | Widget đọc chữ qua accessor generated — key mới chỉ dùng được sau khi regen |
+| `static const` catalogue | M01, M03 | `AppAssets` là class chỉ chứa const — path tập trung, typo = compile error thay vì runtime "asset not found" |
+| dead-key hygiene | M23·07 | Key không còn ai dùng phải được xoá — nếu không ARB phình và 2 ngôn ngữ lệch nhau (grep zero-usage trước khi xoá) |
 
-## Mental model mới — "đọc → diff → port verbatim → verify" (A-40, NORMAL)
+## Mental model mới — "đọc → diff → port verbatim → verify" (NORMAL)
 
 Toàn bộ milestone này xoay quanh **một quy trình** lặp lại cho
 mọi file:
@@ -137,7 +137,7 @@ DIFF có 3 kết quả:
 Mental model phụ của bài này: **"catalogue phải byte-parity"**.
 `AppAssets` không phải kiểu "thêm const khi cần" — nó là danh
 mục tài nguyên của app; senior liệt kê 45 const kể cả ~10 const
-trỏ tới file senior-ship-nhưng-không-dùng (icon `cart.svg`,
+trỏ tới file senior ship nhưng không dùng (icon `cart.svg`,
 `gamepad*.svg`, `trophy-detail-*.svg`... — dự phòng cho feature
 tương lai). Ship nguyên catalogue có nghĩa: về sau, mọi file
 senior nào dùng asset ấy đều port được ngay, không cần quay
@@ -147,9 +147,9 @@ lại vá `app_assets.dart`.
 
 | Dart | Vai trò ở đây | Xem lại |
 |---|---|---|
-| `static const String x = '...'` | `AppAssets` catalogue — path là compile-time const | D-04 |
+| `static const String x = '...'` | `AppAssets` catalogue — path là compile-time const | |
 | `static const X = OtherClass.y` | **Const-delegate**: `OnboardingTokens.grey600 = AppTokens.qzdsBlack600` — alias không copy literal | mới tại đây |
-| `static X get y => ...` | Token động (TextStyle/Gradient/Decoration) — getter vì không const được | D-04 |
+| `static X get y => ...` | Token động (TextStyle/Gradient/Decoration) — getter vì không const được | |
 | `dart format`, `dart analyze` | Verify sau port | đã dùng |
 
 ## Flutter cần dùng
@@ -157,8 +157,8 @@ lại vá `app_assets.dart`.
 | Flutter | Vai trò ở đây | Xem lại |
 |---|---|---|
 | `assets:` section trong `pubspec.yaml` | Khai báo theo **thư mục** — 5 dòng đã đủ cho 50 file | đã có từ M14 |
-| `AssetImage`/`Image.asset`/`SvgPicture.asset` | Đọc asset qua `AppAssets.*` const | F-42 từ M28 |
-| `flutter gen-l10n` | Regen `lib/l10n/*.dart` sau khi sửa ARB | F-25 |
+| `AssetImage`/`Image.asset`/`SvgPicture.asset` | Đọc asset qua `AppAssets.*` const | từ M28 |
+| `flutter gen-l10n` | Regen `lib/l10n/*.dart` sau khi sửa ARB | |
 
 ## Ví dụ độc lập — delegate-token không copy literal
 
@@ -210,10 +210,26 @@ void main() {
 | File senior @ `main@c8eb860` | Dùng để chứng minh |
 |---|---|
 | `assets/images/**` (50 file, 5 dir) | nguồn copy — `pubspec.yaml` khai theo dir nên không cần sửa pubspec |
-| `lib/core/app_assets.dart` | **verbatim** — 45 `static const`, kể cả ~10 const senior-không-reference |
-| `lib/core/onboarding_design_tokens.dart` | **verbatim** — delegate→`AppTokens` mẫu A-38 hoàn chỉnh |
+| `lib/core/app_assets.dart` | **verbatim** — 45 `static const`, kể cả ~10 const senior không reference |
+| `lib/core/onboarding_design_tokens.dart` | **verbatim** — delegate→`AppTokens` mẫu hoàn chỉnh |
 | `lib/l10n/app_en.arb`/`app_vi.arb` | nguồn +11 key; learner trừ 2 dead key |
 
+:::tip[Suy ra trước — chạy mini "đọc→diff→port→verify" trên một file]
+Quy trình ở mental model chỉ có giá trị nếu bạn *vận hành* nó — chạy
+trước một vòng mini trên `app_assets.dart`, không cần mở repo senior:
+
+1. **Đọc.** `AppAssets` hiện có 8 const. Dự đoán senior có bao
+   nhiêu — và *vì sao đoán thế*? (Gợi ý: đếm asset dir đã khai báo
+   trong `pubspec.yaml`, mỗi file asset cần một const).
+2. **Diff.** Nếu senior có 45 const còn learner 8: nêu ra cách phân
+   loại 37 const thiếu — (a) widget bạn sẽ dùng ở bài sau, (b) const
+   senior ship mà *không file nào tham chiếu*. Có nên bỏ qua (b)
+   không? Viện dẫn một rủi ro cụ thể của "port chọn lọc".
+3. **Port.** Viết signature/const cho *một* entry bạn tự chọn — trước
+   khi xem bản verbatim.
+4. **Verify.** Bạn sẽ kiểm chứng parity bằng gì — đếm const, diff
+   path, hay build? Nêu *một* kiểm chứng bạn sẽ chạy sau Bước 3.
+:::
 ## Build it step by step
 
 ### Bước 1 — Diff nền móng trước khi đụng vào code
@@ -261,7 +277,7 @@ diff -rq ../flutter-accelerator-ai/assets/images assets/images
 
 Đây là lý do senior khai `dir/` thay vì từng file: thêm asset
 chỉ cần thả file vào đúng thư mục — không đụng pubspec. Năm
-thư mục mới có thật-sự ở batch này: `avatars/` (avatar mặc
+thư mục mới có thật sự ở batch này: `avatars/` (avatar mặc
 định) và `leaderboard/` (medal SVG, score coin, 7 avatar PNG,
 current-user accent) — chuẩn bị cho Bài 03.
 
@@ -284,14 +300,14 @@ class AppAssets {
 }
 ```
 
-:::caution[Nhìn-kỹ: ~10 const senior không tham chiếu]
+:::caution[Nhìn kỹ: ~10 const senior không tham chiếu]
 `iconCart`, `coinMid`, `gamepad`, `gamepadDetail`, `trophyDeco`,
 `trophyDetail1/2/3`, `trophyVector`, `leaderboardCurrentAccent`
 — grep toàn senior `lib/` không một chỗ dùng. Đây là asset
-dự-phòng senior ship sẵn. Sweep **vẫn port verbatim**: catalogue
+dự phòng senior ship sẵn. Sweep **vẫn port verbatim**: catalogue
 là contract, byte-parity là mục tiêu; quyết định "dùng hay
 không" là của senior, không phải của sweep. Đây là ví dụ đầu
-tiên của A-40: *verbatim là mặc định, mọi "tối ưu hoá" cá nhân
+ tiên của kỷ luật sweep: *verbatim là mặc định, mọi "tối ưu hoá" cá nhân
 là divergence*.
 :::
 
@@ -324,9 +340,9 @@ class OnboardingTokens {
 > `AppTokens` instead of redeclaring the literal; only
 > genuinely onboarding-specific values are defined here."*
 
-Đây chính là A-38 phiên bản "nhiều-file-token": một dự án có
+Đây chính là phiên bản "nhiều file token": một dự án có
 thể có 2 token class, nhưng **mỗi giá trị vẫn chỉ sống ở một
-nơi** — `OnboardingTokens` là *view* chuyên-ngành nhìn vào
+nơi** — `OnboardingTokens` là *view* chuyên ngành nhìn vào
 `AppTokens`, không phải nguồn thứ hai.
 
 ### Bước 5 — ARB: +11 key senior, −2 dead key, regen
@@ -362,11 +378,11 @@ flutter test       # 309/309 — không test mới, không test hỏng
 ```
 
 :::note[Vì sao +0 test là đúng, không phải thiếu]
-Nền móng là *được-tham-chiếu*: `AppAssets`/`OnboardingTokens`/
+Nền móng là *được tham chiếu*: `AppAssets`/`OnboardingTokens`/
 ARB key không có hành vi riêng để test — hành vi của chúng sẽ
 được test qua widget dùng chúng ở Bài 02–06. Checkpoint 309/309
 nghĩa là "thêm nền mà không phá gì đang xanh" — đúng chuẩn của
-một bài chuẩn-bị.
+một bài chuẩn bị.
 :::
 
 ## Hiểu code — 6 chi tiết dễ trượt
@@ -375,7 +391,7 @@ một bài chuẩn-bị.
 Khai báo theo `dir/` (có dấu `/` cuối) nghĩa là "bundle mọi
 file trong thư mục này". Senior chọn convention này ngay từ
 đầu vì biết asset sẽ lớn dần. Nếu khai từng file, mỗi asset
-mới = một dòng pubspec mới = một điểm-quên.
+mới = một dòng pubspec mới = một điểm quên.
 
 **2. `static const Color grey600 = AppTokens.qzdsBlack600` —
 const alias được không?** — Được. `const` cho phép vế phải là
@@ -393,7 +409,7 @@ không const.
 Không sửa tay. `gen-l10n` viết lại toàn bộ `lib/l10n/*.dart`;
 key đã xoá sẽ biến mất khỏi `AppLocalizations`. Nếu code nào
 còn gọi `l10n.questionCounter` → **compile error ngay** — đây
-là điểm mạnh của generated-accessor: dead-key-thật không thể
+là điểm mạnh của generated-accessor: dead key thật không thể
 tồn tại lén.
 
 **5. Hai key xoá (`questionCounter`, `gameRoomTitle`) vì sao
@@ -404,7 +420,7 @@ khi xoá. Quy tắc: dead ≠ "tôi nghĩ không ai dùng"; dead =
 **6. Byte-parity ≠ bit-identical mọi thứ** — asset binary là
 byte-parity; file Dart là "verbatim sau rename+comment-VI";
 ARB là "key-parity, value có thể khác theo ngôn ngữ". Ba mức
-khác nhau, cùng một nguyên tắc: *không-improve-lén*.
+khác nhau, cùng một nguyên tắc: *không improve lén*.
 
 ## Chạy và quan sát
 
@@ -433,7 +449,7 @@ flutter analyze && flutter test
 | Thử | Dự đoán | Thực tế |
 |---|---|---|
 | Xoá `assets/images/leaderboard/medal-gold.svg`, giữ const | App crash khi nào? | Không crash lúc build — chỉ lỗi **runtime** khi widget `Image.asset`/`SvgPicture` load path đó (Bài 03 mới dùng tới). Compile-time catalogue không kiểm tra file tồn tại — đó là giá của string-path |
-| Đổi `OnboardingTokens.grey600` thành literal riêng `0xFF434343` | Ai vỡ? | Không ai vỡ compile; nhưng màu hiển thị lệch 1 step so với mọi `AppTokens.qzdsBlack600` khác — "gần giống" là divergence khó-phát-hiện nhất. Delegate tồn tại để ngăn đúng kiểu trôi này |
+| Đổi `OnboardingTokens.grey600` thành literal riêng `0xFF434343` | Ai vỡ? | Không ai vỡ compile; nhưng màu hiển thị lệch 1 step so với mọi `AppTokens.qzdsBlack600` khác — "gần giống" là divergence khó phát hiện nhất. Delegate tồn tại để ngăn đúng kiểu trôi này |
 | Xoá `questionCounter` khỏi ARB nhưng **không** `gen-l10n` | Analyze báo gì? | Generated `AppLocalizations` vẫn còn getter → analyze vẫn sạch → key "ma": ARB nói đã xoá, Dart vẫn expose. Regen là bước bắt buộc của mọi chỉnh ARB |
 
 ## Lỗi hay gặp
@@ -443,14 +459,14 @@ flutter analyze && flutter test
 | "Unable to load asset: assets/images/…" runtime | file thiếu trong `assets/` hoặc pubspec dir không cover | `diff -rq` cây asset; kiểm path const khớp tên file (case-sensitive trên CI) |
 | `The getter 'menuLevelShort' isn't defined` | ARB có key nhưng quên `gen-l10n` | `flutter gen-l10n` rồi analyze lại |
 | Copy asset rồi `diff -rq` vẫn báo khác | copy qua tool nén/đổi tên (Windows xử lý unicode tên file) | copy nguyên thư mục, không qua archive; kiểm `git status` thấy file thật |
-| Muốn "dọn" 10 const unused khỏi `AppAssets` | nhầm catalogue-const với dead-code | const-unused trong catalogue là contract byte-parity — giữ nguyên (A-40) |
+| Muốn "dọn" 10 const unused khỏi `AppAssets` | nhầm catalogue-const với dead-code | const-unused trong catalogue là contract byte-parity — giữ nguyên |
 
 ## Tự làm
 
 **PREDICT** — Senior `app_assets.dart` có 45 const; một dev
-"cleanup" xoá 10 const không-ai-tham-chiếu rồi commit. Tuần
+"cleanup" xoá 10 const không ai tham chiếu rồi commit. Tuần
 sau, một file senior khác port về dùng `AppAssets.trophyDeco`.
-Chuyện gì xảy ra, và quy trình A-40 ngăn chuyện này bằng cách
+Chuyện gì xảy ra, và quy trình ngăn chuyện này bằng cách
 nào?
 
 :::note[Gợi ý]
@@ -464,7 +480,7 @@ Nghĩ theo hai lớp: (1) catalogue-as-contract vs code-as-usage;
 
 File port về sẽ **compile-error** (`'trophyDeco' isn't defined`)
 — phải quay lại vá `app_assets.dart`, và bản vá dễ lệch với
-senior (path đoán, tên const đoán). A-40 ngăn bằng nguyên tắc:
+senior (path đoán, tên const đoán). ngăn bằng nguyên tắc:
 catalogue port **verbatim**, quyết định giữ/bỏ const thuộc về
 senior; sweep không "tối ưu" catalogue. Xoá chỉ xảy ra khi
 senior xoá — lúc đó diff tiếp theo sẽ bắt được.
@@ -492,7 +508,7 @@ thúc bằng `gen-l10n && analyze && test`.)
 
 **PRODUCE** — Viết một script (bash hoặc PowerShell) in ra:
 (1) số file trong `assets/images/` của learner vs senior;
-(2) danh sách file senior-có-learner-không. Chạy nó trước và
+(2) danh sách file senior có learner không. Chạy nó trước và
 sau Bước 2.
 
 :::note[Gợi ý]
@@ -520,15 +536,15 @@ Sau Bước 2: `comm` in trống = parity.
 
 **H: Vì sao bài này +0 test mà vẫn là checkpoint hợp lệ?** —
 Vì nền móng không có hành vi riêng; hợp đồng của nó là "không
-phá gì đang xanh + mọi tham chiếu cần-thiết tồn tại". 309/309
+phá gì đang xanh + mọi tham chiếu cần thiết tồn tại". 309/309
 sau khi thêm 50 asset + 45 const + 11 key = nền sạch.
 
 **H: `OnboardingTokens` và `AppTokens` cùng tồn tại — hai
 nguồn token?** — Không. `OnboardingTokens` *delegate* mọi giá
-trị đã-có-sang `AppTokens` (`grey600 = AppTokens.qzdsBlack600`);
-nó chỉ *định nghĩa* giá trị chỉ-onboarding (`accentGreen500`,
+trị đã có sang `AppTokens` (`grey600 = AppTokens.qzdsBlack600`);
+nó chỉ *định nghĩa* giá trị chỉ onboarding (`accentGreen500`,
 `indicatorActiveWidth`…). Một giá trị = một nơi sống; hai class
-= hai *góc nhìn* vào một nguồn (A-38).
+= hai *góc nhìn* vào một nguồn.
 
 **H: "Verbatim" trong sweep nghĩa là gì, copy nguyên xi?** —
 Verbatim = nguyên bản **sau hai phép đổi được phép**: rename
@@ -544,7 +560,7 @@ documented.
 
 - **Không dùng asset mới ở bất kỳ widget nào** — catalogue và
   file chỉ *chuẩn bị*; người tiêu thụ đến ở Bài 02–06.
-- **Không đóng FR-31** — bài này thêm key và trừ 2 dead key;
+- **Không đóng ** — bài này thêm key và trừ 2 dead key;
   3 key-rename còn lại (`leaderboardSubtitle`→`menuLeaderboard
   EntrySubtitle`, `menuExpProgress`→`menuExpToNextLevel`,
   `notificationTimeTitle`→`notificationTimeSetting`) được xử
@@ -558,12 +574,12 @@ documented.
 
 - [x] `diff -rq` cây `assets/images/`: **50/50 khớp** senior.
 - [x] `lib/core/app_assets.dart`: **45 const verbatim** (kể cả
-      ~10 const senior-ship-nhưng-không-reference — byte-parity).
+      ~10 const senior ship nhưng không reference — byte-parity).
 - [x] `lib/core/onboarding_design_tokens.dart`: 84-dòng
       verbatim — `OnboardingTokens` delegate→`AppTokens`.
 - [x] ARB +11 key senior, −2 dead key (`questionCounter`,
       `gameRoomTitle`); `flutter gen-l10n` đã chạy.
 - [x] `flutter analyze` clean · `flutter test` **309/309**
       (+0, không hỏng) · `flutter build web` PASS.
-- [x] Mental model **A-40** áp dụng lần đầu: đọc → diff →
-      port verbatim → verify; không-improve-lén.
+- [x] Mental model áp dụng lần đầu: đọc → diff →
+      port verbatim → verify; không improve lén.

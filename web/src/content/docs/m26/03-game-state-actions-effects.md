@@ -1,6 +1,6 @@
 ---
 title: "Bài 3 · GameState + actions + effects — hợp đồng game-DRE"
-description: "Port `view_models/game/dre/`: `GameState` 13 field — `flowToken` thành state (A-32) thay VM field cũ; unmodifiable collections; `initial` + `copyWith`/`clear*` — + 13 `GameAction` / 7 `GameEffect` / 1 `GameAsyncOp` sealed + barrel `game_dre_contract.dart`. Files compile nhưng chưa ai dùng — scaffold của migration. +0 → 241."
+description: "Port `view_models/game/dre/`: `GameState` 13 field — `flowToken` thành state thay VM field cũ; unmodifiable collections; `initial` + `copyWith`/`clear*` — + 13 `GameAction` / 7 `GameEffect` / 1 `GameAsyncOp` sealed + barrel `game_dre_contract.dart`. Files compile nhưng chưa ai dùng — scaffold của migration. +0 → 241."
 sidebar:
   label: "Bài 3 · state + actions + effects"
   order: 3
@@ -11,7 +11,7 @@ sidebar:
 - Tạo `lib/view_models/game/dre/game_dre_state.dart` — `GameState`
   13 field (session model chuyển nhà từ `data/` sang `dre/`, đổi
   tên từ `GameSessionState` → `GameState` đúng senior); thêm field
-  `flowToken` **vào state** (A-32).
+ `flowToken` **vào state**.
 - Tạo `game_dre_action.dart` (13 variant), `game_dre_effect.dart`
   (7 variant), `game_dre_async_op.dart` (`GameSaveResult`),
   `game_dre_contract.dart` (barrel export).
@@ -39,26 +39,26 @@ Hai quyết định thiết kế cần đặt nền trước khi reducer xuất 
 Một: `flowToken` — bản trung gian giữ `_flowToken` như *field tay
 của VM* và guard delay chủ yếu bằng `phase`; senior đưa token vào
 **state** để reducer tự quyết "callback này còn hợp lệ không" bằng
-dữ-liệu, không bằng may-mắn-đúng-phase (A-32). Hai: effect —
+dữ liệu, không bằng may mắn đúng phase. Hai: effect
 `GameScheduleAnswerReveal(flowToken)` là *object mô tả một lời
 hẹn*, không chứa `Timer`/`Future` — reducer giữ purity và test
-được đồng bộ (F-33). Thứ tự file trước — consumer sau là cố ý:
+được đồng bộ. Thứ tự file trước — consumer sau là cố ý:
 contract phải compile sạch trước khi ai dùng.
 
 ## Bạn đã biết gì
 
 - `copyWith` + `clearSelectedAnswer`/`clearAudiencePercentiles`
-  flag (D-34 — khi field nullable, `?? this.x` không xoá được nên
+ flag (khi field nullable, `?? this.x` không xoá được nên
   cần cờ clear).
-- `sealed`/`final class` + `implements` (D-26/D-27);
-  `List/Map/Set.unmodifiable` wrapper (D-32/D-35); `export`
+- `sealed`/`final class` + `implements`;
+ `List/Map/Set.unmodifiable` wrapper; `export`
   barrel (đã gặp ở contract files).
-- `flowToken`-như-`_requestId`: loại kết-quả-cũ bằng con số tăng
-  đơn điệu (M23 — D-42); khác `_isSyncing` từ-chối-vào (A-29).
+- `flowToken`-như-`_requestId`: loại kết quả cũ bằng con số tăng
+ đơn điệu (M23); khác `_isSyncing` từ chối vào.
 - `DreAction`/`DreEffect`/`DreAsyncOp` markers + `DreResult`
-  (Bài 2 — D-46, F-34).
+ (Bài 2).
 
-## Mental model mới — "token trong state; effect là ý định" (A-32 + F-33, CORE)
+## Mental model mới — "token trong state; effect là ý định" (+, CORE)
 
 ```text
 BẢN TRUNG GIAN (M19–M25):
@@ -90,10 +90,10 @@ con số; không có "field VM" và "state" lệch nhau được nữa.
 
 | Construct | Vai trò |
 |---|---|
-| `sealed class GameAction implements DreAction` | sealed family gắn marker — D-26 + D-46 |
+| `sealed class GameAction implements DreAction` | sealed family gắn marker — + |
 | `final class GameAnswerRevealElapsed extends GameAction { final int flowToken; }` | action mang payload — token là *data đi cùng intent* |
 | `List.unmodifiable(...)`/`Map.unmodifiable`/`Set.unmodifiable` trong ctor | defensive view — state không bị sửa từ ngoài |
-| `copyWith({…, bool clearSelectedAnswer = false, bool clearAudiencePercentiles = false})` | cờ clear cho field nullable — D-34 |
+| `copyWith({…, bool clearSelectedAnswer = false, bool clearAudiencePercentiles = false})` | cờ clear cho field nullable — |
 | `factory GameState.initial({required timePerQuestion})` | named ctor — điểm khởi đầu duy nhất của session |
 | `export 'game_dre_*.dart'` | barrel — một import cho cả contract |
 
@@ -144,20 +144,20 @@ void main() {
 }
 ```
 
-Đây chính là ý tưởng `_requestId` (D-42) dời vào state: stale là
-**dữ-liệu lệch**, không phải lỗi cần bắt.
+Đây chính là ý tưởng `_requestId` dời vào state: stale là
+**dữ liệu lệch**, không phải lỗi cần bắt.
 
 ## Android / Compose bridge
 
 **SIMILARITY — `requestId`/`job token` trong `UiState`.** Giữ một
-int tăng đơn điệu trong state và drop kết-quả-cũ khi token lệch
+int tăng đơn điệu trong state và drop kết quả cũ khi token lệch
 giống pattern "latest wins" của `collectLatest`/job-cancellation
-— chỉ khác ở đây huỷ bằng so-sánh data, không huỷ coroutine.
+— chỉ khác ở đây huỷ bằng so sánh data, không huỷ coroutine.
 
 **IMPORTANT DIFFERENCE — action mang token, state giữ token mới
 nhất.** Trên Android thường giữ `job` và `cancel()`; ở đây không
-huỷ `Future` (đơn-luồng, delay không hủy được sau khi lên lịch) —
-thay vào đó reducer bỏ qua action mang token cũ. Huỷ-ảo bằng data.
+huỷ `Future` (đơn luồng, delay không hủy được sau khi lên lịch) —
+thay vào đó reducer bỏ qua action mang token cũ. Huỷ ảo bằng data.
 
 **DO NOT ASSUME — `List.unmodifiable` ≠ immutable type.** Nó là
 view ném `UnsupportedError` khi mutate — copyWith luôn tạo list
@@ -172,6 +172,60 @@ mới thay vì sửa tại chỗ.
 | `lib/view_models/game/dre/game_dre_effect.dart` | 8 variant senior; learner **7** — trừ `GameShareResult` (M27) |
 | `lib/view_models/game/dre/game_dre_async_op.dart` | `GameSaveResult{earnedAmount, isWin, questionCount}` — verbatim |
 | `lib/view_models/game/dre/game_dre_contract.dart` | barrel 4 dòng — verbatim |
+
+:::tip[Suy luận trước khi đọc code — DERIVE: kiểm kê contract]
+Bốn file sắp port là *contract* của toàn bộ DRE — đừng port mù. Tự
+kiểm kê bốn rổ trước (giấy / file nháp), dùng chính VM trung gian
+733 dòng mà Bài 1–2 đã mổ:
+
+1. **STATE — cái gì phải tồn tại?** Liệt kê field mà một trạng thái
+   game phải mang để UI render được mọi màn hình đã build tới M25:
+   câu hỏi hiện tại + index, tiền, timer, answer đã chọn, trạng thái
+   reveal, lifeline còn/dùng, kết quả… Và — theo model trên — field
+   nào thay thế `_flowToken` tay của VM?
+2. **ACTION — cái gì *xin* reducer chuyển trạng thái?** Với mỗi hành
+   động user/hệ thống bạn biết (tap đáp án, hết giờ, dùng 50:50, kết
+   thúc game…), viết một tên action + payload cần mang. Nhớ luật:
+   action chỉ *mô tả sự việc*, không chứa logic.
+3. **EFFECT — cái gì phải *rời* phần reduce thuần?** Những việc nào
+   reducer không được tự làm (đụng thời gian, I/O, điều hướng)? Liệt
+   kê chúng như *dữ liệu ý định*.
+4. **OP — việc async nào phải chạy *sau* reduce?** Từ các effect ở
+   (3), nhóm những cái thành một tác vụ async duy nhất nếu chúng cùng
+   phục vụ một mục đích.
+5. **Ranhm giới ai-gọi-ai.** Ai dispatch action? Ai nhận effect? Ai
+   chạy op? Vẽ một mũi tên một chiều cho mỗi quan hệ — nếu thấy mũi
+   tên ngược (state gọi VM, effect gọi reducer) thì đánh dấu lại.
+
+Sau đó mới mở các bước bên dưới và đối chiếu — đừng cố đoán trúng
+từng tên variant của senior; đoán đúng *loại* và *vai trò* là đủ.
+
+<details>
+<summary>Đối chiếu sau khi tự kiểm kê</summary>
+
+1. `GameState` 13 field: phase, questionIndex, earnings,
+   remainingSeconds, selectedAnswer, revealToken→`flowToken`,
+   lifeline flags, fiftyFiftyRemoved, audiencePercentiles, hasSaved…
+   — field token chính là `flowToken` bạn đoán ở (1).
+2. `GameAction` 13 variant: `GameStarted`, `GameAnswerSubmitted`,
+   `GameAnswerRevealElapsed{flowToken}`, `GameTimerTicked`,
+   `GameFeatureSelected{type}`, `GameWalkAwayConfirmed`,
+   `GameBackToMenuRequested`… — mỗi variant là *một sự việc đã xảy
+   ra hoặc được xin*, không phải lệnh.
+3. `GameEffect` 7 variant: `GameStartTimer`, `GamePauseTimer`,
+   `GameStopTimer`, `GameScheduleAnswerReveal{token}`,
+   `GameScheduleExplanation`, `GameScheduleAIAssistant`,
+   `GameNavigateToMenu` — toàn là *ý định*, không phải tác dụng phụ
+   đã chạy.
+4. `GameAsyncOp` gom phần async sau reduce — đúng một variant
+   `GameSaveResult{earnedAmount, isWin, questionCount}` là op lưu
+   kết quả một-lần.
+5. UI/VM dispatch action → reducer (state,action)→(state,effects)
+   → VM bridge nhận effect → op chạy → op phát action mới. Một
+   chiều duy nhất: không có mũi tên ngược.
+
+</details>
+:::
 
 ## Build it step by step
 
@@ -319,14 +373,14 @@ export 'game_dre_state.dart';
 ## Hiểu code — bốn chi tiết dễ trượt
 
 1. **`flowToken` trong state ≠ field VM.** Token đi theo `copyWith`
-   như mọi field — reducer tăng tại mọi transition tạo-delay
-   (Bài 4); `*Elapsed` chỉ mang con số đã chụp, so-sánh là việc của
-   reducer (A-32). Không còn "field VM" lệch "state".
+   như mọi field — reducer tăng tại mọi transition tạo delay
+   (Bài 4); `*Elapsed` chỉ mang con số đã chụp, so sánh là việc của
+ reducer. Không còn "field VM" lệch "state".
 2. **Vì sao `GameScheduleAnswerReveal(flowToken)` chứ không phải
    `Timer`:** reducer phải thuần — không `dart:async` Timer, không
    delay; "hẹn 1500ms" là việc của bridge (Bài 5). Effect chỉ nói
-   *hẹn cái gì với token nào* (F-33).
-3. **`List.unmodifiable` trong ctor chặn sửa-ngầm:** caller truyền
+ *hẹn cái gì với token nào*.
+3. **`List.unmodifiable` trong ctor chặn sửa ngầm:** caller truyền
    `questions.first.options` — data bank; view unmodifiable chặn
    ai đó mutate state từ ngoài. Muốn đổi → `copyWith` list mới.
 4. **`GameState` KHÔNG `==`:** `!=` trong dispatch (Bài 2) là
@@ -358,8 +412,8 @@ Và `flutter analyze` có báo unused class cho `GameState` không?
 
 - `flowToken == 0`, `selectedAnswer == null` — `copyWith` chỉ đụng
   field được truyền; token chỉ đổi khi reducer truyền
-  `flowToken:` (Bài 4). Đây là điểm mấu-chốt: dialog đóng không
-  tự động vô-hiệu delay đã hẹn — guard khác (`dialogState is! …`)
+  `flowToken:` (Bài 4). Đây là điểm mấu chốt: dialog đóng không
+  tự động vô hiệu delay đã hẹn — guard khác (`dialogState is! …`)
   mới bắt ca đó (Bài 6, regression test 2).
 - Analyzer **không** flag — class top-level không được import vẫn
   hợp lệ; "unused" chỉ áp cho import/variable/private-element.
@@ -379,7 +433,7 @@ Và `flutter analyze` có báo unused class cho `GameState` không?
    session-model `GameState` sống trong `dre/`.
 5. **Tưởng `flowToken` reset về 0 mỗi ván** — `_startGame` (Bài 4)
    dùng `state.flowToken + 1` trên initial mới: token **monotonic
-   qua restarts**, vô-hiệu mọi delay còn lửng của ván trước.
+   qua restarts**, vô hiệu mọi delay còn lửng của ván trước.
 
 ## Tự làm — PRODUCE
 
@@ -420,13 +474,13 @@ vẫn "hợp lệ token" sau khi dialog đóng — Bài 4–5 sẽ thấy guard
   *stale* — callback của flow cũ đến khi flow mới đã tăng token.
 - **Hỏi:** `GameSaveResult` là effect hay asyncOp, vì sao? —
   **Đáp:** asyncOp — nó cần `await` IO với snapshot post-reduce;
-  effect là ý-định-đồng-bộ (timer/nav) fan qua stream (F-33/F-34).
+ effect là ý định đồng bộ (timer/nav) fan qua stream.
 - **Hỏi:** vì sao file chưa ai import vẫn được giữ? — **Đáp:**
   scaffold — contract phải tồn tại trước reducer (Bài 4) và VM
   (Bài 5); analyze sạch vì analyzer không flag unused top-level
   class.
 - **Hỏi:** `GameShareRequested`/`GameShareResult` ở đâu? —
-  **Đáp:** cố ý thiếu — M27/FR-33; reducer switch Bài 4 exhaustive
+ **Đáp:** cố ý thiếu — M27/; reducer switch Bài 4 exhaustive
   trên 13 variant hiện có.
 
 ## Ta cố ý chưa thêm
@@ -436,7 +490,7 @@ vẫn "hợp lệ token" sau khi dialog đóng — Bài 4–5 sẽ thấy guard
 - Xoá `GameSessionState` khỏi `data/` — **Bài 5** (vẫn đang được
   VM cũ dùng).
 - Share plumbing `GameShareRequested`/`GameShareResult`/
-  `GameShareResultEvent`/`shareResult` — **M27** (FR-33).
+ `GameShareResultEvent`/`shareResult` — **M27**.
 - Platform extras — **M27**; visual parity — **M28**;
   `MenuDialogLayer` — **M29**.
 
@@ -449,4 +503,4 @@ vẫn "hợp lệ token" sau khi dialog đóng — Bài 4–5 sẽ thấy guard
 - [ ] `flutter analyze` sạch; `flutter test` **241/241** (chưa ai
   import — scaffold).
 - [ ] Liệt kê được 13 action / 7 effect / 1 asyncOp; giải thích
-  token-in-state vs VM field và effect-là-data.
+  token-in-state vs VM field và effect là data.

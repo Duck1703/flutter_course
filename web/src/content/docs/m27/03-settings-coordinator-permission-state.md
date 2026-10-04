@@ -1,6 +1,6 @@
 ---
 title: "Bài 3 · Coordinator + permission-as-state — bật thông báo thật"
-description: "SettingsNotificationCoordinator verbatim — enable/disable/updateTime + `_saveSettingsWithRollback` giữ lỗi gốc (A-36). SettingsViewModel: `notificationService` + `_loadAppVersion` seam, `_hasNotificationPermission` là state OS-owned, `effectiveNotificationEnabled` = flag AND permission (A-37), `loadSettings` Future.wait×3, `_toggleNotifications` hai nhánh grant/deny, snackbar `notificationPermissionRequired`. +5 test qua fake counters → 259."
+description: "SettingsNotificationCoordinator verbatim — enable/disable/updateTime + `_saveSettingsWithRollback` giữ lỗi gốc. SettingsViewModel: `notificationService` + `_loadAppVersion` seam, `_hasNotificationPermission` là state OS-owned, `effectiveNotificationEnabled` = flag AND permission, `loadSettings` Future.wait×3, `_toggleNotifications` hai nhánh grant/deny, snackbar `notificationPermissionRequired`. +5 test qua fake counters → 259."
 sidebar:
   label: "Bài 3 · coordinator + permission state"
   order: 3
@@ -10,16 +10,16 @@ sidebar:
 
 - Viết `SettingsNotificationCoordinator` verbatim senior —
   orchestration `enable`/`disable`/`updateTime` với rollback
-  best-effort giữ nguyên lỗi gốc (A-36 — CORE).
+ best-effort giữ nguyên lỗi gốc (CORE).
 - Mở rộng `SettingsViewModel`: field `notificationService`
   (contract), seam `_loadAppVersion`, `_notificationCoordinator`
   tạo trong ctor.
-- Hiểu **permission là state do OS sở hữu** (A-37 — CORE):
+- Hiểu **permission là state do OS sở hữu** (CORE):
   `_hasNotificationPermission` nạp từ `hasPermission()` mỗi lần
   `loadSettings`, cập nhật từ `requestPermission()` khi bật —
   `effectiveNotificationEnabled` = flag AND permission, không bao
   giờ assume.
-- Viết `loadSettings` thành `Future.wait` ba-việc-song-song
+- Viết `loadSettings` thành `Future.wait` ba việc song song
   (settings + permission + version) — một lỗi → snackbar
   `loadFailed`.
 - Hai nhánh `_toggleNotifications`: denied → persist-off +
@@ -57,27 +57,27 @@ hẹn gì — *invariant hỏng âm thầm*. Senior tách chuỗi này ra một
 **coordinator**: một class không state, nhận service + callback
 `saveSettings`, chịu trách nhiệm thứ tự + hoàn tác. VM chỉ quyết
 định *khi nào* gọi (permission branches), coordinator lo *gọi
-theo thứ tự nào và lỗi thì dọn dẹp ra sao* (A-36).
+theo thứ tự nào và lỗi thì dọn dẹp ra sao*.
 
 ## Bạn đã biết gì
 
 - `SettingsViewModel` dialog-scoped: ctor seed từ
   `userSettingsStream.value`, `_saveSettings` → repo → subject →
-  `_handleSettings` → notify (M16 — A-15/A-22); events một-lần
+ `_handleSettings` → notify (M16); events một lần
   `SettingsSnackBarRequested` + enum `SettingsSnackBarMessage`
-  (M16 — A-05).
+ (M16).
 - `buildSettingItems`/`localizedSettingItems` — factory nhận
   `effectiveNotificationEnabled` (M16 — sealed `SettingItemData`
-  variant D-26 + switch kiệt hợp D-27).
+ variant + switch kiệt hợp).
 - Contract `LocalNotificationService` + `FakeLocalNotificationService`
-  counters/`throwOn*` (A-35 — Bài 2).
+ counters/`throwOn*` (Bài 2).
 - `context.read<T>()` ở caller trước khi `showDialog` (M16 —
-  F-17); dialog-scoped VM `ChangeNotifierProvider(create:)`
-  (F-18 — dạy ở M12, scope này áp dụng lại từ M16).
+); dialog-scoped VM `ChangeNotifierProvider(create:)`
+ (dạy ở M12, scope này áp dụng lại từ M16).
 
 ## Mental model mới
 
-### A-37 — permission là state OS sở hữu (CORE)
+### — permission là state OS sở hữu (CORE)
 
 ```text
   persisted flag                OS permission
@@ -101,7 +101,7 @@ Ba quy tắc:
    `shouldSchedule` đều qua `effectiveNotificationEnabled`: flag
    on mà permission mất → switch tự render tắt, không ai schedule.
 
-### A-36 — coordinator orchestrate, rollback best-effort (CORE)
+### — coordinator orchestrate, rollback best-effort (CORE)
 
 ```text
  enable(settings):           disable(settings):          updateTime(prev, next, shouldSchedule):
@@ -123,7 +123,7 @@ Ba quy tắc:
 
 | Construct | Vai trò |
 |---|---|
-| `Future.wait([f1, f2, f3])` → `results[i]` | ba Future *độc lập* chạy song song, một lỗi → cả wait throw — **lần đầu trong codebase**, xây trên `Future`/`await` D-09 |
+| `Future.wait([f1, f2, f3])` → `results[i]` | ba Future *độc lập* chạy song song, một lỗi → cả wait throw — **lần đầu trong codebase**, xây trên `Future`/`await` |
 | `Future<void> Function(UserSettingsData)` typedef-param | coordinator nhận `saveSettings` làm **callback** — không biết repo, không biết VM (inversion nhỏ trong app) |
 | `required` ctor param thêm vào class có sẵn | **compile-forced call-site update**: analyzer liệt kê mọi chỗ tạo `SettingsDialogScope`/`SettingsViewModel` — kể cả test |
 | `rollback: notificationService.cancelDaily` | **tear-off** method làm callback — `cancelDaily` là `Future<void> Function()` hợp lệ |
@@ -187,7 +187,7 @@ schedule rồi save hỏng → `cancelDaily` hoàn tác *có thể cũng hỏng*
 hỏi OS mỗi lần `loadSettings` vì user thu hồi quyền trong system
 Settings bất cứ lúc nào — lưu "đã granted" vào SharedPreferences
 là stale ngay lập tức. (Tương đương `checkSelfPermission` mỗi
-`onResume`, không phải flag một-lần.)
+`onResume`, không phải flag một lần.)
 
 ## Senior project connection
 
@@ -198,6 +198,25 @@ là stale ngay lập tức. (Tương đương `checkSelfPermission` mỗi
 | `lib/view_models/settings/settings_ui_event.dart` — `notificationPermissionRequired` | enum member verbatim |
 | `lib/widgets/menu/settings/menu_settings_dialog_scope.dart` | scope `context.read<LocalNotificationService>()` cùng điểm vào |
 | `test/settings_view_model_test.dart` | 12 test cùng shape — grant/deny/fail/reschedule/rollback qua counters |
+
+:::tip[Điểm dừng — suy ra trước khi port]
+Trước khi mở ba bước verbatim, tự trả lời trên giấy:
+
+1. **Ai sở hữu gì?** Ba nguồn — persisted flag (storage), OS
+   permission (platform), coordinator (orchestrate) — đặt từng cái
+   vào đúng chủ: cái nào VM *giữ*, cái nào VM *hỏi mỗi lần*, cái nào
+   VM *không chạm*?
+2. **Derived value.** `effectiveNotificationEnabled` = flag AND
+   permission — nếu bạn thiết kế nó là hai field riêng cho UI tự AND,
+   điều gì hỏng? (Gợi ý: mọi consumer phải nhớ AND — kể cả cái bạn
+   chưa viết.)
+3. **Rollback giữ cái gì?** Nếu `scheduleDaily` thành công nhưng
+   `saveSettings` fail: giờ đã hẹn và flag trong storage lệch nhau —
+   undo thứ nào trước, và lỗi nào lên snackbar?
+
+Đối chiếu với các bước bên dưới — phần bạn đoán khác chính là chỗ
+quyết định kiến trúc của senior.
+:::
 
 ## Build it step by step
 
@@ -362,7 +381,7 @@ import 'settings_notification_coordinator.dart';
 ```
 
 Tear-off `_saveSettings` truyền làm callback — coordinator gọi nó
-mà không biết nó là method của ai (A-36: coordinator độc lập VM).
+mà không biết nó là method của ai (coordinator độc lập VM).
 
 (a-2) `lib/view_models/settings/settings_app_version_loader.dart`
 (file mới — verbatim senior; VM import nó nên file phải tồn tại
@@ -391,7 +410,7 @@ Future<String> loadSettingsAppVersion() async {
 (`settingItems`/`localizedSettingItems` đổi `effectiveNotificationEnabled:
 effectiveNotificationEnabled` — flag đơn thành AND-gate.)
 
-(c) `loadSettings` — `Future.wait` ba-việc (verbatim):
+(c) `loadSettings` — `Future.wait` ba việc (verbatim):
 
 ```dart
   /// Senior `loadSettings` — `Future.wait` ba việc song song: settings
@@ -728,7 +747,7 @@ thành công.
 
 Invariant hỏng: **flag on nhưng không có notification nào được
 hẹn** — user thấy "thông báo bật" trong settings nhưng OS không
-biết gì. Chính là lý do senior chọn schedule-trước: đường hỏng
+biết gì. Chính là lý do senior chọn schedule trước: đường hỏng
 duy nhất cần rollback là save, và rollback của nó (`cancelDaily`)
 rẻ.
 </details>
@@ -741,7 +760,7 @@ rẻ.
   quyền OS mất thì switch render tắt dù flag còn on.
 - **Hỏi:** vì sao `loadSettings` dùng `Future.wait` chứ không
   await tuần tự? — **Đáp:** ba việc độc lập (disk / OS permission /
-  PackageInfo) — song song nhanh hơn và *một-lỗi-throw-cả-nhóm*
+  PackageInfo) — song song nhanh hơn và *một lỗi throw cả nhóm*
   khớp chính sách "load hỏng → loadFailed".
 - **Hỏi:** `_toggleNotifications` denied-path làm theo thứ tự gì?
   — **Đáp:** `_saveSettings(false)` trước → `_emitSnackBar(
@@ -756,10 +775,10 @@ rẻ.
 
 - `Provider<LocalNotificationService>.value` trong
   `AppDependencyScope` + `LocalNotificationServiceImpl()` trong
-  `main()` — **Bài 4** (đọc kỹ warning khoảng-hở runtime ở Bước 4).
+  `main()` — **Bài 4** (đọc kỹ warning khoảng hở runtime ở Bước 4).
 - `v$appVersion` row trong dialog + giải thích `package_info_plus`
   — **Bài 4** (file loader đã land ở đây vì VM import nó; row UI +
-  F-37 giải thích ở Bài 4).
+ giải thích ở Bài 4).
 - Onboarding `_requestNotificationPermission` gọi thật —
   **Bài 4**.
 - iOS `hasPermission` check — senior không wire; giữ verbatim.
@@ -768,12 +787,12 @@ rẻ.
 ## Checkpoint hoàn thành
 
 - [ ] `settings_notification_coordinator.dart` verbatim: `enable`
-  schedule-trước-save-sau, `disable` cancel-trước-persist-sau,
+  schedule trước save sau, `disable` cancel trước persist sau,
   `updateTime` conditional-reschedule, `_saveSettingsWithRollback`
   giữ lỗi gốc.
 - [ ] VM có `notificationService` + `_loadAppVersion` seam +
   `_notificationCoordinator` trong ctor; `effectiveNotificationEnabled`
-  = flag AND permission; `loadSettings` là `Future.wait` ba-việc.
+  = flag AND permission; `loadSettings` là `Future.wait` ba việc.
 - [ ] `_toggleNotifications`: disable→coordinator; enable→request
   nếu chưa có quyền → denied persist-off+snackbar, granted→enable.
 - [ ] `SettingsDialogScope`/`showSettingsDialog` truyền service;

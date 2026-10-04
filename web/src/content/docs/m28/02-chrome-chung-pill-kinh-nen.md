@@ -1,6 +1,6 @@
 ---
 title: "Bài 2 · Chrome chung — pill button, nút kính SVG, nền màn"
-description: "Ba widget common đầu tiên dùng nền móng Bài 1: `QzdsGameButton` (pill 44pt + surfaceGlow + BoxShadow + `if (icon case final iconData?)` — D-48 mới), `GlassIconButton` (`SvgPicture.asset` + `ColorFilter.mode(Colors.white, BlendMode.srcIn)` — F-42 mới), `GameScreenBackground` (ColoredBox + gradient + Image.asset cover). Test `qzds_game_button_test` 4 case đầu tiên của milestone. +4 test → 263."
+description: "Ba widget common đầu tiên dùng nền móng Bài 1: `QzdsGameButton` (pill 44pt + surfaceGlow + BoxShadow + `if (icon case final iconData?)` — mới), `GlassIconButton` (`SvgPicture.asset` + `ColorFilter.mode(Colors.white, BlendMode.srcIn)` — mới), `GameScreenBackground` (ColoredBox + gradient + Image.asset cover). Test `qzds_game_button_test` 4 case đầu tiên của milestone. +4 test → 263."
 sidebar:
   label: "Bài 2 · chrome chung"
   order: 2
@@ -13,14 +13,14 @@ sidebar:
   SVG — nút back của game), `GameScreenBackground` (nền màn chơi:
   màu nền + gradient + ảnh cover mờ).
 - Học **`SvgPicture.asset` + `ColorFilter.mode(…, BlendMode.srcIn)`**
-  (F-42, NORMAL) — pipeline icon của senior: SVG trắng, tô màu
+ (NORMAL) — pipeline icon của senior: SVG trắng, tô màu
   qua colorFilter lúc render.
 - Học **`if (x case final y?)`** — if-case null-extract
-  (D-48, NORMAL): optional `IconData?` bung ra thành non-null
+ (NORMAL): optional `IconData?` bung ra thành non-null
   `iconData` ngay trong `children:` list.
 - Thấy `surfaceGlow` (Bài 1) làm việc thật trên surface dẹt
   44pt; `Semantics(button/enabled/label)` + `ExcludeSemantics`
-  phục vụ a11y đúng shape F-28.
+ phục vụ a11y đúng shape.
 - Port test đầu tiên của milestone: `qzds_game_button_test.dart`
   4 case → **263/263**.
 
@@ -55,29 +55,29 @@ sidebar:
 ## Bạn đã biết gì
 
 - `Semantics(button: true, enabled: …, label: …)` + `ExcludeSemantics`
-  (F-28, M20) — shape a11y y hệt `_GameFeatureButton` cũ.
-- `GestureDetector` + `HitTestBehavior.opaque` (F-28) — vùng bấm
+ (M20) — shape a11y y hệt `_GameFeatureButton` cũ.
+- `GestureDetector` + `HitTestBehavior.opaque` — vùng bấm
   bao cả phần trong suốt của box.
 - `DecoratedBox`/`BoxDecoration`/`BorderRadius`/`Border.all`/
   `BoxShadow` — chrome decoration đã quen qua MenuTokens
   (chưa có registry row riêng).
-- `Stack` + `StackFit.expand` (F-26, M18) — overlay nền.
-- `IconData?` nullable field (D-03) + collection-`if` trong
-  `children:` (D-27 reuse) — `if (icon case …)` là bước tiếp
+- `Stack` + `StackFit.expand` (M18) — overlay nền.
+- `IconData?` nullable field + collection-`if` trong
+ `children:` (reuse) — `if (icon case …)` là bước tiếp
   theo của pattern này.
 
-## Mental model mới — "SVG là vector, colorFilter tô lúc render" (F-42)
+## Mental model mới — "SVG là vector, colorFilter tô lúc render" 
 
-> **F-42 — `SvgPicture.asset` + tint qua `ColorFilter.mode`.**
+> ** — `SvgPicture.asset` + tint qua `ColorFilter.mode`.**
 > File SVG của senior đều fill đen/trắng sẵn; widget *không* sửa
 > file — nó gắn `colorFilter: ColorFilter.mode(màu, BlendMode.srcIn)`
 > để **thay toàn bộ pixel nguồn bằng một màu** giữ nguyên alpha.
 > Một file SVG → mọi màu: trắng trên nút kính, vàng trong badge
 > câu hỏi, cyan trên lifeline — cùng asset, khác filter.
 
-Và `if-case` (D-48):
+Và `if-case` :
 
-> **D-48 — `if (expr case final x?)` null-extract trong widget
+> ** — `if (expr case final x?)` null-extract trong widget
 > list.** Pattern `final x?` khớp *chỉ khi* expr non-null và bind
 > `x` thành non-null ngay trong nhánh — gọn hơn `if (icon != null)
 > Icon(icon!)` vì không cần `!` và không phải viết lại tên field.
@@ -90,15 +90,15 @@ answer option) — học ở file nhỏ, dùng ở file lớn.
 
 | Construct | Vai trò |
 |---|---|
-| `if (icon case final iconData?) ...[` | **D-48 mới** — if-case với null-check pattern: khớp khi `icon != null`, bind `iconData` non-null; `...[ ]` spread nhiều widget vào `children:` |
-| `VoidCallback? onTap` → `enabled: onTap != null` | nút-disable-bằng-null y hệt F-28 — semantics `enabled` đọc cùng một nguồn sự thật |
+| `if (icon case final iconData?) ...[` | ** mới** — if-case với null-check pattern: khớp khi `icon != null`, bind `iconData` non-null; `...[]` spread nhiều widget vào `children:` |
+| `VoidCallback? onTap` → `enabled: onTap != null` | nút disable bằng null y hệt — semantics `enabled` đọc cùng một nguồn sự thật |
 | `this.icon`/`this.scale` optional trong ctor | `QzdsGameButton` 6 field — `icon`/`scale`/`textGlow`/`lightShadow` có default, `text`/`color`/`onTap` bắt buộc |
 
 ## Flutter cần dùng
 
 | API | Vai trò |
 |---|---|
-| `SvgPicture.asset(path, {width, height, colorFilter})` | **F-42 mới** — render SVG từ bundle; `colorFilter` tô toàn bộ bằng một `BlendMode` |
+| `SvgPicture.asset(path, {width, height, colorFilter})` | ** mới** — render SVG từ bundle; `colorFilter` tô toàn bộ bằng một `BlendMode` |
 | `ColorFilter.mode(Colors.white, BlendMode.srcIn)` | `srcIn` = "source-in": thay pixel nguồn bằng `Colors.white`, giữ alpha → SVG mọi màu thành trắng; đổi sang `yellow600` → vàng |
 | `SizedBox.square(dimension: 44)` + `Container` tròn + `glassGradient` | nút kính 44×44: `shape: circle` + border `white10` + gradient kính từ `AppTokens.glassGradient` |
 | `surfaceGlow(color.withValues(alpha: 0.32))` | Bài 1 helper — lớp sáng elip phủ pill (DecoratedBox thứ hai bên trong DecoratedBox màu nền) |
@@ -137,7 +137,7 @@ một nhánh `...[ ]`).
 **SIMILARITY — `SvgPicture.asset` ≈ `ImageVector`/`painterResource`
 trong Compose; `colorFilter` ≈ `ColorFilter.tint`.** Compose có
 `Icon(painter, tint = …)` và `ColorFilter.tint(color)` với
-`BlendMode.srcIn` mặc định — chuyển tất cả pixel không-trong-suốt
+`BlendMode.srcIn` mặc định — chuyển tất cả pixel không trong suốt
 sang `color`. Flutter `flutter_svg` render SVG từ assets và
 `ColorFilter.mode(color, BlendMode.srcIn)` làm đúng việc đó.
 
@@ -149,7 +149,7 @@ Và `SvgPicture` không phải `IconData` — nó đọc file vector,
 decode per-frame; không có font-glyph nào cả.
 
 **DO NOT ASSUME — `ExcludeSemantics`/`Semantics` không giống
-`contentDescription` một-đối-một.** Compose/Android gắn
+`contentDescription` một đối một.** Compose/Android gắn
 `contentDescription` trên từng node; Flutter `Semantics` cũng
 gắn label — nhưng `ExcludeSemantics` *xoá nguyên subtree khỏi
 semantic tree* (khác `clearAndSetSemantics` chỉ ghi đè). Quy
@@ -331,7 +331,7 @@ flutter test     → +263: All tests passed!
    từng gợi ý "press-scale" — disk là nguồn đúng: nút này tĩnh
    hoàn toàn; mọi motion của nó là `surfaceGlow`/`textGlow`
    tĩnh.
-2. **`BlendMode.srcIn` ≠ đổi-màu-file.** `srcIn` nghĩa là "giữ
+2. **`BlendMode.srcIn` ≠ đổi màu file.** `srcIn` nghĩa là "giữ
    alpha nguồn, đổi RGB thành màu filter" — file SVG gốc đã
    fill trắng sẵn; filter trắng lên trắng *trông* như không
    làm gì, nhưng nó *là* chỗ chốt màu: đổi filter thành
@@ -350,7 +350,7 @@ flutter test     → +263: All tests passed!   (259 + 4)
 ```
 
 `GameScreenBackground`/`GlassIconButton` chưa có consumer —
-compile-độc-lập; consumer đầu tiên ở Bài 3 (top bar) và Bài 6
+compile độc lập; consumer đầu tiên ở Bài 3 (top bar) và Bài 6
 (screen).
 
 ## Thử nghiệm
@@ -365,9 +365,9 @@ Sau đó suy ra hành vi khác gì trên màn.
 Suite **không đỏ** — không test nào render `GlassIconButton`
 (nó chưa có consumer). Trên màn: `srcOver` vẽ màu *lên trên*
 pixel nguồn nhưng *không* thay pixel — với `Colors.white` mờ
-alpha 255 thì kết quả tương tự trắng, nhưng với màu bán-trong
+alpha 255 thì kết quả tương tự trắng, nhưng với màu bán trong
 (`Colors.white54`) `srcOver` chỉ phủ mờ còn `srcIn` đổi hẳn
-RGB sang trắng-giữ-alpha. Với file fill-trắng sẵn, visual
+RGB sang trắng giữ alpha. Với file fill trắng sẵn, visual
 gần như giống nhau ở filter trắng — khác biệt chỉ lộ khi
 filter là màu alpha < 255 hoặc file SVG nhiều màu gốc
 (lightning vàng Bài 5 — `srcOver` sẽ *pha* chứ không *đổi*
@@ -415,7 +415,7 @@ MỘT node; khi `ExcludeSemantics` bị gỡ, `Text('PLAY')` bên trong
 tạo thêm một semantics node cùng label `'PLAY'` → finder khớp
 ≥2 node → `findsOneWidget` fail. (b) Cấu trúc cũng sai về
 accessibility: TalkBack đọc text hai lần (node `Text` + node
-`Semantics(label:)`), và `Icon` xuất hiện như node không-nhãn
+`Semantics(label:)`), và `Icon` xuất hiện như node không nhãn
 gây nhiễu traversal. `ExcludeSemantics` là *dọn subtree* để
 chỉ còn một node button sạch — vì vậy senior bọc `Row`, chứ
 không bọc `Semantics` cha.
@@ -432,7 +432,7 @@ không bọc `Semantics` cha.
   **Đáp:** thay RGB bằng màu filter, giữ nguyên alpha — cùng
   một file SVG, filter trắng→trắng, filter vàng→vàng.
 - **Hỏi:** vì sao test assert `AppTokens.qzdsButtonHeight` thay
-  vì `44`? — **Đáp:** A-38 — token là nguồn-đúng; design đổi
+ vì `44`? — **Đáp:** — token là nguồn đúng; design đổi
   44→48 thì test + code đổi cùng một chỗ, test vẫn xanh.
 - **Hỏi:** `GameScreenBackground` mấy lớp? Liệt kê từ dưới
   lên. — **Đáp:** bốn — `ColoredBox(screenBackground)` →
@@ -467,7 +467,7 @@ không bọc `Semantics` cha.
   `ColorFilter.mode(srcIn)`), `game_screen_background.dart`
   (4 lớp).
 - [ ] `test/widgets/qzds_game_button_test.dart` 4 case xanh.
-- [ ] Kể được `srcIn` làm gì và vì sao icon fill-trắng vẫn
+- [ ] Kể được `srcIn` làm gì và vì sao icon fill trắng vẫn
   cần `colorFilter`.
 - [ ] `flutter analyze` sạch; `flutter test` **263/263**
   (+4 từ qzds test).

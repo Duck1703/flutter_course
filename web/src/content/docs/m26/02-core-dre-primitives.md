@@ -1,6 +1,6 @@
 ---
 title: "Bài 2 · core/dre — contract + DreChangeNotifier"
-description: "Port `lib/core/dre/dre.dart` + `dre_change_notifier.dart`: `abstract interface class` markers + generic bounds `A extends DreAction` (D-46); dispatch 5 nhịp — reduce → swap → `!=` notify → effects broadcast → `unawaited` asyncOp post-reduce snapshot + `onAsyncOpError` (F-34); `@protected`; dispose-safe. +5 test → 236 → 241."
+description: "Port `lib/core/dre/dre.dart` + `dre_change_notifier.dart`: `abstract interface class` markers + generic bounds `A extends DreAction`; dispatch 5 nhịp — reduce → swap → `!=` notify → effects broadcast → `unawaited` asyncOp post-reduce snapshot + `onAsyncOpError`; `@protected`; dispose-safe. +5 test → 236 → 241."
 sidebar:
   label: "Bài 2 · core/dre primitives"
   order: 2
@@ -19,7 +19,7 @@ sidebar:
 - Trace được dispatch algorithm đúng nhịp senior: reduce → swap
   `_state` → `previousState != _state` → `notifyListeners()` →
   add effects → `unawaited(_executeAsyncOp(op, _state))` với
-  snapshot POST-reduce (F-34).
+ snapshot POST-reduce.
 
 ## Bạn đang ở đâu
 
@@ -37,19 +37,19 @@ sau dùng lại. Quan trọng hơn: `dispatch` là **nơi duy nhất**
 quyết định notify/effect/async — trước đây logic đó rải qua
 `_emit` (notify), `_schedule` (delay), `_emitWithSaveResult`
 (`unawaited` save) trong 733 dòng; giờ nó là ~20 dòng
-đọc-một-lần.
+đọc một lần.
 
 ## Bạn đã biết gì
 
 - `ChangeNotifier` + `notifyListeners()` + `addListener` (nền
-  A-18); `StreamController.broadcast` + `listen`/
+); `StreamController.broadcast` + `listen`/
   `expectLater(emits)` (M13/M15).
-- `unawaited` (M22 — D-17); `_isDisposed` lifecycle +
-  `addTearDown` (D-23); `==`/identity (D-05).
+- `unawaited` (M22); `_isDisposed` lifecycle +
+ `addTearDown`; `==`/identity.
 - `sealed` + `final class` + `implements` + `switch` exhaustive
-  (D-26/D-27); `_requestId`/`_isSyncing` (D-42, A-29).
+; `_requestId`/`_isSyncing`.
 
-## Mental model mới — "dispatch là thuật toán năm nhịp" (F-34)
+## Mental model mới — "dispatch là thuật toán năm nhịp" 
 
 ```text
 dispatch(action):
@@ -66,18 +66,18 @@ Hai điểm khoá: (a) snapshot của asyncOp là state **đã swap** —
 reducer commit xong mới chạy op, op nhìn thấy kết quả cuối
 (`hasSavedResult: true`, phase terminal); (b) `effects` là
 broadcast stream — listener đến sau **không được replay**: effect
-là sự-kiện-một-lần, khác `BehaviorSubject.seeded`/`ValueStream`
-(A-08) vốn replay state hiện tại.
+là sự kiện một lần, khác `BehaviorSubject.seeded`/`ValueStream`
+ vốn replay state hiện tại.
 
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
 |---|---|
-| `abstract interface class DreAction {}` | type thuần — không instantiate, không `extends`, chỉ `implements`; không member → **marker interface** (D-46 mới) |
-| `class N<S, A extends DreAction, E extends DreEffect, O extends DreAsyncOp>` | generic bounds — type param phải implement marker (D-46) |
+| `abstract interface class DreAction {}` | type thuần — không instantiate, không `extends`, chỉ `implements`; không member → **marker interface** (mới) |
+| `class N<S, A extends DreAction, E extends DreEffect, O extends DreAsyncOp>` | generic bounds — type param phải implement marker |
 | `final class DreResult{state, effects: List<E> = const [], asyncOp: O?}` | value carrier; `O?` → tối đa một op per reduce |
 | `@protected void dispatch(A action)` | meta annotation — "chỉ subclass dùng"; analyzer warn nếu gọi ngoài |
-| `unawaited(future)` (`dart:async`) | fire-and-forget — D-17 reuse, lần đầu trong infrastructure class |
+| `unawaited(future)` (`dart:async`) | fire-and-forget — reuse, lần đầu trong infrastructure class |
 | `StreamController<E>.broadcast()` | multi-listener, không replay |
 | `Future<void> executeAsyncOp(O, S)` abstract | lỗ hổng bắt buộc cho subclass — VM implement ở Bài 5 |
 | `void onAsyncOpError(...) {}` no-op | hook tối thiểu — chỉ gọi khi `!_isDisposed` |
@@ -114,8 +114,8 @@ void main() {
 }
 ```
 
-Đây đúng nhịp `DreChangeNotifier.dispatch`: diff-trước-notify là
-lý do guard-trả-state-cũ (Bài 1) im lặng hoàn toàn.
+Đây đúng nhịp `DreChangeNotifier.dispatch`: diff trước notify là
+lý do guard trả state cũ (Bài 1) im lặng hoàn toàn.
 
 ## Android / Compose bridge
 
@@ -125,7 +125,7 @@ không nhận sự kiện cũ; `state` ≈ `StateFlow`.
 
 **IMPORTANT DIFFERENCE — không coroutine scope.** Async op là
 `unawaited` future + `onAsyncOpError` hook; cancel/dispose qua
-`_isDisposed` flag tay — không `viewModelScope` huỷ-job tự động.
+`_isDisposed` flag tay — không `viewModelScope` huỷ job tự động.
 
 **DO NOT ASSUME — `!=` trên object Dart.** `==` chỉ là
 value-equal khi class override; `GameState` không override (Bài
@@ -322,7 +322,7 @@ _TestAsyncOp` + `_LoadAsync` — port verbatim.
 1. **Test 'post-reduce snapshot' chứng minh nhịp 5.** `_StartAsync`
    reduce `count 0→1` + op → `executeAsyncOp` nhận `_TestState(1)`,
    KHÔNG phải state cũ — `_executeAsyncOp(op, _state)` được gọi sau
-   khi `_state` đã swap. Op nhìn thấy quyết định đã commit (F-34).
+ khi `_state` đã swap. Op nhìn thấy quyết định đã commit.
 2. **'unchanged state does not notify' chứng minh nhịp 3.**
    `_NoChange` trả cùng instance → `prev != next` false →
    `notifyCount == 0`. `GameState` không `==` (Bài 3) vẫn hưởng
@@ -409,14 +409,14 @@ effect mà không đổi state.
 - **Hỏi:** vì sao `DreAction` là `abstract interface class` chứ
   không phải `abstract class`? — **Đáp:** marker thuần — cấm
   instantiate và cấm `extends` (subclass phải `implements`), ép
-  vai "nhãn type" chứ không "chia sẻ code" (D-46).
+ vai "nhãn type" chứ không "chia sẻ code".
 - **Hỏi:** `executeAsyncOp` nhận snapshot nào và vì sao
   post-reduce? — **Đáp:** `_state` sau swap — op nhìn thấy quyết
   định đã commit (`hasSavedResult`, phase terminal); đó là ý
   nghĩa test 3.
 - **Hỏi:** `effects` broadcast khác `userProfileStream` seeded
-  thế nào? — **Đáp:** không replay — effect là sự-kiện-một-lần;
-  stream seeded replay state-hiện-tại cho listener mới (A-08).
+  thế nào? — **Đáp:** không replay — effect là sự kiện một lần;
+ stream seeded replay state hiện tại cho listener mới.
 - **Hỏi:** ai gọi `onAsyncOpError`, và game có override không? —
   **Đáp:** `_executeAsyncOp` gọi khi op throw và VM chưa dispose;
   game KHÔNG override (senior) — `_saveGameResult` tự nuốt+log.
@@ -426,7 +426,7 @@ effect mà không đổi state.
 - `GameReducer`/consumer production đầu tiên — **Bài 4–5**.
 - `onAsyncOpError` override — senior game không override;
   `_saveGameResult` tự xử (Bài 5).
-- Share plumbing — **M27** (FR-33); platform extras — **M27**;
+- Share plumbing — **M27**; platform extras — **M27**;
   visual parity — **M28**; `MenuDialogLayer` — **M29**.
 - Middleware/store/logging trong dispatch — senior không có; DRE
   là project-local, không port framework.

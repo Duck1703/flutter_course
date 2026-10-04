@@ -1,6 +1,6 @@
 ---
-title: "Bài 6 · Regression tests + tổng kết FR-37"
-description: "Port `game_screen_view_model_regression_test.dart` — 3 test ghim behavior qua đổi-kiến-trúc: submit-ignored-intro, stale-AI-result-sau-dismiss, terminal-save-once qua `backToMenu` lặp. Vì sao regression test tồn tại SAU refactor: pin behavior ở public surface. Recap reducer/VM/repository/UI ownership split; FR-37 → CONVERGED → 251 → 254."
+title: "Bài 6 · Regression tests + tổng kết "
+description: "Port `game_screen_view_model_regression_test.dart` — 3 test ghim behavior qua đổi kiến trúc: submit-ignored-intro, stale-AI-result-sau-dismiss, terminal-save-once qua `backToMenu` lặp. Vì sao regression test tồn tại SAU refactor: pin behavior ở public surface. Recap reducer/VM/repository/UI ownership split; → CONVERGED → 251 → 254."
 sidebar:
   label: "Bài 6 · regression + tổng kết"
   order: 6
@@ -19,7 +19,7 @@ sidebar:
 - Recap ownership split của M26: reducer (transition + guard +
   scoring), VM-bridge (timer/future/repo/stream plumbing),
   repository (persistence), UI (render + notify taps).
-- Đóng **FR-37** trong fidelity register: bản trung gian
+- Đóng trong fidelity register: bản trung gian
   `ChangeNotifier`+manual-guards → `DreChangeNotifier` +
   `GameReducer` + `asyncOp`.
 
@@ -31,7 +31,7 @@ sidebar:
 - Chưa có test nào *chứng minh rằng refactor không đổi hành vi
   quan sát được* — 236 test cũ xanh là bằng chứng gián tiếp
   (chúng assert semantics M19–M25); 3 test hôm nay là pins chuyên
-  biệt cho ba edge mà kiến-trúc-mới phải giữ.
+  biệt cho ba edge mà kiến trúc mới phải giữ.
 - Senior chứng minh cùng ba điều này trong cùng file name —
   learner port ở tầng VM với `FakeUserProfileRepository` thay
   `FakeGameProfileRepository` (helper có sẵn từ M14).
@@ -39,14 +39,14 @@ sidebar:
 ## Vì sao việc này quan trọng ngay bây giờ
 
 Refactor "đúng" không phải "chạy được" — là *không đổi gì quan
-sát được*. Ba test này ghim đúng ba rủi-ro của kiến trúc mới:
+sát được*. Ba test này ghim đúng ba rủi ro của kiến trúc mới:
 (1) guard `phase != playing` giờ sống trong reducer — submit sớm
-vẫn phải im lặng; (2) delayed callback vòng-qua-dispatch giờ đi
+vẫn phải im lặng; (2) delayed callback vòng qua dispatch giờ đi
 xa hơn (`_schedule*` → `Future.delayed` → `dispatch(*Elapsed)` →
 reducer) — stale phải bị loại ở *data*, không phải bằng may;
 (3) save-once giờ là reducer-guard `hasSavedResult` — hai
 `backToMenu` liên tiếp không được phát hai `GameSaveResult` op.
-Ba pin này cũng là bằng chứng cuối cùng để ghi **FR-37:
+Ba pin này cũng là bằng chứng cuối cùng để ghi **:
 CONVERGED**.
 
 ## Bạn đã biết gì
@@ -55,11 +55,11 @@ CONVERGED**.
   state/effects/asyncOp → `_handleEffect`/`executeAsyncOp`.
 - `FakeUserProfileRepository` (`saveCallCount`,
   `loadUserProfile`/`saveUserProfile` fast) + `FakeAuthRepository`
-  + `FakeUserProfileSyncRepository` (M14/M24 — A-11).
-- `screenData.answers`/`featureButtons` qua mapper (A-20);
+ + `FakeUserProfileSyncRepository` (M14/M24).
+- `screenData.answers`/`featureButtons` qua mapper;
   `GameAnswerState.idle`; dialog variants `GameMoneyLadderDialog`/
   `GameAIAssistantDialog`/`GameDialogHidden`/`GameEndedDialog`
-  (A-21/D-27).
+.
 
 ## Mental model — "regression test = đinh ghim behavior" (NORMAL)
 
@@ -73,7 +73,7 @@ bắt     sai transition/luật               sai TÍCH-HỢP: wiring, guard,
 
 Refactor đổi *cách* state đổi (method-mutation → reduce) chứ
 không đổi *gì quan sát được* — pin là assert trên public
-surface, không đụng `dispatch`/`reducer` (cả hai là chi-tiết-bên-
+surface, không đụng `dispatch`/`reducer` (cả hai là chi tiết bên
 trong).
 
 ## Dart cần dùng / Dart mới
@@ -81,14 +81,14 @@ trong).
 | Construct | Vai trò |
 |---|---|
 | `await Future.delayed(800ms/2600ms)` | **đồng hồ thật** — khác `FakeAsync` của file test chính; senior verbatim (đợi `_aiAssistantDelay` 700ms / reveal+explanation 2500ms) |
-| `await Future.delayed(Duration.zero)` | flush microtask cho `unawaited` op hoàn tất (D-09) |
-| `setUp`/`tearDown` trên ba fake + VM | subject ownership — D-10 |
+| `await Future.delayed(Duration.zero)` | flush microtask cho `unawaited` op hoàn tất |
+| `setUp`/`tearDown` trên ba fake + VM | subject ownership — |
 | helper `_answer`/`_answerState`/`_featureButton` | tra `screenData` theo text/label — assert qua public surface |
 
 ## Flutter cần dùng
 
 `flutter_test` với đồng hồ *thật* (`Future.delayed` 800ms/2600ms)
-— khác `FakeAsync` của `game_screen_view_model_test.dart` (D-33);
+— khác `FakeAsync` của `game_screen_view_model_test.dart`;
 không có API mới, khác biệt duy nhất là test chờ delay thật của
 bridge (`_aiAssistantDelay` 700ms, reveal+explanation 2500ms) và
 flush microtask bằng `Duration.zero` cho `unawaited` op.
@@ -134,7 +134,7 @@ trong một suite, hai trade-off: thật = chậm nhưng đúng nhịp
 delay; ảo = nhanh nhưng cần tất cả timer trong `run` scope.
 
 **DO NOT ASSUME — regression test đặt SAU refactor là cố ý.**
-Không phải test-để-tìm-bug-lúc-viết; nó là *pin* — khóa hành vi
+Không phải test để tìm bug lúc viết; nó là *pin* — khóa hành vi
 quan sát được trước khi ai đó (kể cả bạn ở milestone sau) "tối
 ưu" reducer mà vô tình đổi semantics.
 
@@ -268,16 +268,16 @@ GameFeatureButtonData _featureButton(
    `dismissDialog` không tăng `flowToken` (default branch chỉ đổi
    `dialogState`) → `GameAIAssistantElapsed(2)` đến sau 800ms có
    token *vẫn khớp* (`state.flowToken` vẫn 2 — select AI đã bump
-   1→2, dismiss không đụng). Cái loại nó là guard-thứ-hai
+   1→2, dismiss không đụng). Cái loại nó là guard thứ hai
    `state.dialogState is! GameAIAssistantDialog` → `_result(state)`
    → dialog giữ `GameDialogHidden`. Hai guard hai vai — token cho
-   "flow đã tăng", dialog-check cho "dialog đã đổi" (A-32).
+ "flow đã tăng", dialog-check cho "dialog đã đổi".
 2. **Test 3: save-once là reducer-guard, nav vẫn emit.** Hai
    `backToMenu` → hai reduce `_withSaveResult`; lần hai
    `hasSavedResult == true` → `_result(state, effects: effects)`
    → `GameNavigateToMenu` vẫn add vào `uiEvents` (UI vẫn pop
    được) nhưng **không** `GameSaveResult` op → `saveCallCount`
-   giữ 1. Idempotence A-22 giờ sống trong reduce.
+ giữ 1. Idempotence giờ sống trong reduce.
 3. **Đồng hồ thật, không FakeAsync.** `2600ms > 1500+1000` đủ cho
    reveal+explanation; `800ms > 700` đủ cho AI delay; `Duration.zero`
    flush microtask để `unawaited` op (`_saveGameResult` → fake
@@ -329,7 +329,7 @@ cho bốn kịch bản trên cùng `setUp` (trước khi đối chiếu test):
 ## Lỗi hay gặp
 
 1. **Tưởng token-guard cứu test 2** — `dismissDialog` không bump
-   `flowToken`; guard-thực-sự-cứu là `dialogState is!
+   `flowToken`; guard thực sự cứu là `dialogState is!
    GameAIAssistantDialog`. Đọc đúng guard đúng lớp.
 2. **Assert `saveCallCount == 0` khi `backToMenu` sớm** — save
    chạy ngay cả từ intro/`playing` (walkAway có thể 0 nhưng
@@ -338,7 +338,7 @@ cho bốn kịch bản trên cùng `setUp` (trước khi đối chiếu test):
    senior và đổi điều test chứng minh (đồng hồ thật chứng minh
    `Future.delayed` của bridge đúng delay).
 4. **Tưởng regression test "dư thừa" vì suite cũ xanh** — pins
-   nhắm edge kiến-trúc-mới (vòng dispatch, op-once, guard tầng)
+   nhắm edge kiến trúc mới (vòng dispatch, op-once, guard tầng)
    mà test cũ không nhắm trực tiếp.
 
 ## Tự làm — DEBUG (planted bug)
@@ -363,7 +363,7 @@ tại `expect(profileRepository.saveCallCount, 1)` **cuối** (assert
 tiếp theo phát thêm một `GameSaveResult` op → `executeAsyncOp` →
 `_saveGameResult` → `saveUserProfile` được gọi thêm → Actual ≥ 2
 (hai op lọt qua; số chính xác phụ thuộc flush của
-`Duration.zero`). Điểm mấu-chốt: `hasSavedResult` trong
+`Duration.zero`). Điểm mấu chốt: `hasSavedResult` trong
 **state**, check trong **reducer** — là nơi DUY NHẤT giữ
 save-once; VM không tự đếm.
 </details>
@@ -378,11 +378,11 @@ save-once; VM không tự đếm.
 - **Hỏi:** test 2 chứng minh guard nào, và tại sao KHÔNG phải
   token-guard? — **Đáp:** `dialogState is! GameAIAssistantDialog`
   — `dismissDialog` không bump `flowToken` nên token vẫn khớp;
-  cái loại stale là dialog-check (A-32: hai guard hai vai).
+ cái loại stale là dialog-check (hai guard hai vai).
 - **Hỏi:** `backToMenu` lần hai — cái gì emit, cái gì bị chặn? —
   **Đáp:** `GameNavigateToMenu` effect vẫn emit (UI vẫn pop);
   chỉ `GameSaveResult` op bị `hasSavedResult` chặn.
-- **Hỏi:** FR-37 converge ở mức file nghĩa là gì? — **Đáp:**
+- **Hỏi:** converge ở mức file nghĩa là gì? — **Đáp:**
   VM `extends DreChangeNotifier` + `GameReducer` + `asyncOp`
   `GameSaveResult` + `flowToken`-in-state — intermediate
   `ChangeNotifier`+manual-guards retire, khớp senior form.
@@ -390,13 +390,13 @@ save-once; VM không tự đếm.
 ## Ta cố ý chưa thêm
 
 - `shareResult` + `GameShareRequested`/`GameShareResult`/
-  `GameShareResultEvent` — **M27** (FR-33).
+ `GameShareResultEvent` — **M27**.
 - Platform extras: notification permission/scheduling + version
-  text `v$appVersion` — **M27** (FR-27, FR-28 residual).
+ text `v$appVersion` — **M27** (residual).
 - Visual parity: `SettingsDialogShell`/`OnboardingGameButton`/
-  icon-asset/`LevelProgressCard` — **M28** (FR-30/32/34).
+ icon-asset/`LevelProgressCard` — **M28** (32/34).
 - `MenuDialogLayer` + `MenuDialogAuth`/`MenuDialogSignOut` state
-  — **M29** (FR-29).
+ — **M29**.
 - `onAsyncOpError` override / rollback-save / `==` cho
   `GameState` / DRE hoá các VM khác — senior không có.
 
@@ -408,7 +408,7 @@ save-once; VM không tự đếm.
   `flutter build web` PASS.
 - [ ] Nói được: test 2 được cứu bởi `dialogState is!` (không
   phải token); `backToMenu` ×2 emit nav nhưng save một lần.
-- [ ] Kể được FR-37 converge thế nào (intermediate →
+- [ ] Kể được converge thế nào (intermediate →
   `DreChangeNotifier` + `GameReducer` + `asyncOp`) và divergence
   nào còn mở ở milestone nào (M27/M28/M29).
 
@@ -417,11 +417,11 @@ save-once; VM không tự đếm.
 Trả lời được năm câu này là đủ:
 
 1. **Học gì?** `part`/`part of` + private `extension` theo flow
-   domain (D-45); `abstract interface class` marker + generic
-   bounds (D-46); effects-stream → bridge (F-33); async-op
-   boundary + post-reduce snapshot (F-34); project-local reducer
-   (A-31); `flowToken`-in-state stale guard (A-32 — ý tưởng
-   `_requestId` D-42 nhưng token sống trong state, check ở
+ domain; `abstract interface class` marker + generic
+ bounds; effects-stream → bridge; async-op
+ boundary + post-reduce snapshot; project-local reducer
+; `flowToken`-in-state stale guard (ý tưởng
+ `_requestId` nhưng token sống trong state, check ở
    reducer).
 2. **Giải thích được?** Vì sao reducer thuần (10 test không
    Flutter); vì sao effect là data chứ không phải `Timer`; vì sao
@@ -430,8 +430,8 @@ Trả lời được năm câu này là đủ:
    không expansion "DRE".
 3. **Viết lại không copy?** Tự làm: `Multiply` counter action
    (Bài 1) + PREDICT chuỗi dispatch (Bài 2) + copyWith dismiss
-   (Bài 3) + test `GameTimerTicked`-ngoài-playing và DEBUG xoá
-   `flowToken !=` (Bài 4) + PREDICT vòng-lặp effect (Bài 5) +
+   (Bài 3) + test `GameTimerTicked`-ngoài playing và DEBUG xoá
+   `flowToken !=` (Bài 4) + PREDICT vòng lặp effect (Bài 5) +
    DEBUG xoá `hasSavedResult` (Bài 6).
 4. **Nếu … thì sao?** Delayed callback trễ → token lệch → reducer
    no-op; dismiss dialog → delay vẫn "đúng token" nhưng

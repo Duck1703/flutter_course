@@ -1,6 +1,6 @@
 ---
 title: "Bài 5 · Bề mặt game + lớp dialog — answers, question, dialogs"
-description: "Bề mặt game hoàn chỉnh: `GameAnswerOption`/`Colors`/`List` (stagger `CurvedAnimation`+`Interval`, reveal-blink `TweenAnimationBuilder` keyed `label:text:state`, sin-pulse `_blinkOpacity`), `GameQuestionPanel` (lightning `yellow600` `srcIn` ×2 + `AnimatedSwitcher` key `index-text`), `AudiencePollRow` (`LinearProgressIndicator` bo tròn). Subsystem dialog mới: `GameDialogShell` (card trắng + `headerSheen` + `toUpperCase` + dual `iconAsset`/`icon` if-case) + `GameDialogButton`/`GameDialogMoneyRow` (`_coinGutter` balance) + 3 family views + `dialogs/game_dialog_layer.dart` (runtimeType-keyed `AnimatedSwitcher`, `BackdropFilter` blur 16, `IgnorePointer`, dismiss-rules). F-41 implicit-family + F-43 semantics-nâng. +13 test → 289."
+description: "Bề mặt game hoàn chỉnh: `GameAnswerOption`/`Colors`/`List` (stagger `CurvedAnimation`+`Interval`, reveal-blink `TweenAnimationBuilder` keyed `label:text:state`, sin-pulse `_blinkOpacity`), `GameQuestionPanel` (lightning `yellow600` `srcIn` ×2 + `AnimatedSwitcher` key `index-text`), `AudiencePollRow` (`LinearProgressIndicator` bo tròn). Subsystem dialog mới: `GameDialogShell` (card trắng + `headerSheen` + `toUpperCase` + dual `iconAsset`/`icon` if-case) + `GameDialogButton`/`GameDialogMoneyRow` (`_coinGutter` balance) + 3 family views + `dialogs/game_dialog_layer.dart` (runtimeType-keyed `AnimatedSwitcher`, `BackdropFilter` blur 16, `IgnorePointer`, dismiss-rules). implicit-family + semantics nâng. +13 test → 289."
 sidebar:
   label: "Bài 5 · bề mặt + dialog"
   order: 5
@@ -10,20 +10,20 @@ sidebar:
 
 - Port bề mặt game hoàn chỉnh: `GameAnswerOption` + `GameAnswer
   OptionColors` + `GameAnswerOptionList`, `GameQuestionPanel`,
-  `AudiencePollRow` — các ô đáp án stagger-trượt-vào, đáp án
+  `AudiencePollRow` — các ô đáp án stagger trượt vào, đáp án
   đúng blink, câu hỏi crossfade khi đổi.
-- Học **implicit-animation family** (F-41, NORMAL): `Animated
+- Học **implicit-animation family** (NORMAL): `Animated
   Opacity`/`AnimatedScale`/`AnimatedContainer`/`AnimatedDefault
-  TextStyle`/`TweenAnimationBuilder` — widget tự-tween khi prop
+  TextStyle`/`TweenAnimationBuilder` — widget tự tween khi prop
   đổi, không controller nào của mình; và `CurvedAnimation` +
-  `Interval` để stagger *trên một* controller (F-38 reuse).
-- Học **semantics nâng** (F-43, LIGHT): `liveRegion`, `value`,
+ `Interval` để stagger *trên một* controller (reuse).
+- Học **semantics nâng** (LIGHT): `liveRegion`, `value`,
   `onTap` trong `Semantics` + `getSemantics`/`matchesSemantics`
   test API — TalkBack thông báo "Đúng"/"Sai" khi state đổi.
 - Port **toàn bộ subsystem dialog mới**: `GameDialogShell`
   (card + header + `toUpperCase`), `GameDialogButton` (bản thật
   của `_DialogShareButton` scaffold M27), `GameDialogMoneyRow`
-  (cân-bằng-coin), 3 family views (`result`/`help`/`confirm`),
+  (cân bằng coin), 3 family views (`result`/`help`/`confirm`),
   và `dialogs/game_dialog_layer.dart` thay thế layer cũ —
   `AnimatedSwitcher` keyed `runtimeType`, `BackdropFilter` blur,
   `IgnorePointer`, dismiss-rules.
@@ -37,25 +37,25 @@ sidebar:
   học; `SvgPicture.asset`+`srcIn` đã render ở `GlassIconButton`.
 - Đáp án hiện render bằng `_GameAnswerButton` scaffold trong
   screen cũ — container trơn, không stagger, không blink, không
-  badge khán-giả.
+  badge khán giả.
 - Dialog hiện chạy qua **layer cũ** `lib/widgets/game/game_
   dialog_layer.dart` (239 dòng) + `game_dialog_views.dart`
   (726 dòng) — monolith M20/M21: card đơn giản, không shell,
   không sheen, không coin-row. Layer-test cũ là bản VI 10 case
   "chưa port case visual senior".
 - `GameDialogState` sealed-family đã đầy đủ 9 variant từ M20
-  (8 hiển-thị + `GameDialogHidden`) — layer mới *switch* trên
+  (8 hiển thị + `GameDialogHidden`) — layer mới *switch* trên
   cùng family đó (9 nhánh), chỉ render khác.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
-- Đây là bài **file-nhiều-nhất** của milestone (10 lib + 5 test)
-  nhưng *ít concept mới nhất* — mọi thứ là reuse có-kiến-trúc:
+- Đây là bài **file nhiều nhất** của milestone (10 lib + 5 test)
+  nhưng *ít concept mới nhất* — mọi thứ là reuse có kiến trúc:
   `SvgPicture`+`srcIn` (Bài 2), controller/`didUpdateWidget`/
   trigger (Bài 3-4), `AnimatedSwitcher`/`BackdropFilter`/
   `IgnorePointer`/runtimeType-key (M21). Bài tập lớn ở *đọc
   hiểu cấu trúc*, không ở khái niệm.
-- Layer mới là điểm-nối: nó *render* `GameMoneyLadderDialogView`
+- Layer mới là điểm nối: nó *render* `GameMoneyLadderDialogView`
   (Bài 4) + các view shell — land cùng lúc để subsystem dialog
   hoàn chỉnh một mạch; `GameScreen` mới ở Bài 6 chỉ việc gắn
   vào layer này.
@@ -67,53 +67,52 @@ sidebar:
 ## Bạn đã biết gì
 
 - `AnimationController` + `SingleTicker…` + `didUpdateWidget` +
-  `dispose` (F-38/F-40, Bài 3-4) — `GameAnswerOptionList` dùng
+ `dispose` (Bài 3-4) — `GameAnswerOptionList` dùng
   y hệt: một controller + `forward(from:0)` khi `questionIndex`
-  đổi (chính là A-39 trigger!).
+ đổi (chính là trigger!).
 - `AnimatedSwitcher` keyed-`runtimeType` + `BackdropFilter` +
   `ImageFilter.blur` + `IgnorePointer` + `Curves.easeIn/OutCubic`
-  (F-29/F-30, D-37 — M21 layer cũ) — layer mới cùng công nghệ,
+ (M21 layer cũ) — layer mới cùng công nghệ,
   chỉ khác *nội dung* view.
-- `SvgPicture.asset` + `ColorFilter.mode(srcIn)` (F-42, Bài 2) —
+- `SvgPicture.asset` + `ColorFilter.mode(srcIn)` (Bài 2)
   `yellow600` tint cho lightning, `iconGameMoney` không filter
   (giữ màu gốc vàng của file).
-- `if (x case final y?)` (D-48, Bài 2) — shell dùng *hai lần*:
+- `if (x case final y?)` (Bài 2) — shell dùng *hai lần*:
   `iconAsset` trước, `icon` sau.
-- `MediaQuery.disableAnimations` → `Duration.zero` (F-30, Bài 4) —
+- `MediaQuery.disableAnimations` → `Duration.zero` (Bài 4)
   answer-blink, answer-container, layer-transition đều gate;
   `AnimatedSwitcher` duration cũng gate.
-- `Semantics(button/enabled/label)` + `ExcludeSemantics` (F-28) —
-  answer-option thêm `value`/`liveRegion`/`onTap` (F-43 mới).
-- `GameDialogState` sealed 8-case + `switch` exhaustive (D-26/
-  D-27, A-21 — M20/M21) — `_dialogBody` switch y hệt layer cũ.
+- `Semantics(button/enabled/label)` + `ExcludeSemantics` 
+ answer-option thêm `value`/`liveRegion`/`onTap` (mới).
+- `GameDialogState` sealed 8-case + `switch` exhaustive (M20/M21) — `_dialogBody` switch y hệt layer cũ.
 
-## Mental model mới — "implicit family: widget tự-tween" (F-41)
+## Mental model mới — "implicit family: widget tự tween" 
 
-> **F-41 — Implicit-animation widgets.** `AnimatedOpacity`,
+> ** — Implicit-animation widgets.** `AnimatedOpacity`,
 > `AnimatedScale`, `AnimatedContainer`, `AnimatedDefaultTextStyle`,
 > `TweenAnimationBuilder` — bạn truyền *đích* (`opacity: 0.38`,
 > `style:`, `tween: Tween(begin:0, end:1)`) + `duration` +
 > `curve`; widget tự sở hữu `AnimationController` nội bộ và
-> tween prop-cũ→prop-mới mỗi lần rebuild. Không `vsync`, không
+> tween prop cũ→prop mới mỗi lần rebuild. Không `vsync`, không
 > `dispose`, không `forward()` — nhưng cũng không "chạy khi
 > nào mình bảo": nó chạy *khi prop đổi*.
 
-So sánh trục-quyền với Bài 3:
+So sánh trục quyền với Bài 3:
 
-| | Implicit (F-41) | Explicit (F-38) |
+| | Implicit | Explicit |
 |---|---|---|
 | Controller | widget tự new | **bạn** new + `vsync` |
 | Lái bằng | prop đổi → auto-tween | `forward`/`repeat`/`stop` |
 | Dispose | tự | **bạn** `dispose()` |
 | Repeat/loop | `TweenAnimationBuilder` re-arm bằng `key` mới | `repeat(reverse:)` |
-| Khi nào chọn | prop-drift đơn giản (fade, scale, color) | loop, one-shot gated, nhiều-choreography |
+| Khi nào chọn | prop-drift đơn giản (fade, scale, color) | loop, one-shot gated, nhiều choreography |
 
-`TweenAnimationBuilder` là cầu-nối: nó là *implicit* (bạn vẫn
+`TweenAnimationBuilder` là cầu nối: nó là *implicit* (bạn vẫn
 không new controller) nhưng nhận `tween` + `builder` tùy ý —
 reveal-blink dùng nó để lái `_blinkOpacity(progress)` custom.
 
 Một trường hợp lai đáng chú ý — `GameAnswerOptionList`: **một**
-controller explicit (F-38) lái *nhiều* `CurvedAnimation` con
+controller explicit lái *nhiều* `CurvedAnimation` con
 với `Interval(start, 1)` khác nhau → bốn ô stagger bằng *một*
 ticker, không cần bốn controller:
 
@@ -128,7 +127,7 @@ final animation = CurvedAnimation(
 `Interval(0.3, 1)` nghĩa là "con này chỉ chạy trong 70%-cuối
 của ticker cha" — ô thứ 4 (start 0.4-cap) vào muộn nhất.
 
-Và **semantics nâng** (F-43, LIGHT): `Semantics` không chỉ
+Và **semantics nâng** (LIGHT): `Semantics` không chỉ
 `label` — `value:` báo *trạng thái* ("Đã chọn"/"Đúng"/"Sai"),
 `liveRegion: true` bảo TalkBack *chủ động đọc* khi node đổi
 (đáp án đúng vừa reveal), `onTap:` expose hành động. Test
@@ -139,25 +138,25 @@ value:…)` để assert từng thuộc tính.
 
 | Construct | Vai trò |
 |---|---|
-| `switch (state) { GameAnswerState.idle => null, … }` | `_stateLabel` — exhaustive enum-switch trả `String?` (idle → không value) — D-27 reuse |
-| `if (iconAsset case final asset?) … else if (icon case final iconData?)` | **D-48 reuse** — dual if-case trong `_Header`: `iconAsset` thắng, `icon` fallback (IconData vẫn sống tới Bài 6) |
+| `switch (state) { GameAnswerState.idle => null, … }` | `_stateLabel` — exhaustive enum-switch trả `String?` (idle → không value) — reuse |
+| `if (iconAsset case final asset?) … else if (icon case final iconData?)` | ** reuse** — dual if-case trong `_Header`: `iconAsset` thắng, `icon` fallback (IconData vẫn sống tới Bài 6) |
 | `'${data.answerLabel}:${data.answerText}:${data.state}'` trong `ValueKey` | key chứa *cả state* — đổi state → widget mới → `TweenAnimationBuilder` re-arm tween từ đầu (kỹ thuật "implicit re-trigger") |
-| `math.sin(visibleProgress * math.pi) * 0.34` | `_blinkOpacity` — sin-pulse: 0 → đỉnh-ở-giữa → 0 trong `visiblePortion` đầu của 1200ms, rồi tắt hẳn |
-| `dialog as GameEndedDialog` trong `switch` pattern | pattern `GameEndedDialog()` khớp rồi `as` bóc data — D-26/D-27 reuse y hệt layer cũ |
+| `math.sin(visibleProgress * math.pi) * 0.34` | `_blinkOpacity` — sin-pulse: 0 → đỉnh ở giữa → 0 trong `visiblePortion` đầu của 1200ms, rồi tắt hẳn |
+| `dialog as GameEndedDialog` trong `switch` pattern | pattern `GameEndedDialog()` khớp rồi `as` bóc data — / reuse y hệt layer cũ |
 
 ## Flutter cần dùng
 
 | API | Vai trò |
 |---|---|
-| `TweenAnimationBuilder<double>({key, tween, duration, builder, child})` | **F-41** — reveal-blink: `end` bật-1-khi-correct (hoặc-0), `key` chứa state để re-arm; `builder` nhận `progress` → `_blinkOpacity` |
-| `AnimatedContainer(duration, curve, decoration, …)` | **F-41** — ô đáp án đổi `colors.background`/`colors.border` theo state — crossfade `motionMedium` (hoặc zero khi reduce-motion) |
+| `TweenAnimationBuilder<double>({key, tween, duration, builder, child})` | — reveal-blink: `end` bật-1-khi-correct (hoặc-0), `key` chứa state để re-arm; `builder` nhận `progress` → `_blinkOpacity` |
+| `AnimatedContainer(duration, curve, decoration, …)` | — ô đáp án đổi `colors.background`/`colors.border` theo state — crossfade `motionMedium` (hoặc zero khi reduce-motion) |
 | `CurvedAnimation(parent, curve: Interval(start, 1, easeOutCubic))` | stagger — cắt một đoạn của ticker cha; `start = min(index*0.1, 0.4)` |
 | `Opacity`/`Transform.translate`/`Transform.scale` trong `AnimatedBuilder` | answer-list lái opacity + dy `16*(1-v)` + scale `0.98+0.02v` — cùng một `animation` |
-| `AnimatedSwitcher(duration, child: keyed)` | question-text crossfade khi `index-text` đổi (F-29 reuse); duration gated reduce-motion |
-| `BackdropFilter(filter: ImageFilter.blur(sigmaX:16, sigmaY:16))` | scrim mờ sau dialog — F-30 reuse, sigma từ `AppTokens.dialogHazeBlurSigma` |
-| `IgnorePointer(ignoring: dialog is GameDialogHidden)` | mở/khóa tap-xuống-game theo state — y hệt layer cũ (F-30) |
+| `AnimatedSwitcher(duration, child: keyed)` | question-text crossfade khi `index-text` đổi (reuse); duration gated reduce-motion |
+| `BackdropFilter(filter: ImageFilter.blur(sigmaX:16, sigmaY:16))` | scrim mờ sau dialog — reuse, sigma từ `AppTokens.dialogHazeBlurSigma` |
+| `IgnorePointer(ignoring: dialog is GameDialogHidden)` | mở/khóa tap xuống game theo state — y hệt layer cũ |
 | `LinearProgressIndicator(value, color, backgroundColor, borderRadius)` | `AudiencePollRow` — thanh % khán giả bo `radiusN` (named-param `borderRadius` mới của indicator) |
-| `Semantics(liveRegion:, value:, onTap:)` + `getSemantics`/`matchesSemantics` | **F-43** — TalkBack đọc state-đổi chủ động; test assert thuộc tính semantics |
+| `Semantics(liveRegion:, value:, onTap:)` + `getSemantics`/`matchesSemantics` | — TalkBack đọc state đổi chủ động; test assert thuộc tính semantics |
 | `FittedBox(fit: BoxFit.scaleDown)` | `GameDialogMoneyRow` — amount dài co chữ xuống thay vì tràn (test 'long amount stays centred') |
 
 ## Ví dụ độc lập — implicit stagger trên một controller
@@ -218,7 +217,7 @@ AsState`/`updateTransition`; `AnimatedContainer` ≈ `animate
 *AsState` trên color/size; `Interval` ≈ `keyframes`/`spring`
 với delay khác nhau.** Compose stagger bằng `LaunchedEffect` +
 delay hoặc `Animatable` per-item; Flutter `Interval` trên *một*
-controller là cùng ý-tưởng "một timeline, nhiều cửa-sổ-con".
+controller là cùng ý tưởng "một timeline, nhiều cửa sổ con".
 
 **IMPORTANT DIFFERENCE — `TweenAnimationBuilder` re-arm bằng
 `key`, không phải `LaunchedEffect`.** Trong Compose, đổi
@@ -243,7 +242,7 @@ duration bị gate bằng tay (`Duration.zero`), không tự động.
 | Senior @ `main@c8eb860` | Dùng để chứng minh |
 |---|---|
 | `lib/widgets/game/answers/game_answer_option.dart` (193 dòng) | **verbatim-port** — `TweenAnimationBuilder` keyed `label:text:state` dòng 41–47, `_blinkOpacity` sin-pulse dòng 131–139, semantics `liveRegion`/`value` dòng 29–36, `AnimatedContainer` gated dòng 74–78 |
-| `lib/widgets/game/answers/game_answer_option_colors.dart` (45 dòng) | **verbatim-port** — `GameAnswerOptionColors.fromState` bốn-state color set (idle/selected/correct/incorrect) |
+| `lib/widgets/game/answers/game_answer_option_colors.dart` (45 dòng) | **verbatim-port** — `GameAnswerOptionColors.fromState` bốn state color set (idle/selected/correct/incorrect) |
 | `lib/widgets/game/answers/game_answer_option_list.dart` (95 dòng) | **verbatim-port** — `SingleTicker…` + `Interval(min(i*0.1,0.4),1)` stagger dòng 59–61, `forward(from:0)` on `questionIndex` dòng 43 |
 | `lib/widgets/game/questions/game_question_panel.dart` (151 dòng) | **verbatim-port** — `AnimatedSwitcher` key `index-text` dòng 80–83, lightning `yellow600 srcIn` ×2 dòng 144–148, count badge `${display}/${total}` |
 | `lib/widgets/game/lifelines/game_audience_poll_row.dart` (46 dòng) | **verbatim-port** — `LinearProgressIndicator` + `borderRadius` cho poll row |
@@ -255,7 +254,7 @@ duration bị gate bằng tay (`Duration.zero`), không tự động.
 ## Build it step by step
 
 Bài này port 10 file lib + 5 test — chia bốn cụm. Toàn bộ
-**verbatim senior**; dưới đây chỉ trích vùng-đáng-đọc.
+**verbatim senior**; dưới đây chỉ trích vùng đáng đọc.
 
 **Bước 1 — answers (3 file).**
 
@@ -321,15 +320,15 @@ vùng trung tâm:
 
 `_blinkOpacity` (dòng 131–139) là sin-pulse: chỉ "hiện" trong
 `_answerRevealBlinkVisiblePortion` đầu của 1200ms, `sin(π·x)·0.34`
-→ blink lên-rồi-tắt một lần, không lặp. `effectiveOnTap` null
+→ blink lên rồi tắt một lần, không lặp. `effectiveOnTap` null
 khi `answerLabel`/`answerText` rỗng (50:50 xoá ô → ô câm hoàn
 toàn: không tap, không badge).
 
 `lib/widgets/game/answers/game_answer_option_list.dart` (95
-dòng) — stagger-list (đã trích ở F-41): một controller
+dòng) — stagger-list (đã trích ở): một controller
 `motionSlow`, `didUpdateWidget` `forward(from:0)` khi
 `questionIndex` đổi — **`questionIndex` đóng vai
-`animationTrigger`** (A-39 reuse): câu mới → replay stagger.
+`animationTrigger`** (reuse): câu mới → replay stagger.
 
 **Bước 2 — question panel + poll row (2 file).**
 
@@ -343,7 +342,7 @@ là `AnimatedSwitcher` gated-reduce-motion, child keyed
 data.totalQuestions}'` (vd `1/15`) kẹp hai `_lightningIcon()`
 — `SvgPicture.asset(AppAssets.iconGameLightning, colorFilter:
 ColorFilter.mode(AppTokens.yellow600, BlendMode.srcIn))` — đây
-là chỗ `srcIn` *đổi màu thật* (không phải trắng-lên-trắng như
+là chỗ `srcIn` *đổi màu thật* (không phải trắng lên trắng như
 Bài 2).
 
 `lib/widgets/game/lifelines/game_audience_poll_row.dart` (46
@@ -359,7 +358,7 @@ có từ M20; consumer ở `GameAudiencePollDialogView` bên dưới.
 khung chung của mọi dialog game:
 
 - `GameDialogShell({title, iconAsset, icon, …})` — card ngoài
-  gradient-viền + card trắng `white100` trong + `_Header`:
+  gradient viền + card trắng `white100` trong + `_Header`:
   `title.toUpperCase()` + overlay `headerSheen` (Bài 1) +
   dual if-case `iconAsset`-thắng-`icon`-fallback.
 - `GameDialogButton` = `SizedBox(width: infinity)` bọc
@@ -367,7 +366,7 @@ khung chung của mọi dialog game:
   `_DialogShareButton` scaffold M27** (scaffold đó retire ở
   Bài 6 cùng views cũ).
 - `GameDialogMoneyRow` — `SvgPicture.asset(AppAssets.iconGame
-  Money)` coin-trái + `Flexible(FittedBox(scaleDown, Text))`
+  Money)` coin trái + `Flexible(FittedBox(scaleDown, Text))`
   + `SizedBox(width: _coinGutter)` phải — `_coinGutter =
   iconLg + spacingXs` *bằng đúng* coin+gap để amount căn giữa
   dù có coin lệch trái (test assert `center.dx` bằng nhau).
@@ -392,7 +391,7 @@ DialogView` (`_LoadingBody`/`_AIAssistantBody` + sparkle),
 `"XÁC NHẬN DỪNG"`/`"CHƠI TIẾP"` trên VI.
 
 `lib/widgets/game/dialogs/game_dialog_layer.dart` (191 dòng) —
-**file thay-thế**: cùng vai trò layer cũ nhưng render bằng
+**file thay thế**: cùng vai trò layer cũ nhưng render bằng
 subsystem mới:
 
 ```dart
@@ -437,21 +436,21 @@ khung 375.
 
 - `test/widgets/game_answer_option_test.dart` (+4): pill+badge
   audience; `liveRegion`/`value` chỉ khi non-idle
-  (`matchesSemantics`); ô-rỗng không-tap-không-badge; disabled
+  (`matchesSemantics`); ô rỗng không tap không badge; disabled
   semantics khi `onTap` null.
 - `test/widgets/game_answer_option_reveal_blink_test.dart` (+3):
-  blink giữ 1200ms-tổng-nhưng-chỉ-hiện-`visiblePortion`; không
+  blink giữ 1200ms tổng nhưng chỉ hiện-`visiblePortion`; không
   blink khi `incorrect`; skip khi `MediaQueryData(disable
   Animations: true)`.
 - `test/widgets/game_question_panel_test.dart` (+1): surface
   gradient + badge `1/15` + hai lightning.
 - `test/widgets/game_dialog_money_row_test.dart` (+4): amount
   `center.dx` ≈ row `center.dx` trong exit/walk-away/result
-  dialog + amount-dài-co-chữ-vẫn-giữa.
+  dialog + amount dài co chữ vẫn giữa.
 - `test/widgets/game_dialog_layer_test.dart` (**thay thế**,
-  10→11): bản senior đầy đủ — keyed fade, reduced-motion-xoá-
-  ngay-outgoing, dismiss-giữ-outgoing-trong-exit, terminal+
-  money-ladder-animate-out-trước-khi-remove, ladder-fit-không-
+  10→11): bản senior đầy đủ — keyed fade, reduced motion xoá
+  ngay-outgoing, dismiss giữ outgoing trong exit, terminal+
+  money ladder animate out trước khi remove, ladder fit không
   scroll, acknowledge-dismiss, action-buttons-fill-width,
   outside-tap-rules ×2. Ba case visual senior (shell width/
   shadow/compact-fit) mà file VI cũ từng ghi "→ M28 không
@@ -481,21 +480,21 @@ flutter test     → +289: All tests passed!
    trên đĩa** sau bài này — Bài 6 mới xoá (screen cũ còn dùng).
 2. **`ValueKey('…:$state')` là cơ chế re-trigger của blink.**
    Không có key này, `TweenAnimationBuilder` giữ identity qua
-   state-đổi và tween `0→0`/`1→0` không replay — key chứa
+   state đổi và tween `0→0`/`1→0` không replay — key chứa
    state nghĩa là "state mới = widget mới = tween mới từ 0".
 3. **`_coinGutter` là *cân bằng*, không phải padding.** Trừ
-   đúng `iconLg + spacingXs` ở phải để tổng-lệch-trái (coin +
-   gap) bằng lệch-phải → amount text thực sự ở giữa row —
-   test `center.dx`-so-sánh là bằng chứng.
+   đúng `iconLg + spacingXs` ở phải để tổng lệch trái (coin +
+   gap) bằng lệch phải → amount text thực sự ở giữa row —
+   test `center.dx`-so sánh là bằng chứng.
 4. **`iconAsset` thắng `icon` trong shell.** `_Header` có
    `if (iconAsset case …) else if (icon case …)` — thứ tự
    quyết định ưu tiên: asset-path luôn được render nếu cả hai
-   set. Đây là cầu-nối chuyển-tiếp: `IconData` vẫn tồn tại
+   set. Đây là cầu nối chuyển tiếp: `IconData` vẫn tồn tại
    trong DTO tới Bài 6.
 5. **Answer-list `questionIndex` = money `animationTrigger`.**
-   Cùng pattern A-39: prop-int báo "context mới" → `forward
+ Cùng pattern : prop-int báo "context mới" → `forward
    (from:0)` replay. Khác chỗ: questionIndex *là* data có
-   nghĩa (số câu), trigger money là counter thuần-tín-hiệu.
+   nghĩa (số câu), trigger money là counter thuần tín hiệu.
 
 ## Chạy và quan sát
 
@@ -521,18 +520,18 @@ thường có đỏ không? Vì sao?
 
 Test **'keeps total duration but shortens visible correct
 blink'** (trong `reveal_blink_test`) **đỏ.** Khi option đi
-`idle → correct` với key giữ-nguyên (`label:text`), widget
+`idle → correct` với key giữ nguyên (`label:text`), widget
 `TweenAnimationBuilder` *giữ identity* — tween `end` đổi
 `0→1` nhưng `begin` vẫn `0` nên nó *sẽ* animate (implicit
 vẫn chạy khi end đổi)… **nhưng** trong kịch bản *correct →
 idle → correct* (câu sau cũng correct cùng label) hoặc khi
-parent rebuild với cùng-text-khác-state, widget giữ nguyên
+parent rebuild với cùng text khác state, widget giữ nguyên
 `progress=1` từ lần trước — `end: 1` không đổi → **không
 blink lại**. Test senior pump option vào `correct` hai lần
 liên tiếp/qua state trung gian và assert blink *replay* —
 không có `state` trong key, tween không re-arm → FAIL. Key
 chứa state là cách duy nhất "implicit mà vẫn re-trigger" —
-đây là bản chất F-41: implicit animation chỉ chạy khi *prop
+đây là bản chất: implicit animation chỉ chạy khi *prop
 trong cùng một widget* đổi, không chạy khi bạn cần *context
 mới*.
 </details>
@@ -547,9 +546,9 @@ mới*.
    thứ tự if-case → `IconData` render khi asset đã có; `iconAsset`
    phải là nhánh *đầu*.
 3. **Quên `transformHitTests: false` trong transition** — dialog
-   đang trượt-ra vẫn bắt tap ở vị trí cũ; senior set `false`
+   đang trượt ra vẫn bắt tap ở vị trí cũ; senior set `false`
    để outgoing không chặn gesture.
-4. **`liveRegion: true` không gate state** — idle-cũng-live
+4. **`liveRegion: true` không gate state** — idle cũng live
    làm TalkBack đọc mỗi rebuild; gate `state != idle` như senior.
 5. **Assert text tiếng Việt *thường* cho title** — views gọi
    `.toUpperCase()` → phải assert HOA (`"THANG TIỀN THƯỞNG"`,
@@ -566,7 +565,7 @@ animate được không nếu `start` vượt 1.0? Trace `_controller`
 
 :::note[Gợi ý]
 `Interval(start, end)` cắt `[start, end]` của ticker cha;
-`start` ≥ 1 nghĩa là cửa-sổ-con bắt đầu *sau khi* cha xong.
+`start` ≥ 1 nghĩa là cửa sổ con bắt đầu *sau khi* cha xong.
 :::
 
 <details>
@@ -574,10 +573,10 @@ animate được không nếu `start` vượt 1.0? Trace `_controller`
 
 `index * 0.2` với index 3 → `start = 0.6` (vẫn < 1 — animate
 được, chỉ vào muộn hơn). Nhưng nếu list có 6 ô (index 5) →
-`start = 1.0` → `Interval(1.0, 1)` là cửa-sổ rỗng: `animation.
+`start = 1.0` → `Interval(1.0, 1)` là cửa sổ rỗng: `animation.
 value` = 0 mãi (hoặc clamp ở cuối) — ô đó **không bao giờ
 hiện** (opacity 0 vĩnh viễn). Cap `min(…, 0.4)` chính là
-bảo-đảm "ô cuối cùng — dù index bao nhiêu — luôn còn 60%
+bảo đảm "ô cuối cùng — dù index bao nhiêu — luôn còn 60%
 timeline để vào". Đây là lý do senior chọn cap thay vì
 `index * 0.1` trần: số ô đáp án có thể đổi (ít hơn 4 khi
 50:50 xoá bớt — dù ở đây list giữ 4 ô với text rỗng), cap
@@ -596,16 +595,16 @@ giữ stagger an toàn cho mọi độ dài.
   `motionSlow`; stagger trên một ticker duy nhất.
 - **Hỏi:** `ValueKey(dialog.runtimeType)` khác `ValueKey
   (dialog)` ở chỗ nào? — **Đáp:** key theo *loại* (Type) —
-  hai `GameEndedDialog` data-khác-nhau cùng một key → switcher
-  không coi là dialog-mới (không re-animate khi chỉ data đổi);
-  key theo instance sẽ animate mỗi data-update (D-37 reuse).
+  hai `GameEndedDialog` data khác nhau cùng một key → switcher
+  không coi là dialog mới (không re-animate khi chỉ data đổi);
+ key theo instance sẽ animate mỗi data-update (reuse).
 - **Hỏi:** `GameDialogButton` khác `_DialogShareButton` scaffold
   M27 ở đâu? — **Đáp:** nó bọc `QzdsGameButton` thật (gradient
   + `lightShadow` + `surfaceGlow`) thay vì `ElevatedButton`
   phẳng — scaffold retire ở Bài 6.
 - **Hỏi:** `_canDismissFromBackdrop` chặn dialog nào? — **Đáp:**
   `GameMoneyLadderDialog` + terminal (`GameEndedDialog`/
-  `GameVictoryDialog`) — tap-nền không đóng được; `onDismiss`
+  `GameVictoryDialog`) — tap nền không đóng được; `onDismiss`
   cho các dialog còn lại.
 - **Hỏi:** `_stateLabel` trả `String?` — `idle` về `null` có
   nghĩa gì? — **Đáp:** `Semantics.value` = null → không báo

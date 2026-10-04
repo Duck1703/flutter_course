@@ -1,6 +1,6 @@
 ---
 title: "Bài 4 · Wiring — DI scope, version row, onboarding xin quyền thật"
-description: "Đóng khoảng hở Bài 3: `main()` tạo `LocalNotificationServiceImpl()` VÔ ĐIỀU KIỆN (khác A-24 conditional — service tự guard, không dart-define) + `Provider<LocalNotificationService>.value` trong AppDependencyScope. Onboarding đổi simulated grant → `requestPermission()` thật + `FlutterError.reportError` (FR-27). `v$appVersion` row + `package_info_plus` seam `() async => '9.9.9'` (F-37). Widget-test hosts nhận `notificationService:` — +0 test → 259."
+description: "Đóng khoảng hở Bài 3: `main()` tạo `LocalNotificationServiceImpl()` VÔ ĐIỀU KIỆN (khác conditional — service tự guard, không dart-define) + `Provider<LocalNotificationService>.value` trong AppDependencyScope. Onboarding đổi simulated grant → `requestPermission()` thật + `FlutterError.reportError`. `v$appVersion` row + `package_info_plus` seam `() async => '9.9.9'`. Widget-test hosts nhận `notificationService:` — +0 test → 259."
 sidebar:
   label: "Bài 4 · wiring + version + onboarding"
   order: 4
@@ -12,13 +12,13 @@ sidebar:
   **vô điều kiện** + `AppDependencyScope` đăng ký
   `Provider<LocalNotificationService>.value`.
 - Giải thích được vì sao service này *không* theo conditional-DI
-  của Supabase (A-24): không dart-define lái — impl tự an toàn
+ của Supabase: không dart-define lái — impl tự an toàn
   (`initialize` web OK, `requestPermission` → `!kIsWeb`).
 - Đổi onboarding từ simulated grant sang `requestPermission()`
   thật + `FlutterError.reportError` khi lỗi — coi lỗi là denied,
-  không crash overlay (FR-27).
+ không crash overlay.
 - Hiển thị `v$appVersion` cuối settings dialog + giải thích
-  `package_info_plus` và seam `loadAppVersion` (F-37).
+ `package_info_plus` và seam `loadAppVersion`.
 - Cập nhật widget-test hosts (bốn `AppDependencyScope` hosts +
   onboarding `Provider.value` host) nhận fake service — +0 test →
   **259/259**. (Hai `SettingsDialogScope` hosts đã vá ở Bài 3.)
@@ -36,27 +36,27 @@ sidebar:
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
-Đây là bài chứng-minh-claim của A-35: vì VM/widget chỉ biết
+Đây là bài chứng minh claim của DI: vì VM/widget chỉ biết
 *contract*, giờ ta đặt impl plugin vào app-scope mà **không sửa
 một dòng nào** trong VM/dialog/onboarding — đổi impl = đổi một
 chỗ `main()`. Đồng thời đây là lúc hai tính năng user-facing
 cuối cùng bật lên: `v…` version text và nút "Bật thông báo"
 onboarding xin quyền thật — cái `onNotificationPermissionResult(
-true)` giả-vờ cũ chết tại đây.
+true)` giả vờ cũ chết tại đây.
 
 ## Bạn đã biết gì
 
 - `AppDependencyScope` + `Provider<CONTRACT>.value` — đăng ký theo
-  kiểu interface (M14 — A-07/F-21).
+ kiểu interface (M14).
 - Conditional DI: `client == null ? Disabled : Impl` trong `main()`
-  (M23 — A-24) — *sẽ đối lập* với unconditional của bài này.
+ (M23) — *sẽ đối lập* với unconditional của bài này.
 - `context.read<T>()` ở `didChangeDependencies`/caller trước
-  `showDialog` (M16 — F-17).
+ `showDialog` (M16).
 - `OnboardingViewModel.onNotificationPermissionResult(bool)` đã
   tồn tại từ M18 — scope cũ gọi nó với `true` hardcode.
-- `unawaited(...)` cho future-không-await trong callback (D-17 —
+- `unawaited(...)` cho future không await trong callback (
   M11).
-- `FlutterError.reportError` — báo lỗi không-fatal lên framework
+- `FlutterError.reportError` — báo lỗi không fatal lên framework
   (đã gặp trong `OnboardingViewModel` error paths — M18).
 
 ## Mental model mới — "hai kiểu DI: conditional vs unconditional"
@@ -71,7 +71,7 @@ true)` giả-vờ cũ chết tại đây.
                                      federated), không cần dart-define
 ```
 
-Quy tắc chọn: nếu *không-có-impl-an-toàn* (Supabase thiếu URL thì
+Quy tắc chọn: nếu *không có impl an toàn* (Supabase thiếu URL thì
 không chạy được) → conditional DI với Disabled-impl. Nếu impl
 *tự an toàn mọi platform* (plugin có web stub, mọi call đều
 degrade gracefully) → unconditional — không cần fake/disabled
@@ -81,8 +81,8 @@ song song.
 
 | Construct | Vai trò |
 |---|---|
-| `PackageInfo.fromPlatform()` | static async — đọc metadata bundle của app đang chạy; `.version` trả chuỗi `version:` từ pubspec (F-37 — mới) |
-| `FlutterError.reportError(FlutterErrorDetails(exception:, stackTrace:, library:, context:))` | báo lỗi không-fatal lên framework — xuất hiện trong console/TestWidgetsFlutterBinding mà không crash app |
+| `PackageInfo.fromPlatform()` | static async — đọc metadata bundle của app đang chạy; `.version` trả chuỗi `version:` từ pubspec (mới) |
+| `FlutterError.reportError(FlutterErrorDetails(exception:, stackTrace:, library:, context:))` | báo lỗi không fatal lên framework — xuất hiện trong console/TestWidgetsFlutterBinding mà không crash app |
 | `unawaited(future)` | đánh dấu "cố ý không await" — onboarding callback fire-and-forget nhưng vẫn `async` bên trong |
 
 ## Flutter cần dùng
@@ -93,7 +93,7 @@ song song.
 | `context.read<LocalNotificationService>()` | onboarding scope + `showSettingsDialog` đọc — giờ đã có provider trả |
 | `Text('v${viewModel.appVersion}')` + `isNotEmpty` gate | row version chỉ render khi đã nạp — `''` trước `loadSettings` → không hiện `v` trần |
 
-## Ví dụ độc lập — seam hàm-thay-impl (DartPad)
+## Ví dụ độc lập — seam hàm thay impl (DartPad)
 
 ```dart
 // Seam `Future<String> Function()` — production truyền loader thật,
@@ -152,7 +152,7 @@ registration vô dụng khi user không đụng notification.
 |---|---|
 | `lib/main.dart` — `final notificationService = LocalNotificationServiceImpl();` (vô điều kiện, ngay sau repos) | learner verbatim — cùng điểm khởi tạo, không dart-define |
 | `lib/core/app_dependency_scope.dart` — field + `Provider<LocalNotificationService>.value` | learner verbatim — entry theo contract |
-| `lib/view_models/settings/settings_app_version_loader.dart` | 6 dòng verbatim (đã land Bài 3); F-37 giải thích ở đây |
+| `lib/view_models/settings/settings_app_version_loader.dart` | 6 dòng verbatim (đã land Bài 3); giải thích ở đây |
 | `lib/widgets/menu/settings/settings_card.dart` — `v$appVersion` cuối card | learner render cùng điều kiện `isNotEmpty` |
 | `lib/widgets/onboarding/onboarding_overlay_scope.dart` — `_requestNotificationPermission` | verbatim — đọc service → `requestPermission()` → `onNotificationPermissionResult(granted)`; catch → `FlutterError.reportError` + `false` |
 
@@ -289,7 +289,7 @@ host onboarding cần `Provider` cho `context.read` mới):
 `AppDependencyScope`.)
 
 **Bước 6 — `flutter analyze` + `flutter test`** → **259/259**
-(+0 — hosts là sửa-call-site, không test mới).
+(+0 — hosts là sửa call site, không test mới).
 
 ## Hiểu code — bốn chi tiết dễ trượt
 
@@ -298,12 +298,12 @@ host onboarding cần `Provider` cho `context.read` mới):
    `requestPermission` → `!kIsWeb`); Disabled-impl song song chỉ
    thêm lớp không ai dùng. Điều kiện DI chỉ đáng khi *thiếu impl
    an toàn* — dart-define điều khiển *cấu hình*, không phải
-   *khả-năng-chạy*.
+   *khả năng chạy*.
 2. **`requestPermission` ở onboarding vs settings.** Cùng contract
    method, hai call-site khác nhau — onboarding truyền kết quả vào
    VM riêng của nó (`onNotificationPermissionResult`), settings
    đi qua `_toggleNotifications`/coordinator. Service không biết
-   ai gọi — đúng ranh giới A-35.
+ ai gọi — đúng ranh giới.
 3. **`catch` onboarding báo `reportError` thay vì snackbar.**
    Onboarding không có cơ chế snackbar riêng — lỗi hiếm (plugin
    chết) → log qua `FlutterError` để dev/CI thấy, user-flow coi
@@ -376,7 +376,7 @@ ctor (stream.value), `_hasNotificationPermission` giữ `false`,
 hiện**; snackbar `loadFailed` bắn. `hasPermission()` *đã chạy*
 song song (fire không hủy) nhưng kết quả bị bỏ cùng `wait`.
 Ba-state-atomicity của `wait`: hoặc cả ba gán, hoặc không gán —
-không có trạng thái nửa-vở.
+không có trạng thái nửa vở.
 </details>
 
 ## Kiểm tra hiểu biết
@@ -385,7 +385,7 @@ không có trạng thái nửa-vở.
   `supabaseClient == null ? Disabled : Impl`? — **Đáp:** impl tự
   an toàn mọi platform (`!kIsWeb` + web impl federated); không có
   dart-define nào lái notification → conditional chỉ thêm lớp vô
-  dụng (khác A-24: Supabase *không chạy được* khi thiếu config).
+ dụng (khác với Supabase: *không chạy được* khi thiếu config).
 - **Hỏi:** onboarding request lỗi thì user thấy gì? — **Đáp:**
   không gì thêm — catch báo `FlutterError.reportError` (log cho
   dev) rồi `onNotificationPermissionResult(false)` → step coi như
@@ -394,7 +394,7 @@ không có trạng thái nửa-vở.
   thành công gán `_appVersion` khác `''` — `isNotEmpty` gate.
 - **Hỏi:** test truyền version như thế nào? — **Đáp:** seam
   `loadAppVersion: () async => '9.9.9'` — `Future<String>
-  Function()` thay `PackageInfo` thật (F-37).
+ Function` thay `PackageInfo` thật.
 
 ## Ta cố ý chưa thêm
 

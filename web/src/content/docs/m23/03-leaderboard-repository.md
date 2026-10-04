@@ -1,28 +1,28 @@
 ---
 title: "Bài 3 · LeaderboardRepository — query chain & row mapping"
-description: "Mổ xẻ cụm đã port ở Bài 2: contract loadLeaderboard({currentUserId}) → LeaderboardSnapshot; chuỗi query senior from('leaderboard').select(...).order(total_money_won desc).order(rank).limit(10) + .eq('auth_uuid',uid).maybeSingle(); _LeaderboardRecord map JSON→entry phòng thủ; entryFromRow seam; DisabledLeaderboardRepository; FakeLeaderboardRepository + 4 test → 171 → 175."
+description: "Mổ xẻ cụm đã port ở Bài 2: contract loadLeaderboard({currentUserId}) → LeaderboardSnapshot; chuỗi query senior from('leaderboard').select(...).order(total_money_won desc).order(rank).limit(10) +.eq('auth_uuid', uid).maybeSingle; _LeaderboardRecord map JSON→entry phòng thủ; entryFromRow seam; DisabledLeaderboardRepository; FakeLeaderboardRepository + 4 test → 171 → 175."
 sidebar:
-  label: "Bài 3 · repository + query"
-  order: 3
+ label: "Bài 3 · repository + query"
+ order: 3
 ---
 
 ## Mục tiêu
 
 - Đọc trơn chuỗi query Supabase: `from('leaderboard')` →
-  `select(cột)` → `order(...) × 2` → `limit(10)` và query hàng riêng
-  `.eq('auth_uuid', uid).maybeSingle()`.
+ `select(cột)` → `order(...) × 2` → `limit(10)` và query hàng riêng
+ `.eq('auth_uuid', uid).maybeSingle()`.
 - Hiểu `maybeSingle()` — "0 hoặc 1 dòng" trả `null` thay vì throw.
 - Giải thích mapping `Map<String,dynamic>` → `_LeaderboardRecord` →
-  `LeaderboardEntryData` (parse phòng thủ + format điểm bỏ ' VNĐ').
+ `LeaderboardEntryData` (parse phòng thủ + format điểm bỏ ' VNĐ').
 - Viết `FakeLeaderboardRepository` scriptable + 4 test repo → suite
-  **171 → 175**.
+ **171 → 175**.
 
 ## Bạn đang ở đâu
 
 - Bài 2: bốn file leaderboard đã vào `lib/` verbatim; scope đã đăng
-  ký contract; `main()` đã chọn impl theo cấu hình.
+ ký contract; `main()` đã chọn impl theo cấu hình.
 - Bài này KHÔNG thêm production file — nó mổ xẻ thứ đã port và khoá
-  lại bằng test.
+ lại bằng test.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -34,15 +34,14 @@ mọi query sau.
 
 ## Bạn đã biết gì
 
-- Contract + snapshot + hai impl (Bài 2 — A-23/A-24); `import`/
-  `export` file hợp nhất.
-- `Map<String,dynamic>` + parse phòng thủ kiểu `fromMap` (M10 —
-  D-15; `UserProfileData.fromMap` cùng họ).
-- `String.trim()`, `??`, `_intValue`-style fallback (D-03, D-15).
+- Contract + snapshot + hai impl (Bài 2); `import`/
+ `export` file hợp nhất.
+- `Map<String,dynamic>` + parse phòng thủ kiểu `fromMap` (M10 —; `UserProfileData.fromMap` cùng họ).
+- `String.trim()`, `??`, `_intValue`-style fallback.
 - `UserProfileData.formatVnd` (M14 — format '510.000 VNĐ').
-- `abstract interface class` + `implements` (D-19); fake repo
-  handwritten (A-11).
-- VIEW-vs-table + `auth_uuid` che trên view (Bài 1 — B-01/B-02).
+- `abstract interface class` + `implements`; fake repo
+ handwritten.
+- VIEW-vs-table + `auth_uuid` che trên view (Bài 1).
 
 ## Mental model — "snapshot là ảnh chụp, không phải kênh trực tiếp"
 
@@ -66,7 +65,7 @@ Khác `userProfileStream` (BehaviorSubject, M14): leaderboard không
 có stream — muốn dữ liệu mới, phải gọi `loadLeaderboard` lại. Đó
 chính là cơ sở cho `refresh()` ở Bài 4.
 
-## Dart/Backend mới — query builder + `maybeSingle` (**D-41**)
+## Dart/Backend mới — query builder + `maybeSingle` 
 
 | Construct | Vai trò |
 |---|---|
@@ -118,14 +117,14 @@ final row = await _client
 Ba chi tiết dễ trượt:
 
 1. **Hai `.order` liên tiếp** = `ORDER BY total_money_won DESC, rank`
-   — order thứ hai là tie-breaker, không ghi đè order thứ nhất.
+ — order thứ hai là tie-breaker, không ghi đè order thứ nhất.
 2. `.eq('auth_uuid', uid)` hoạt động nhờ thiết kế view ở Bài 1:
-   `auth_uuid` chỉ non-null trên hàng của chính caller → query lọc
-   này trả đúng một hàng của mình, hoặc không hàng nào.
+ `auth_uuid` chỉ non-null trên hàng của chính caller → query lọc
+ này trả đúng một hàng của mình, hoặc không hàng nào.
 3. `maybeSingle()` trả `null` khi 0 dòng — người chơi đã đăng nhập
-   nhưng chưa có trên bảng là *trường hợp hợp lệ*, không phải lỗi.
-   `single()` sẽ throw và biến "chưa có hạng" thành crash — đó là
-   lý do senior chọn `maybeSingle`.
+ nhưng chưa có trên bảng là *trường hợp hợp lệ*, không phải lỗi.
+ `single()` sẽ throw và biến "chưa có hạng" thành crash — đó là
+ lý do senior chọn `maybeSingle`.
 
 **Mapper phòng thủ** — `_LeaderboardRecord`:
 
@@ -156,12 +155,12 @@ static String _formatScore(int amount) {
 ```
 
 - `_intValue(v, fb)`: `int` → giữ; `num` khác (vd `1500000.0`) →
-  `toInt()`; còn lại → fallback. `_stringValue(v)`: `String`
-  non-blank → trim; còn lại → `null` (→ `?? 'Player'`/`?? null`).
-  Server trả kiểu lệch cũng không crash — đúng tinh thần
-  `UserProfileData.fromMap` của M14.
+ `toInt()`; còn lại → fallback. `_stringValue(v)`: `String`
+ non-blank → trim; còn lại → `null` (→ `?? 'Player'`/`?? null`).
+ Server trả kiểu lệch cũng không crash — đúng tinh thần
+ `UserProfileData.fromMap` của M14.
 - `score` trên entry là **String đã format** — UI chỉ in ra, không
-  tự format lại.
+ tự format lại.
 
 **Seam test** — vì không dựng được `SupabaseClient` trong test:
 
@@ -209,13 +208,13 @@ quả" mà VM (Bài 4) emit và UI (Bài 5) switch lên:
 | `LeaderboardPopupError` | `message` (`loadError`) | repo throw — render nút THỬ LẠI |
 | `LeaderboardPopupLoading` | `message` (`loading`) | request đang bay |
 
-`sealed` (D-26) nghĩa là tập đóng: mọi `switch` trên nó được
+`sealed` nghĩa là tập đóng: mọi `switch` trên nó được
 compiler bắt kiệt hợp — thêm variant thứ năm mà quên render là lỗi
-biên dịch, không phải bug ngầm (A-14). `LeaderboardPopupMessage`
+biên dịch, không phải bug ngầm. `LeaderboardPopupMessage`
 là enum nhãn — **model giữ enum, widget giữ chữ**: VM không biết
 chuỗi l10n; Bài 5 `_messageText` map enum → `l10n.*`.
 
-## `FakeLeaderboardRepository` — fake scriptable (A-11 nâng cấp)
+## `FakeLeaderboardRepository` — fake scriptable (nâng cấp)
 
 `test/helpers/fake_leaderboard_repository.dart` (verbatim senior):
 
@@ -248,9 +247,9 @@ Ba chế độ scriptable hơn fake M14:
 - `snapshot`: trả ngay — lái nhánh success/empty.
 - `error`: throw — lái nhánh `LeaderboardPopupError`.
 - `completers`: pop một `Completer` mỗi call — **test giữ chìa
-  khoá**: quyết định response "về" lúc nào, ở đâu — chính cái này
-  dựng được test stale-response ở Bài 4 (request 1 chậm hơn
-  request 2).
+ khoá**: quyết định response "về" lúc nào, ở đâu — chính cái này
+ dựng được test stale-response ở Bài 4 (request 1 chậm hơn
+ request 2).
 
 `loadCallCount`/`lastCurrentUserId` ghi tương tác để assert "VM gọi
 repo đúng tham số" — không mock framework, đúng convention repo.
@@ -353,20 +352,20 @@ thực tế không bao giờ qua được INSERT.
 ## Lỗi hay gặp
 
 1. **`.single()` thay `.maybeSingle()` cho hàng của mình.** Người
-   chưa có trên bảng → throw PostgrestException thay vì `null` —
-   biến trường hợp hợp lệ thành error branch.
+ chưa có trên bảng → throw PostgrestException thay vì `null` —
+ biến trường hợp hợp lệ thành error branch.
 2. **Tự sort lại `entries` trong Dart.** Rank + thứ tự đã được
-   server tính (`row_number()` + `ORDER BY`); sort lại client-side
-   phá tie-break và làm việc thừa.
+ server tính (`row_number()` + `ORDER BY`); sort lại client-side
+ phá tie-break và làm việc thừa.
 3. **Quên `isCurrentUser` khi map hàng riêng.** Hàng top đều
-   `isCurrentUser: false`; hàng riêng phải truyền `true` — quên thì
-   hàng "bạn" không được tô accent (Bài 5 thấy trên UI).
+ `isCurrentUser: false`; hàng riêng phải truyền `true` — quên thì
+ hàng "bạn" không được tô accent (Bài 5 thấy trên UI).
 4. **`select *`-tư tưởng.** `.select()` liệt kê đúng 5 cột — view
-   đã thiết kế cột public; lôi thêm cột là lôi dữ liệu không cần
-   (và `auth_uuid` bản thân đã được che cho mục đích riêng).
+ đã thiết kế cột public; lôi thêm cột là lôi dữ liệu không cần
+ (và `auth_uuid` bản thân đã được che cho mục đích riêng).
 5. **Format điểm ở UI.** `entry.score` là String đã format trong
-   mapper; format lại ở widget là nhân đôi trách nhiệm và lệch
-   senior.
+ mapper; format lại ở widget là nhân đôi trách nhiệm và lệch
+ senior.
 
 ## Tự làm — PRODUCE
 
@@ -424,33 +423,33 @@ test('queue hai snapshot → trả đúng thứ tự gọi', () async {
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** `maybeSingle()` khác `single()` ở điểm nào và vì sao
-  senior chọn nó? — **Đáp:** `maybeSingle` trả `null` khi 0 dòng;
-  `single` throw. "Đã đăng nhập nhưng chưa có hạng" là hợp lệ →
-  null, không phải lỗi.
+ senior chọn nó? — **Đáp:** `maybeSingle` trả `null` khi 0 dòng;
+ `single` throw. "Đã đăng nhập nhưng chưa có hạng" là hợp lệ →
+ null, không phải lỗi.
 - **Hỏi:** `auth_uuid` trên view khác gì `auth_uuid` trên bảng
-  `users`? — **Đáp:** view chỉ lộ `auth_uuid` trên hàng của chính
-  caller (case … `else null`); bảng giữ đầy đủ nhưng chỉ owner đọc
-  được nhờ RLS.
+ `users`? — **Đáp:** view chỉ lộ `auth_uuid` trên hàng của chính
+ caller (case … `else null`); bảng giữ đầy đủ nhưng chỉ owner đọc
+ được nhờ RLS.
 - **Hỏi:** vì sao test mapper không dựng `SupabaseClient`? — **Đáp:**
-  nó cần `Supabase.initialize` (mạng/config thật) — không có trong
-  test; seam `entryFromRow` cho phép test map thuần trên `Map` giả.
+ nó cần `Supabase.initialize` (mạng/config thật) — không có trong
+ test; seam `entryFromRow` cho phép test map thuần trên `Map` giả.
 
 ## Ta cố ý chưa thêm
 
 - Ai gọi `loadLeaderboard` và chuyển snapshot thành UI — **Bài 4**
-  (VM) + **Bài 5** (dialog).
+ (VM) + **Bài 5** (dialog).
 - `currentUserId` thật từ auth — **M24** (giờ VM luôn truyền null —
-  guest seam).
+ guest seam).
 - GHI vào `public.users` (insert/update/upsert/sync) — **M25**.
 - Realtime subscription tự cập nhật bảng — ngoài scope (senior
-  không dùng; pull-to-refresh là cơ chế).
+ không dùng; pull-to-refresh là cơ chế).
 
 ## Checkpoint hoàn thành
 
 - [ ] Đọc trơn không nhìn code: `from('leaderboard')` → `select(5
   cột)` → `order total_money_won desc` → `order rank` → `limit 10`;
-  hàng riêng `eq('auth_uuid', uid).maybeSingle()`.
+ hàng riêng `eq('auth_uuid', uid).maybeSingle()`.
 - [ ] `test/helpers/fake_leaderboard_repository.dart` + test file
-  tồn tại; `flutter test` **175/175**.
+ tồn tại; `flutter test` **175/175**.
 - [ ] Giải thích được vì sao `entries` không cần sort lại phía
-  Dart (rank từ `row_number()` + ORDER BY trên server).
+ Dart (rank từ `row_number()` + ORDER BY trên server).

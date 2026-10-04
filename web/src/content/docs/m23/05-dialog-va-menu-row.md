@@ -1,37 +1,69 @@
 ---
 title: "Bài 5 · Dialog, menu row & RefreshIndicator"
-description: "FR-14 đóng: _LeaderboardEntry tappable → requestLeaderboardDialog() → MenuLeaderboardRequested → bridge showLeaderboardDialog → MenuLeaderboardDialogScope (ChangeNotifierProvider + post-frame load) → LeaderboardPopupBody switch 4 state → LeaderboardList RefreshIndicator.adaptive + hàng ghim → LeaderboardRow. +6 key ARB, gen-l10n, 9 test → 184 → 193. Chạy manual: không dart-define (fallback) và có dart-define (OPTIONAL, env-dependent)."
+description: "Menu leaderboard đóng: _LeaderboardEntry tappable → requestLeaderboardDialog → MenuLeaderboardRequested → bridge showLeaderboardDialog → MenuLeaderboardDialogScope (ChangeNotifierProvider + post-frame load) → LeaderboardPopupBody switch 4 state → LeaderboardList RefreshIndicator.adaptive + hàng ghim → LeaderboardRow. +6 key ARB, gen-l10n, 9 test → 184 → 193. Chạy manual: không dart-define (fallback) và có dart-define (OPTIONAL, env-dependent)."
 sidebar:
-  label: "Bài 5 · dialog + menu row"
-  order: 5
+ label: "Bài 5 · dialog + menu row"
+ order: 5
 ---
 
 ## Mục tiêu
 
-- Nối tap trên hàng menu → `requestLeaderboardDialog()` → event
-  `MenuLeaderboardRequested` → bridge `_openLeaderboard()` →
-  `showLeaderboardDialog` — đúng transport settings (FR-29 → M29).
-- Dựng cụm widget: `MenuLeaderboardDialogScope` (dialog-scoped VM +
-  post-frame load) → `MenuLeaderboardDialog` (chrome `MenuTokens`)
-  → `LeaderboardPopupBody` (switch 4 state) → `LeaderboardList`
-  (`RefreshIndicator.adaptive` + hàng ghim) → `LeaderboardRow`.
+- Nối tap trên hàng menu → 
+`requestLeaderboardDialog()`
+ → event
+ 
+`MenuLeaderboardRequested`
+ → bridge 
+`_openLeaderboard()`
+ →
+ 
+`showLeaderboardDialog`
+ — đúng transport settings (→ M29).
+- Dựng cụm widget: 
+`MenuLeaderboardDialogScope`
+ (dialog-scoped VM +
+ post-frame load) → 
+`MenuLeaderboardDialog`
+ (chrome 
+`MenuTokens`)
+ → 
+`LeaderboardPopupBody`
+ (switch 4 state) → 
+`LeaderboardList`
+
+ (`RefreshIndicator.adaptive`
+ + hàng ghim) → 
+`LeaderboardRow`.
 - Thêm 6 key ARB + regen l10n.
 - 9 test (8 widget + 1 menu VM event) → suite **184 → 193** — đỉnh
-  cuối milestone.
+ cuối milestone.
 - Chạy app hai cách: không dart-define (fallback tĩnh) và có
-  dart-define (OPTIONAL — phụ thuộc môi trường).
+ dart-define (OPTIONAL — phụ thuộc môi trường).
 
 ## Bạn đang ở đâu
 
-- Bài 4: VM đã emit 4 state + `refresh`/`retry`; `LeaderboardRepository`
-  đã nằm trong scope từ Bài 2.
-- `_LeaderboardEntry` trên menu đang là card tĩnh — chưa tap được.
-- Chưa có một widget nào của dialog; `LeaderboardPopupBody`/
-  `LeaderboardList`/`LeaderboardRow` chưa tồn tại.
+- Bài 4: VM đã emit 4 state + 
+`refresh`
+/
+`retry`; 
+`LeaderboardRepository`
+
+ đã nằm trong scope từ Bài 2.
+- 
+`_LeaderboardEntry`
+ trên menu đang là card tĩnh — chưa tap được.
+- Chưa có một widget nào của dialog; 
+`LeaderboardPopupBody`
+/
+ 
+`LeaderboardList`
+/
+`LeaderboardRow`
+ chưa tồn tại.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
-Đây là nơi FR-14 **đóng**: hàng bảng xếp hạng trên menu — vốn chỉ
+Đây là nơi **đóng**: hàng bảng xếp hạng trên menu — vốn chỉ
 để trưng từ M02 — lần đầu thành entry thật mở dialog dữ liệu thật.
 Mọi mảnh M23 đổ bộ cùng chỗ này: DI (Bài 2) cho repo, query chain
 (Bài 3) cho snapshot, VM + guard (Bài 4) cho state — còn lại là
@@ -39,20 +71,55 @@ dây UI và một điểm chạm.
 
 ## Bạn đã biết gì
 
-- Event một-lần + bridge `switch` kiệt hợp (M13/M15 — A-05, D-26,
-  D-27); `showDialog`/`AlertDialog` là route (M09 — F-13);
-  transport settings `MenuSettingsRequested → showSettingsDialog`
-  (M16).
-- `ChangeNotifierProvider` create/auto-dispose (M12 — F-18);
-  dialog-scoped VM (M16 — A-15); `context.read`/`watch` (F-17).
-- `didChangeDependencies` + `addPostFrameCallback` + `mounted` guard
-  (F-06); `unawaited` (D-17).
-- `Semantics(button, label, excludeSemantics)` + `GestureDetector(
-  HitTestBehavior.opaque)` (F-28, F-23).
-- ARB + `flutter gen-l10n` + `AppLocalizations.of(context)` (M17 —
-  D-31, F-25); `profileLevel` key có sẵn.
-- Widget test: `pumpWidget`/`pump`/`tap`/`ensureVisible`/finders
-  (F-14); `localizedTestApp` helper.
+- Event một lần + bridge 
+`switch`
+ kiệt hợp (M13/M15); 
+`showDialog`
+/
+`AlertDialog`
+ là route (M09);
+ transport settings 
+`MenuSettingsRequested → showSettingsDialog`
+
+ (M16).
+- 
+`ChangeNotifierProvider`
+ create/auto-dispose (M12);
+ dialog-scoped VM (M16); 
+`context.read`
+/
+`watch`.
+- 
+`didChangeDependencies`
+ + 
+`addPostFrameCallback`
+ + 
+`mounted`
+ guard; 
+`unawaited`.
+- 
+`Semantics(button, label, excludeSemantics)`
+ + 
+`GestureDetector(
+ HitTestBehavior.opaque)`.
+- ARB + 
+`flutter gen-l10n`
+ + 
+`AppLocalizations.of(context)`
+ (M17); 
+`profileLevel`
+ key có sẵn.
+- Widget test: 
+`pumpWidget`
+/
+`pump`
+/
+`tap`
+/
+`ensureVisible`
+/finders; 
+`localizedTestApp`
+ helper.
 
 ## Mental model — "dialog = một scope sống ngắn, tự lo việc của nó"
 
@@ -76,21 +143,45 @@ tap hàng menu
   context.watch(state) → MenuLeaderboardDialog → PopupBody switch
 ```
 
-Vì sao load qua **post-frame** chứ không gọi trong `create:` hay
-`build`? Vì `loadLeaderboard` `notifyListeners` ngay khi emit
+Vì sao load qua **post-frame** chứ không gọi trong 
+`create:`
+ hay
+
+`build`
+? Vì 
+`loadLeaderboard`
+ 
+`notifyListeners`
+ ngay khi emit
 Loading — notify giữa lúc framework đang build provider subtree là
-lỗi ("setState during build"). `addPostFrameCallback` + cờ
-`_didLoadLeaderboard` = "gọi đúng một lần sau frame đầu" — pattern
-senior `_LeaderboardDialogBridge` giữ nguyên.
+lỗi ("setState during build"). 
+`addPostFrameCallback`
+ + cờ
+
+`_didLoadLeaderboard`
+ = "gọi đúng một lần sau frame đầu" — pattern
+senior 
+`_LeaderboardDialogBridge`
+ giữ nguyên.
 
 Vì sao đọc repo từ context **caller** rồi truyền vào scope? Giữ
 dialog **self-contained/pumpable trong test** — pump
-`MenuLeaderboardDialogScope` với hai fake là đủ, không cần dựng cả
-`MultiProvider` app (giống `showSettingsDialog` M16).
+
+`MenuLeaderboardDialogScope`
+ với hai fake là đủ, không cần dựng cả
+
+`MultiProvider`
+ app (giống 
+`showSettingsDialog`
+ M16).
 
 ## Build it step by step
 
-**Bước 1 — ARB: +6 key.** `app_en.arb`/`app_vi.arb` (giá trị đúng
+**Bước 1 — ARB: +6 key.** 
+`app_en.arb`
+/
+`app_vi.arb`
+ (giá trị đúng
 senior):
 
 ```text
@@ -102,12 +193,23 @@ retryButton                "Retry" / "Thử lại"
 rankSemanticLabel          "Rank {rank}" / "Hạng {rank}"   (+ @rankSemanticLabel ICU int)
 ```
 
-(`leaderboardTitle`/`leaderboardSubtitle` đã có; `profileLevel` dùng
-lại cho level text.) Chạy `flutter gen-l10n` — getters mới phải
-xuất hiện trong `app_localizations.dart` trước khi viết widget.
+(`leaderboardTitle`
+/
+`leaderboardSubtitle`
+ đã có; 
+`profileLevel`
+ dùng
+lại cho level text.) Chạy 
+`flutter gen-l10n`
+ — getters mới phải
+xuất hiện trong 
+`app_localizations.dart`
+ trước khi viết widget.
 
-**Bước 2 — `lib/widgets/menu/leaderboard/
-menu_leaderboard_dialog_scope.dart`** (hàm vào + scope + bridge):
+**Bước 2 — 
+`lib/widgets/menu/leaderboard/
+menu_leaderboard_dialog_scope.dart`
+** (hàm vào + scope + bridge):
 
 ```dart
 Future<void> showLeaderboardDialog(BuildContext context) {
@@ -137,30 +239,74 @@ class MenuLeaderboardDialogScope extends StatelessWidget {
 }
 ```
 
-`_LeaderboardDialogBridge` (StatefulWidget): `didChangeDependencies`
-→ `_attachViewModel(context.read<LeaderboardDialogViewModel>())`;
-cờ `_didLoadLeaderboard` → `addPostFrameCallback` →
-`unawaited(viewModel.loadLeaderboard())` nếu `mounted`; `build` →
-`context.watch` → `MenuLeaderboardDialog(state: vm.state,
+
+`_LeaderboardDialogBridge`
+ (StatefulWidget): 
+`didChangeDependencies`
+
+→ 
+`_attachViewModel(context.read<LeaderboardDialogViewModel>())`;
+cờ 
+`_didLoadLeaderboard`
+ → 
+`addPostFrameCallback`
+ →
+
+`unawaited(viewModel.loadLeaderboard())`
+ nếu 
+`mounted`; 
+`build`
+ →
+
+`context.watch`
+ → 
+`MenuLeaderboardDialog(state: vm.state,
 onRefresh: vm.refresh, onRetry: vm.retry)`.
 
-**Bước 3 — `lib/widgets/menu/leaderboard/
-menu_leaderboard_dialog.dart`** (57 dòng): `AlertDialog` key
-`'leaderboard-dialog-shell'`, `backgroundColor: MenuTokens.
-backgroundBottom`, title `l10n.leaderboardTitle.toUpperCase()` vàng
-accent, `content: SizedBox(width: double.maxFinite, height:
-_contentHeight /* 380 */)` chứa `LeaderboardPopupBody`.
-Nhận `state`/`onRefresh`/`onRetry` — **stateless thuần**, không tự
+**Bước 3 — 
+`lib/widgets/menu/leaderboard/
+menu_leaderboard_dialog.dart`
+** (57 dòng): 
+`AlertDialog`
+ key
+
+`'leaderboard-dialog-shell'`, 
+`backgroundColor: MenuTokens.
+backgroundBottom`, title 
+`l10n.leaderboardTitle.toUpperCase()`
+ vàng
+accent, 
+`content: SizedBox(width: double.maxFinite, height:
+_contentHeight /* 380 */)`
+ chứa 
+`LeaderboardPopupBody`.
+Nhận 
+`state`
+/
+`onRefresh`
+/
+`onRetry`
+ — **stateless thuần**, không tự
 đọc VM (bridge truyền xuống → widget test pump được chỉ bằng state).
 
 :::note[Chrome learner, không phải senior]
-Senior `MenuLeaderboardDialog` vẽ frame gradient + painter riêng và
-sống trong `MenuDialogLayer` (M29). Learner dùng `AlertDialog` +
-`MenuTokens` đúng transport settings — visual parity là M28.
+Senior 
+`MenuLeaderboardDialog`
+ vẽ frame gradient + painter riêng và
+sống trong 
+`MenuDialogLayer`
+ (M29). Learner dùng 
+`AlertDialog`
+ +
+
+`MenuTokens`
+ đúng transport settings — visual parity là M28.
 :::
 
-**Bước 4 — `lib/widgets/leaderboard/
-leaderboard_popup_body.dart`** (181 dòng): switch kiệt hợp —
+**Bước 4 — 
+`lib/widgets/leaderboard/
+leaderboard_popup_body.dart`
+** (181 dòng): switch kiệt hợp —
 
 ```dart
 return switch (state) {
@@ -178,14 +324,29 @@ return switch (state) {
 };
 ```
 
-`_messageText` map enum `LeaderboardPopupMessage` → chuỗi l10n
+
+`_messageText`
+ map enum 
+`LeaderboardPopupMessage`
+ → chuỗi l10n
 (empty/loadError/loading) — **model giữ enum, widget giữ chữ**: VM
-không import `AppLocalizations` (đúng phân chia "UI sở hữu chữ, VM
-context-free" của A-16). Error branch: `Icons.cloud_off` + message
-+ `TextButton.icon` key `'leaderboard-retry-button'` hiển thị
+không import 
+`AppLocalizations`
+ (đúng phân chia "UI sở hữu chữ, VM
+context-free" của). Error branch: 
+`Icons.cloud_off`
+ + message
++ 
+`TextButton.icon`
+ key 
+`'leaderboard-retry-button'`
+ hiển thị
+
 `l10n.retryButton.toUpperCase()`.
 
-**Bước 5 — `lib/widgets/leaderboard/leaderboard_list.dart`** (97
+**Bước 5 — 
+`lib/widgets/leaderboard/leaderboard_list.dart`
+** (97
 dòng) — hai vùng:
 
 ```dart
@@ -205,24 +366,53 @@ Column(children: [
 ])
 ```
 
-- Top rows CUỘN trong `_TopRowsScrollView` (`SingleChildScrollView`
-  key `'leaderboard-scrollable-top-rows'`); hàng "bạn" GHIM dưới
-  đáy NGOÀI vùng cuộn (key `'leaderboard-current-user-row'`).
-- `physics: onRefresh == null ? null : const
-  AlwaysScrollableScrollPhysics()` — kéo-refresh được ngay cả khi
-  list ngắn không tràn.
-- `RefreshIndicator.adaptive(onRefresh: onRefresh!, child:
-  scrollView)` — adaptive = vẻ Material/Cupertino theo platform
-  (F-32, NORMAL).
+- Top rows CUỘN trong 
+`_TopRowsScrollView`
+ (`SingleChildScrollView`
 
-**Bước 6 — `lib/widgets/leaderboard/leaderboard_row.dart`** (104
-dòng): `Container` nền `statGreen` tint + viền `statGreen` khi
-`entry.isCurrentUser` (còn lại `cardBackground`/`cardBorder`);
+ key 
+`'leaderboard-scrollable-top-rows'`); hàng "bạn" GHIM dưới
+ đáy NGOÀI vùng cuộn (key 
+`'leaderboard-current-user-row'`).
+- 
+`physics: onRefresh == null ? null : const
+  AlwaysScrollableScrollPhysics()`
+ — kéo refresh được ngay cả khi
+ list ngắn không tràn.
+- 
+`RefreshIndicator.adaptive(onRefresh: onRefresh!, child:
+  scrollView)`
+ — adaptive = vẻ Material/Cupertino theo platform
+ (NORMAL).
+
+**Bước 6 — 
+`lib/widgets/leaderboard/leaderboard_row.dart`
+** (104
+dòng): 
+`Container`
+ nền 
+`statGreen`
+ tint + viền 
+`statGreen`
+ khi
+
+`entry.isCurrentUser`
+ (còn lại 
+`cardBackground`
+/
+`cardBorder`);
+
 `Semantics(label: l10n.rankSemanticLabel(
-entry.rank), image: true, excludeSemantics: true)` bọc RIÊNG badge
-`'#${entry.rank}'` — đặt label trên leaf để a11y đọc đúng "Hạng N"
-(đặt quanh cả hàng sẽ bị Text con merge); tên + `l10n.profileLevel(
-entry.level)` + `entry.score`.
+entry.rank), image: true, excludeSemantics: true)`
+ bọc RIÊNG badge
+
+`'#${entry.rank}'`
+ — đặt label trên leaf để a11y đọc đúng "Hạng N"
+(đặt quanh cả hàng sẽ bị Text con merge); tên + 
+`l10n.profileLevel(
+entry.level)`
+ + 
+`entry.score`.
 
 **Bước 7 — event + VM + screen** (3 edit nhỏ):
 
@@ -246,7 +436,9 @@ Future<void> _openLeaderboard() => showLeaderboardDialog(context);
 // import '../widgets/menu/leaderboard/menu_leaderboard_dialog_scope.dart';
 ```
 
-Và `_LeaderboardEntry` thành tappable:
+Và 
+`_LeaderboardEntry`
+ thành tappable:
 
 ```dart
 return Semantics(
@@ -265,29 +457,92 @@ return Semantics(
 
 **Bước 8 — test.**
 
-- `test/sealed_state_test.dart`: switch kiệt hợp + `case
-  MenuLeaderboardRequested()` (compile-forced — không thêm variant
-  mà quên xử lý được).
-- `test/menu_view_model_test.dart`: +1 test — subscribe
-  `events.first` TRƯỚC `vm.requestLeaderboardDialog()` → `expect(
+- 
+`test/sealed_state_test.dart`
+: switch kiệt hợp + 
+`case
+  MenuLeaderboardRequested()`
+ (compile-forced — không thêm variant
+ mà quên xử lý được).
+- 
+`test/menu_view_model_test.dart`
+: +1 test — subscribe
+ 
+`events.first`
+ TRƯỚC 
+`vm.requestLeaderboardDialog()`
+ → 
+`expect(
   await emitted, isA<MenuLeaderboardRequested>())`.
-- `test/widgets/menu_leaderboard_dialog_test.dart`: 8 test — 4
-  nhánh state (success render tên/điểm + `'Hạng 125'` semantics +
-  `'CẤP 12'`; empty; error + retry counter; loading),
-  `RefreshIndicator` gọi `onRefresh` + `isRefreshing` progress,
-  scope auto-load sau post-frame (`loadCallCount == 1`,
-  `lastCurrentUserId == null`), scope error→retry→`loadCallCount 2`,
-  và **tap `'menu-leaderboard-entry'` trên `MenuScreen` → dialog mở
-  với dữ liệu fake repo** (đường FR-14 đầy đủ qua
-  `AppDependencyScope` + `localizedTestApp` + `navigatorKey`).
+- 
+`test/widgets/menu_leaderboard_dialog_test.dart`
+: 8 test — 4
+ nhánh state (success render tên/điểm + 
+`'Hạng 125'`
+ semantics +
+ 
+`'CẤP 12'`; empty; error + retry counter; loading),
+ 
+`RefreshIndicator`
+ gọi 
+`onRefresh`
+ + 
+`isRefreshing`
+ progress,
+ scope auto-load sau post-frame (`loadCallCount == 1`,
+ 
+`lastCurrentUserId == null`), scope error→retry→
+`loadCallCount 2`,
+ và **tap 
+`'menu-leaderboard-entry'`
+ trên 
+`MenuScreen`
+ → dialog mở
+ với dữ liệu fake repo** (đường đầy đủ qua
+ 
+`AppDependencyScope`
+ + 
+`localizedTestApp`
+ + 
+`navigatorKey`).
 
 ## Hiểu code — ba mối nối dễ lẫn
 
 | Cặp | Khác nhau ở |
 |---|---|
-| `onRefresh` vs `onRetry` | refresh = kéo xuống list → `vm.refresh()` → `loadLeaderboard(isRefresh: true)` — list cũ đứng yên; retry = nút THỬ LẠI ở Error → `vm.retry()` → load mới từ Loading. |
-| state `Success.currentEntry` vs `entries` | `currentEntry` GHIM dưới đáy ngoài scroll; `entries` = top-10 cuộn — hàng của mình có thể trùng một hàng top (cùng data, hai chỗ hiển thị — đúng senior). |
-| `MenuLeaderboardRequested` vs `MenuDialogLeaderboard` | learner: event một-lần → `showDialog` (transport FR-29). Senior: `requestLeaderboardDialog()` đặt `MenuDialogLeaderboard` STATE → `MenuDialogLayer` render in-Stack (M29). Cùng tên method — body đổi ở M29. |
+| 
+`onRefresh`
+ vs 
+`onRetry`
+ | refresh = kéo xuống list → 
+`vm.refresh()`
+ → 
+`loadLeaderboard(isRefresh: true)`
+ — list cũ đứng yên; retry = nút THỬ LẠI ở Error → 
+`vm.retry()`
+ → load mới từ Loading. |
+| state 
+`Success.currentEntry`
+ vs 
+`entries`
+ | 
+`currentEntry`
+ GHIM dưới đáy ngoài scroll; 
+`entries`
+ = top-10 cuộn — hàng của mình có thể trùng một hàng top (cùng data, hai chỗ hiển thị — đúng senior). |
+| 
+`MenuLeaderboardRequested`
+ vs 
+`MenuDialogLeaderboard`
+ | learner: event một lần → 
+`showDialog`
+ (transport). Senior: 
+`requestLeaderboardDialog()`
+ đặt 
+`MenuDialogLeaderboard`
+ STATE → 
+`MenuDialogLayer`
+ render in-Stack (M29). Cùng tên method — body đổi ở M29. |
 
 ## Chạy và quan sát
 
@@ -308,7 +563,9 @@ flutter run
 → kéo xuống list → spinner refresh → snapshot tĩnh trả lại
 ```
 
-App chạy `DisabledLeaderboardRepository` — đúng thiết kế: thiếu
+App chạy 
+`DisabledLeaderboardRepository`
+ — đúng thiết kế: thiếu
 config vẫn demo được đầy đủ.
 
 **Manual — có dart-define** — OPTIONAL, phụ thuộc môi trường:
@@ -320,111 +577,228 @@ flutter run --dart-define=SUPABASE_URL=<your-project-url> \
 
 Giá trị lấy từ **project Supabase của chính bạn** (Dashboard →
 Project Settings → API: project URL + publishable/anon key) sau khi
-đã chạy `supabase/student-setup/01-setup-database.sql` trong SQL
+đã chạy 
+`supabase/student-setup/01-setup-database.sql`
+ trong SQL
 Editor. Không bao giờ commit giá trị này.
 
 :::caution[Đường remote chưa được verify sống]
 Môi trường phát triển khóa học KHÔNG có credential —
+
 `LIVE_SUPABASE_CONNECTIVITY: NOT_PERFORMED`. Mọi PASS của M23 dựa
 trên fake + impl disabled: chuỗi query là senior-verbatim và mapper
-được test qua seam `entryFromRow`. Chạy có dart-define là checkpoint
+được test qua seam 
+`entryFromRow`. Chạy có dart-define là checkpoint
 mở rộng của riêng bạn — dữ liệu thấy được phụ thuộc project bạn tự
 tạo, KHÔNG phải điều kiện qua môn.
 :::
 
 ## Thử nghiệm
 
-Trên app đang chạy (không dart-define): vào dialog, kéo-refresh ba
-lần liên tục thật nhanh — đoán `loadCallCount` nếu đếm được và dự
-đoán hành vi (gợi ý Bài 4: mỗi `refresh()` là một request mới; repo
+Trên app đang chạy (không dart-define): vào dialog, kéo refresh ba
+lần liên tục thật nhanh — đoán 
+`loadCallCount`
+ nếu đếm được và dự
+đoán hành vi (gợi ý Bài 4: mỗi 
+`refresh()`
+ là một request mới; repo
 Disabled trả tức thì nên race khó quan sát bằng mắt — vì vậy guard
 được *test* bằng Completer chứ không nhìn tay được).
 
 ## Lỗi hay gặp
 
-1. **Gọi `loadLeaderboard()` trong `initState`/`build`.** Notify
-   giữa build → crash "setState during build". Post-frame callback
-   + cờ `_didLoadLeaderboard` là cách senior né.
-2. **`RefreshIndicator` không kéo được khi list ngắn.** Quên
-   `AlwaysScrollableScrollPhysics` → scroll view chặn ở biên →
-   indicator không bao giờ kích. (Tự làm bên dưới cho bạn tự phát
-   hiện.)
-3. **Đọc `context.read<MenuViewModel>()` trong `onTap` bằng context
-   của dialog-builder.** Callback `onTap` chạy với context của WIDGET
-   (menu row) — nơi `MenuViewModel` đang phủ; đừng truyền context
-   route khác vào.
-4. **`Semantics(label)` đặt quanh cả hàng.** Các `Text` con merge
-   nhãn vào nhau → a11y đọc sai. Senior đặt label trên leaf badge +
-   `excludeSemantics` — learner giữ kỹ thuật đó trên `#N`.
-5. **Switch trên `LeaderboardPopupState` thiếu nhánh.** Sealed
-   class: compiler bắt kiệt hợp — đó là lý do state là `sealed`,
-   không phải enum + if-chain.
+1. **Gọi 
+`loadLeaderboard()`
+ trong 
+`initState`
+/
+`build`.** Notify
+ giữa build → crash "setState during build". Post-frame callback
+ + cờ 
+`_didLoadLeaderboard`
+ là cách senior né.
+2. **
+`RefreshIndicator`
+ không kéo được khi list ngắn.** Quên
+ 
+`AlwaysScrollableScrollPhysics`
+ → scroll view chặn ở biên →
+ indicator không bao giờ kích. (Tự làm bên dưới cho bạn tự phát
+ hiện.)
+3. **Đọc 
+`context.read<MenuViewModel>()`
+ trong 
+`onTap`
+ bằng context
+ của dialog-builder.** Callback 
+`onTap`
+ chạy với context của WIDGET
+ (menu row) — nơi 
+`MenuViewModel`
+ đang phủ; đừng truyền context
+ route khác vào.
+4. **
+`Semantics(label)`
+ đặt quanh cả hàng.** Các 
+`Text`
+ con merge
+ nhãn vào nhau → a11y đọc sai. Senior đặt label trên leaf badge +
+ 
+`excludeSemantics`
+ — learner giữ kỹ thuật đó trên 
+`#N`.
+5. **Switch trên 
+`LeaderboardPopupState`
+ thiếu nhánh.** Sealed
+ class: compiler bắt kiệt hợp — đó là lý do state là 
+`sealed`,
+ không phải enum + if-chain.
 
 ## Tự làm — PREDICT (kèm chứng cứ)
 
-Trong `leaderboard_list.dart`, đổi `physics` của
-`_TopRowsScrollView` về `null` trong mọi trường hợp (tức xoá
-`AlwaysScrollableScrollPhysics`), giữ nguyên `RefreshIndicator.
+Trong 
+`leaderboard_list.dart`, đổi 
+`physics`
+ của
+
+`_TopRowsScrollView`
+ về 
+`null`
+ trong mọi trường hợp (tức xoá
+
+`AlwaysScrollableScrollPhysics`), giữ nguyên 
+`RefreshIndicator.
 adaptive`. Trên màn hình có 6 hàng (không tràn vùng cuộn):
 
 1. Kéo xuống trên list — pull-to-refresh còn chạy không?
-2. `flutter test test/widgets/menu_leaderboard_dialog_test.dart`
-   đỏ hay xanh? Vì sao?
+2. 
+`flutter test test/widgets/menu_leaderboard_dialog_test.dart`
+
+ đỏ hay xanh? Vì sao?
 
 <details>
 <summary>Đáp án</summary>
 
-- **Hỏng kéo-refresh**: `SingleChildScrollView` physics mặc định
-  (clamping) không cho overscroll khi nội dung không tràn → không
-  có kéo-dư → `RefreshIndicator` không bao giờ kích hoạt. 6 hàng
-  nhét vừa 380px nên lỗi hiện ngay trên máy chạy.
-- **Test vẫn xanh**: widget test lấy `tester.widget<RefreshIndicator>`
-  rồi gọi `refreshIndicator.onRefresh()` TRỰC TIẾP — đi qua callback,
-  không qua gesture/physics. Đây là lỗi UX-thuần: observable bằng
-  tay, không bắt được bằng test hiện có. Đó là lý do senior phải
-  set physics một cách có chủ đích — và là bài học "test xanh ≠ UX
-  đúng" cho hành vi chạm-cảm.
-- Revert lại `physics: onRefresh == null ? null :
-  const AlwaysScrollableScrollPhysics()` sau khi quan sát.
+- **Hỏng kéo refresh**: 
+`SingleChildScrollView`
+ physics mặc định
+ (clamping) không cho overscroll khi nội dung không tràn → không
+ có kéo dư → 
+`RefreshIndicator`
+ không bao giờ kích hoạt. 6 hàng
+ nhét vừa 380px nên lỗi hiện ngay trên máy chạy.
+- **Test vẫn xanh**: widget test lấy 
+`tester.widget<RefreshIndicator>`
+
+ rồi gọi 
+`refreshIndicator.onRefresh()`
+ TRỰC TIẾP — đi qua callback,
+ không qua gesture/physics. Đây là lỗi UX-thuần: observable bằng
+ tay, không bắt được bằng test hiện có. Đó là lý do senior phải
+ set physics một cách có chủ đích — và là bài học "test xanh ≠ UX
+ đúng" cho hành vi chạm cảm.
+- Revert lại 
+`physics: onRefresh == null ? null :
+  const AlwaysScrollableScrollPhysics()`
+ sau khi quan sát.
 
 </details>
 
 ## Kiểm tra hiểu biết
 
-- **Hỏi:** luồng đầy đủ từ ngón tay tới `loadLeaderboard`? — **Đáp:**
-  tap → `requestLeaderboardDialog()` → `MenuLeaderboardRequested` →
-  `_openLeaderboard` → `showLeaderboardDialog` → scope tạo VM →
-  post-frame → `loadLeaderboard()`.
-- **Hỏi:** vì sao VM được tạo trong `ChangeNotifierProvider` của
-  dialog thay vì `AppDependencyScope`? — **Đáp:** scope = lifetime
-  (A-15): VM chỉ sống khi dialog mở, Provider dispose khi dialog
-  đóng — state loading/refresh của một lần mở không rò sang lần sau.
+- **Hỏi:** luồng đầy đủ từ ngón tay tới 
+`loadLeaderboard`
+? — **Đáp:**
+ tap → 
+`requestLeaderboardDialog()`
+ → 
+`MenuLeaderboardRequested`
+ →
+ 
+`_openLeaderboard`
+ → 
+`showLeaderboardDialog`
+ → scope tạo VM →
+ post-frame → 
+`loadLeaderboard()`.
+- **Hỏi:** vì sao VM được tạo trong 
+`ChangeNotifierProvider`
+ của
+ dialog thay vì 
+`AppDependencyScope`
+? — **Đáp:** scope = lifetime:
+ VM chỉ sống khi dialog mở, Provider dispose khi dialog
+ đóng — state loading/refresh của một lần mở không rò sang lần sau.
 - **Hỏi:** guest thấy gì ở hàng ghim? — **Đáp:** hàng dựng từ
-  profile local (`username`/`level`/`totalMoneyWon` qua
-  `userProfileStream.value`), rank 125, viền `statGreen` — test
-  thấy `'0XFF'` mặc định.
+ profile local (`username`
+/
+`level`
+/
+`totalMoneyWon`
+ qua
+ 
+`userProfileStream.value`), rank 125, viền 
+`statGreen`
+ — test
+ thấy 
+`'0XFF'`
+ mặc định.
 
 ## Ta cố ý chưa thêm
 
-- `MenuDialogLayer` + `MenuDialogLeaderboard` state — **M29**;
-  transport event+`showDialog` giữ nguyên (FR-29).
-- Frame painter/SVG frame/rank-badge images/`LeaderboardAvatar`/
-  `LeaderboardRowStyle`/`LeaderboardEntryCard` tách-widget của
-  senior — **M28** (visual parity); hàng hiện `#N` text + `Icon`.
-- `AuthRepository` vào scope VM dialog — **M24**.
-- Level badge/rank asset theo hạng — M28 (`rankSemanticLabel` text
-  đã senior-parity).
+- 
+`MenuDialogLayer`
+ + 
+`MenuDialogLeaderboard`
+ state — **M29**;
+ transport event+
+`showDialog`
+ giữ nguyên.
+- Frame painter/SVG frame/rank-badge images/
+`LeaderboardAvatar`
+/
+ 
+`LeaderboardRowStyle`
+/
+`LeaderboardEntryCard`
+ tách widget của
+ senior — **M28** (visual parity); hàng hiện 
+`#N`
+ text + 
+`Icon`.
+- 
+`AuthRepository`
+ vào scope VM dialog — **M24**.
+- Level badge/rank asset theo hạng — M28 (`rankSemanticLabel`
+ text
+ đã senior-parity).
 
 ## Checkpoint hoàn thành
 
-- [ ] `flutter gen-l10n` chạy xong; 6 getter mới tồn tại.
-- [ ] `flutter analyze` sạch; `flutter test` **193/193**;
-  `flutter build web` xanh.
+- [ ] 
+`flutter gen-l10n`
+ chạy xong; 6 getter mới tồn tại.
+- [ ] 
+`flutter analyze`
+ sạch; 
+`flutter test`
+ **193/193**;
+ 
+`flutter build web`
+ xanh.
 - [ ] Manual không dart-define: tap hàng → dialog mở, 6 hàng + hàng
-  "bạn" rank 125; kéo-refresh chạy; nút THỬ LẠI hiện khi repo throw
-  (có thể xác nhận qua widget test error-branch).
-- [ ] Đọc được chuỗi: `MenuLeaderboardRequested` →
-  `_openLeaderboard` → `showLeaderboardDialog` → scope → bridge →
-  `loadLeaderboard` → switch 4 state.
+ "bạn" rank 125; kéo refresh chạy; nút THỬ LẠI hiện khi repo throw
+ (có thể xác nhận qua widget test error-branch).
+- [ ] Đọc được chuỗi: 
+`MenuLeaderboardRequested`
+ →
+ 
+`_openLeaderboard`
+ → 
+`showLeaderboardDialog`
+ → scope → bridge →
+ 
+`loadLeaderboard`
+ → switch 4 state.
 - [ ] (Tuỳ chọn) Chạy được lệnh dart-define với placeholder đúng
-  format — biết giá trị thật lấy ở đâu, biết chúng không commit.
+ format — biết giá trị thật lấy ở đâu, biết chúng không commit.

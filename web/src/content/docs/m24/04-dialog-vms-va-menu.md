@@ -1,36 +1,36 @@
 ---
 title: "Bài 4 · Dialog VMs, single-flight & MenuViewModel nhận auth"
-description: "Hai dialog-scoped VM với sealed UiEvent (Dismiss/SnackBar — FR-12: snackbar dời từ menu VM xuống dialog VM), _isLoading chặn double-tap, _isDisposed guard. MenuViewModel +AuthRepository (seed/sub/isAuthenticated/loadUserProfile dual). FR-35: LeaderboardDialogViewModel nhận AuthRepository + switch(authState) → uid. +18 test → 219."
+description: "Hai dialog-scoped VM với sealed UiEvent (Dismiss/SnackBar — snackbar dời từ menu VM xuống dialog VM), _isLoading chặn double-tap, _isDisposed guard. MenuViewModel +AuthRepository (seed/sub/isAuthenticated/loadUserProfile dual). : LeaderboardDialogViewModel nhận AuthRepository + switch(authState) → uid. +18 test → 219."
 sidebar:
-  label: "Bài 4 · dialog VMs + menu auth"
-  order: 4
+ label: "Bài 4 · dialog VMs + menu auth"
+ order: 4
 ---
 
 ## Mục tiêu
 
 - Port hai **dialog-scoped VM** (sống/chết cùng dialog):
-  `MenuAuthDialogViewModel` + sealed `MenuAuthDialogUiEvent`, và
-  `MenuSignOutDialogViewModel` + sealed `MenuSignOutDialogUiEvent` —
-  mỗi family hai variant: `DismissRequested` / `SnackBarRequested`.
+ `MenuAuthDialogViewModel` + sealed `MenuAuthDialogUiEvent`, và
+ `MenuSignOutDialogViewModel` + sealed `MenuSignOutDialogUiEvent` —
+ mỗi family hai variant: `DismissRequested` / `SnackBarRequested`.
 - Hiểu ba cơ chế: **single-flight** `_isLoading` (action đang chạy →
-  call tiếp trả `false` ngay), guard `_isDisposed` (result về sau
-  khi VM chết → không emit/notify), và result→event dịch
-  (success → dismiss + snackbar; failure → chỉ snackbar).
+ call tiếp trả `false` ngay), guard `_isDisposed` (result về sau
+ khi VM chết → không emit/notify), và result→event dịch
+ (success → dismiss + snackbar; failure → chỉ snackbar).
 - `MenuViewModel` nhận `AuthRepository`: seed `_authState` +
-  subscribe + `isAuthenticated` + `loadUserProfile` gọi cả hai repo —
-  cùng pattern `_userData` của M14, áp dụng cho session.
-- **FR-35 closed**: `LeaderboardDialogViewModel` +`AuthRepository`,
-  `_currentLeaderboardUserId()` = exhaustive `switch(authState)` —
-  authed → `uid`, guest → `null`.
+ subscribe + `isAuthenticated` + `loadUserProfile` gọi cả hai repo —
+ cùng pattern `_userData` của M14, áp dụng cho session.
+- ** closed**: `LeaderboardDialogViewModel` +`AuthRepository`,
+ `_currentLeaderboardUserId()` = exhaustive `switch(authState)` —
+ authed → `uid`, guest → `null`.
 - +18 test (11 auth-dialog VM + 3 sign-out VM + 3 menu-VM auth +
-  1 FR-35 leaderboard) → suite **201 → 219**.
+ 1 leaderboard) → suite **201 → 219**.
 
 ## Bạn đang ở đâu
 
 - Bài 3: coordinator + sync seam đã vào; suite 201/201. Coordinator
-  sẵn sàng được "một ai đó" gọi — bài này chính là hai "ai đó".
+ sẵn sàng được "một ai đó" gọi — bài này chính là hai "ai đó".
 - `MenuViewModel` đang chỉ biết profile; pill tài khoản vẫn là UI
-  tĩnh (Bài 5 mới nối tap → `requestAuthAction` + hai event mới).
+ tĩnh (Bài 5 mới nối tap → `requestAuthAction` + hai event mới).
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -42,7 +42,7 @@ trong dialog scope tạo nó và **tự dispose** khi dialog rời cây (cùng
 pattern `LeaderboardDialogViewModel` của M23). Hệ quả: mọi cấu hình
 "VM sống lâu" — singleton, app-scope — đều sai chỗ cho việc này.
 
-**② Snackbar dời chủ — FR-12 converge.** Trước M24, `MenuViewModel`
+**② Snackbar dời chủ — converge.** Trước M24, `MenuViewModel`
 bắn `MenuSnackBarRequested` cho mọi thông báo — nhưng snackbar kết
 quả sign-in thuộc về DIALOG (VM dialog mới biết result). Senior giải
 quyết gọn: **mỗi dialog VM có event family riêng** —
@@ -63,15 +63,15 @@ giữa chừng. `_isLoading` chặn concurrent call (trả `false` ngay);
 ## Bạn đã biết gì
 
 - `AuthRepository` + `AuthActionResult` + session model (Bài 1–2);
-  `MenuAuthActionCoordinator` + guard (Bài 3 — A-26).
-- `ChangeNotifier` + `notifyListeners` + `context.watch` (M11 — F-07);
-  `StreamController.broadcast` cho event một-lần vs `BehaviorSubject`
-  cho state (M13/A-09 — **đối lập replay**, VM này dùng đúng broadcast);
-  `StreamSubscription` attach/cancel (D-10).
+ `MenuAuthActionCoordinator` + guard (Bài 3).
+- `ChangeNotifier` + `notifyListeners` + `context.watch` (M11);
+ `StreamController.broadcast` cho event một lần vs `BehaviorSubject`
+ cho state (M13/ — **đối lập replay**, VM này dùng đúng broadcast);
+ `StreamSubscription` attach/cancel.
 - Dialog-scoped VM + `ChangeNotifierProvider` trong scope widget
-  (M23 leaderboard dialog — cùng shape); sealed event family (D-26).
+ (M23 leaderboard dialog — cùng shape); sealed event family.
 - `Completer` scripting trong fake (`signInCompleter`… — Bài 2) để
-  mô phỏng "call đang chờ" khi test single-flight.
+ mô phỏng "call đang chờ" khi test single-flight.
 
 ## Mental model — "VM dịch result thành event, bridge dịch event
 thành UI"
@@ -95,16 +95,16 @@ Vì sao snackbar ở *dialog* VM mà vẫn hiện trong *menu* Scaffold? Vì
 `ScaffoldMessenger` lan tỏa lên `MaterialApp` — snackbar bắn từ
 route/dialog vẫn render ở Scaffold gần nhất phía dưới (widget test
 Bài 5 khóa hành vi này: "snackbar phát TỪ DIALOG VM hiện trong menu
-Scaffold, dialog vẫn mở — FR-12").
+Scaffold, dialog vẫn mở — ").
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
 |---|---|
-| `StreamController<T>.broadcast()` | event một-lần — listener đến trễ không nhận event cũ (đúng bản chất event; đối lập `BehaviorSubject` replay của state) |
+| `StreamController<T>.broadcast()` | event một lần — listener đến trễ không nhận event cũ (đúng bản chất event; đối lập `BehaviorSubject` replay của state) |
 | `_events.isClosed` | check controller đã close trước `add` — emit vào controller đã close ném `StateError` |
-| named-param closure `action: _authActions.signInWithGoogle` | tear-off method làm `Future<AuthActionResult> Function()` — D-06 |
-| `case Variant(:final field)` trong `switch(event)` | object pattern bóc `message` của `SnackBarRequested` — D-27 |
+| named-param closure `action: _authActions.signInWithGoogle` | tear-off method làm `Future<AuthActionResult> Function()` — |
+| `case Variant(final field)` trong `switch(event)` | object pattern bóc `message` của `SnackBarRequested` — |
 
 ## Ví dụ độc lập — single-flight trong 20 dòng
 
@@ -148,7 +148,7 @@ Kotlin nhờ structured concurrency; ở đây kỷ luật nằm ở hai guard.
 
 **DO NOT ASSUME — `StreamController.broadcast` KHÔNG replay.** Nếu
 listener attach sau khi event đã `add`, event đó MẤT — khác hẳn
-`BehaviorSubject`/StateFlow giữ latest. Event một-lần muốn vậy;
+`BehaviorSubject`/StateFlow giữ latest. Event một lần muốn vậy;
 cần "giá trị mới nhất" thì dùng state stream, đừng dùng broadcast.
 
 ## Senior project connection
@@ -158,7 +158,7 @@ cần "giá trị mới nhất" thì dùng state stream, đừng dùng broadcast
 | `view_models/menu/menu_auth_dialog_view_model.dart` | verbatim — `_runAuthAction(label, failurePrefix, action)`, `continueAsGuest`, hai cờ guard |
 | `view_models/menu/menu_sign_out_dialog_view_model.dart` | verbatim — `signOut()` cùng skeleton, `'Sign out failed: $error'` |
 | `view_models/menu/menu_screen_view_model.dart` | `MenuViewModel` port: auth seed+sub + `isAuthenticated` + `loadUserProfile` gọi cả hai repo + `requestAuthAction` (Bài 5 nối event) |
-| `view_models/leaderboard/leaderboard_dialog_view_model.dart` | ctor +`AuthRepository`, `_currentLeaderboardUserId` switch — FR-35 |
+| `view_models/leaderboard/leaderboard_dialog_view_model.dart` | ctor +`AuthRepository`, `_currentLeaderboardUserId` switch — |
 | `test/menu_auth_dialog_view_model_test.dart` | 10 ca verbatim + 1 ca learner-add (guard test) |
 
 ## Build it step by step
@@ -216,7 +216,7 @@ chỉ snackbar, dialog mở lại cho thử lần nữa.
 **Bước 2 — `lib/view_models/menu/menu_sign_out_dialog_view_model.dart`**
 (111 dòng, verbatim): cùng skeleton — `MenuSignOutDialogUiEvent`
 + `Dismiss`/`SnackBar` variants; `signOut()` chạy qua coordinator
-(coordinator lo `resetUserProfile()` — FR-11); exception prefix
+(coordinator lo `resetUserProfile()`); exception prefix
 `'Sign out failed: '`.
 
 **Bước 3 — `lib/view_models/menu/menu_view_model.dart`** — chen auth
@@ -266,7 +266,7 @@ chỉ snackbar, dialog mở lại cho thử lần nữa.
 theo, class giữ nguyên trong family).
 
 **Bước 4 — `lib/view_models/leaderboard/leaderboard_dialog_view_model.dart`**
-— FR-35: ctor thêm `required AuthRepository authRepository` (giữa
+— : ctor thêm `required AuthRepository authRepository` (giữa
 leaderboard và userProfile — đúng thứ tự senior), field, và thay
 `_currentLeaderboardUserId()`:
 
@@ -311,13 +311,13 @@ hai `MenuLeaderboardDialogScope(...)` +`authRepository: FakeAuthRepository()`;
 `test/menu_auth_dialog_view_model_test.dart` (404 dòng, 11 test —
 verbatim senior + 1 ca learner): Google/Apple/email ×(success→
 sync+dismiss+snackbar / failure→no-dismiss-no-sync), single-flight
-qua completer, email sign-up có-session→sync / không-session→
-dismiss-không-sync (confirm-email), dispose giữa chừng→không notify,
+qua completer, email sign-up có session→sync / không session→
+dismiss không sync (confirm-email), dispose giữa chừng→không notify,
 và ca guard `'success without session → failure "no active session"'`
 (fake `signInSession: AuthSessionGuest()` — đúng bug Bài 3).
 `test/menu_sign_out_dialog_view_model_test.dart` (167 dòng, 3 test):
 success → `resetUserProfile` áp dụng (profile về mặc định) + Guest
-emit + dismiss+snackbar (**FR-11 core**); failure → dialog ở lại +
+emit + dismiss+snackbar (core); failure → dialog ở lại +
 profile giữ + session vẫn authed; duplicate-tap single-flight.
 
 **Bước 9 — `menu_view_model_test.dart`** thêm group M24, ba test
@@ -328,15 +328,15 @@ Bài 5 cùng method.)
 ## Hiểu code — hai quyết định thiết kế
 
 1. **Vì sao VM tự `new` coordinator thay vì inject sẵn?** Vì senior
-   định vị coordinator là *detail của dialog VM*: ctor VM nhận BA
-   repo (shape cố định để M25 không đổi signature khi sync impl
-   thật vào) rồi dựng coordinator bên trong. Test vẫn script đủ mọi
-   hành vi qua ba repo — không mất khả năng test, mà call-site gọn.
+ định vị coordinator là *detail của dialog VM*: ctor VM nhận BA
+ repo (shape cố định để M25 không đổi signature khi sync impl
+ thật vào) rồi dựng coordinator bên trong. Test vẫn script đủ mọi
+ hành vi qua ba repo — không mất khả năng test, mà call-site gọn.
 2. **`return false` hai nơi trong `_runAuthAction` — khác nhau gì?**
-   `if (_isLoading) return false` = "đang bận, từ chối call" (call
-   thứ hai); `if (_isDisposed) return false` sau `await` = "VM chết
-   rồi, nuốt kết quả" (call thứ nhất về trễ). Cùng `false` nhưng
-   ngữ nghĩa khác — một chặn *vào*, một chặn *ra*.
+ `if (_isLoading) return false` = "đang bận, từ chối call" (call
+ thứ hai); `if (_isDisposed) return false` sau `await` = "VM chết
+ rồi, nuốt kết quả" (call thứ nhất về trễ). Cùng `false` nhưng
+ ngữ nghĩa khác — một chặn *vào*, một chặn *ra*.
 
 ## Chạy và quan sát
 
@@ -348,7 +348,7 @@ flutter test    → +219: All tests passed!   (201 + 11 + 3 + 3 + 1)
 ```
 
 Đếm đúng: file auth-dialog VM +11, sign-out VM +3, menu VM auth-state
-+3, leaderboard VM FR-35 +1 → +18. `requestAuthAction` test và pill
++3, leaderboard VM +1 → +18. `requestAuthAction` test và pill
 UI là Bài 5 (+5 net).
 
 ## Thử nghiệm
@@ -370,24 +370,24 @@ fake có `…Completer`: mô phỏng "call đang treo" mà không cần network.
 ## Lỗi hay gặp
 
 1. **Bắn snackbar từ menu VM cho kết quả sign-in.** Result sống ở
-   dialog VM — menu VM không biết gì về call vừa chạy. FR-12: mỗi
-   surface tự lo event của nó.
+ dialog VM — menu VM không biết gì về call vừa chạy — mỗi
+ surface tự lo event của nó.
 2. **`_setLoading` quên guard `==`.** `_setLoading` chỉ notify khi
-   giá trị ĐỔI (`_isLoading == isLoading → return`) — gọi
-   `notifyListeners` vô điều kiện sẽ spam rebuild.
+ giá trị ĐỔI (`_isLoading == isLoading → return`) — gọi
+ `notifyListeners` vô điều kiện sẽ spam rebuild.
 3. **Emit sau `dispose()`.** `_emitSnackBar`/`_emitDismissRequested`
-   có guard `_isDisposed || _events.isClosed` — bỏ guard sẽ ném
-   `StateError: Cannot add event after closing` khi result về trễ.
-4. **Dùng `BehaviorSubject` cho dialog events.** Event một-lần phải
-   broadcast — listener attach sau khi dialog mở sẽ được replay event
-   cũ nếu subject (dismiss dialog lần hai ngay khi mở — bug khó chịu).
+ có guard `_isDisposed || _events.isClosed` — bỏ guard sẽ ném
+ `StateError: Cannot add event after closing` khi result về trễ.
+4. **Dùng `BehaviorSubject` cho dialog events.** Event một lần phải
+ broadcast — listener attach sau khi dialog mở sẽ được replay event
+ cũ nếu subject (dismiss dialog lần hai ngay khi mở — bug khó chịu).
 5. **`switch(authState)` viết `if/else` thay exhaustive.** Sealed
-   switch ép xử lý đủ variant — FR-35 dùng `switch` expression đúng
-   vì vậy; `if (is AuthSessionAuthenticated)` bỏ sót variant tương
-   lai âm thầm.
+ switch ép xử lý đủ variant — dùng `switch` expression đúng
+ vì vậy; `if (is AuthSessionAuthenticated)` bỏ sót variant tương
+ lai âm thầm.
 6. **Gọi `syncUserProfile` từ VM thay vì coordinator.** Sync là bước
-   của CHUỖI (Bài 3) — VM gọi trực tiếp repo sync là copy nửa chuỗi,
-   mất guard `loadAuthState`.
+ của CHUỖI (Bài 3) — VM gọi trực tiếp repo sync là copy nửa chuỗi,
+ mất guard `loadAuthState`.
 
 ## Tự làm — PRODUCE (bắt buộc)
 
@@ -396,16 +396,16 @@ file scratch `test/m24_signout_exercise_test.dart` (xoá sau exercise —
 không tính suite 224). Yêu cầu phải chứng minh được **cả ba**:
 
 1. Fake script `signOutResult` là **failure**(`'Sign out failed.'`)
-   và `initialSession` là `AuthSessionAuthenticated(uid: 'u-9')`.
+ và `initialSession` là `AuthSessionAuthenticated(uid: 'u-9')`.
 2. Sau `await vm.signOut()`: result `false`; **profile KHÔNG bị
-   reset** (assert `userProfileStream.value` giữ nguyên — seed sẵn
-   profile khác-default trước khi tạo VM); `signOutCallCount == 1`.
+ reset** (assert `userProfileStream.value` giữ nguyên — seed sẵn
+ profile khác default trước khi tạo VM); `signOutCallCount == 1`.
 3. `SnackBarRequested` emit đúng `'Sign out failed.'` và KHÔNG có
-   `DismissRequested` (dialog ở lại).
+ `DismissRequested` (dialog ở lại).
 
 Gợi ý: mirror shape `createViewModel` của
 `menu_sign_out_dialog_view_model_test.dart` (ba repo + VM + addTearDown);
-profile khác-default seed qua `SharedPreferences.setMockInitialValues`
+profile khác default seed qua `SharedPreferences.setMockInitialValues`
 + `UserProfileRepositoryImpl.create()` rồi `saveUserProfile`.
 
 <details>
@@ -479,41 +479,41 @@ và VM giữ dialog mở (không DismissRequested).
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** success → VM emit event nào, theo thứ tự nào? — **Đáp:**
-  `DismissRequested` rồi `SnackBarRequested(message)` — đóng trước,
-  báo sau; snackbar vẫn hiện vì ScaffoldMessenger lan tỏa.
+ `DismissRequested` rồi `SnackBarRequested(message)` — đóng trước,
+ báo sau; snackbar vẫn hiện vì ScaffoldMessenger lan tỏa.
 - **Hỏi:** `_isLoading` và `isLoading`-overlay khác nhau thế nào? —
-  **Đáp:** cờ trong VM là nguồn truth chặn double-call; overlay UI
-  (Bài 5) chỉ hiển thị theo cờ qua `context.watch` — bỏ overlay vẫn
-  chặn được call, bỏ cờ thì overlay không còn ý nghĩa.
-- **Hỏi:** FR-35 đóng ở đâu và bằng cơ chế gì? — **Đáp:**
-  `LeaderboardDialogViewModel` +`AuthRepository` +
-  `_currentLeaderboardUserId()` exhaustive `switch` — authed → uid
-  vào `currentUserId`, guest → null (hàng "bạn" rơi về profile
-  local); test assert `lastCurrentUserId == 'auth-uid-1'`.
+ **Đáp:** cờ trong VM là nguồn truth chặn double-call; overlay UI
+ (Bài 5) chỉ hiển thị theo cờ qua `context.watch` — bỏ overlay vẫn
+ chặn được call, bỏ cờ thì overlay không còn ý nghĩa.
+- **Hỏi:** đóng ở đâu và bằng cơ chế gì? — **Đáp:**
+ `LeaderboardDialogViewModel` +`AuthRepository` +
+ `_currentLeaderboardUserId()` exhaustive `switch` — authed → uid
+ vào `currentUserId`, guest → null (hàng "bạn" rơi về profile
+ local); test assert `lastCurrentUserId == 'auth-uid-1'`.
 
 ## Ta cố ý chưa thêm
 
 - `MenuAuthRequested`/`MenuSignOutRequested` events +
-  `requestAuthAction()` + retire `resetProfile` + emit site
-  `MenuSnackBarRequested` — **Bài 5** (cùng đợt event-set đổi;
-  class `MenuSnackBarRequested` giữ nguyên senior-true).
+ `requestAuthAction()` + retire `resetProfile` + emit site
+ `MenuSnackBarRequested` — **Bài 5** (cùng đợt event-set đổi;
+ class `MenuSnackBarRequested` giữ nguyên senior-true).
 - Widget dialog + scope + pill tap + ARB — **Bài 5**.
 - `MenuDialogLayer`/`MenuDialogState` transport của senior — **M29**
-  (learner giữ event một-lần + `showDialog` — FR-29 còn mở).
+ (learner giữ event một lần + `showDialog` — còn mở).
 - `UserProfileSyncRepositoryImpl` — **M25**.
 
 ## Checkpoint hoàn thành
 
 - [ ] Hai dialog VM + hai sealed event family tồn tại; mỗi VM có
-  `_isLoading` single-flight + `_isDisposed` guard + result→event
-  dịch đúng (success: dismiss+snackbar; failure: snackbar).
+ `_isLoading` single-flight + `_isDisposed` guard + result→event
+ dịch đúng (success: dismiss+snackbar; failure: snackbar).
 - [ ] `MenuViewModel` seed/sub `authStateStream`, `isAuthenticated`,
-  `loadUserProfile` fan-out; `LeaderboardDialogViewModel` + scope
-  nhận `AuthRepository` + `switch(authState)` → uid/null (FR-35).
+ `loadUserProfile` fan-out; `LeaderboardDialogViewModel` + scope
+ nhận `AuthRepository` + `switch(authState)` → uid/null.
 - [ ] `menu_screen.dart` `create:` truyền `AuthRepository`; các
-  call-site test bị chữ ký ép đã cập nhật.
+ call-site test bị chữ ký ép đã cập nhật.
 - [ ] `flutter analyze` sạch; `flutter test` **219/219**
-  (201 + 11 + 3 + 3 + 1).
+ (201 + 11 + 3 + 3 + 1).
 - [ ] PRODUCE exercise: scratch sign-out-failure test chạy xanh,
-  assert đủ profile-preserved + không-dismiss + callCount; file đã
-  xoá.
+ assert đủ profile-preserved + không dismiss + callCount; file đã
+ xoá.

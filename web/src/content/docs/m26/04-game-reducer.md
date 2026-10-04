@@ -1,6 +1,6 @@
 ---
 title: "Bài 4 · GameReducer — bảng transition thuần, chia theo flow"
-description: "`reducer/game_reducer.dart` + `part`/`part of` + 4 private `extension _GameReducer*Flow` (`part`/`part of` reuse từ M24 — D-45 mới ở chỗ: private `extension` trên class qua part files, lần đầu trong course); switch exhaustive 13 arm; guard `_result(state)` same-instance; `flowToken` tăng tại mọi transition tạo-delay (A-32); `_withSaveResult` → `GameSaveResult` op (F-34, A-22). 10 reducer test thuần — không Flutter, không fake → 241 → 251."
+description: "`reducer/game_reducer.dart` + `part`/`part of` + 4 private `extension _GameReducer*Flow` (`part`/`part of` reuse từ M24 — mới ở chỗ: private `extension` trên class qua part files, lần đầu trong course); switch exhaustive 13 arm; guard `_result(state)` same-instance; `flowToken` tăng tại mọi transition tạo delay; `_withSaveResult` → `GameSaveResult` op. 10 reducer test thuần — không Flutter, không fake → 241 → 251."
 sidebar:
   label: "Bài 4 · GameReducer"
   order: 4
@@ -11,16 +11,16 @@ sidebar:
 - Tạo `lib/view_models/game/reducer/game_reducer.dart` + bốn
   `part` file — `game_reducer_answer_flow.dart`,
   `_feature_flow`, `_session_flow`, `_timer_flow` — mỗi file một
-  `extension _GameReducer*Flow on GameReducer` private (D-45 — `part`/`part of`
+ `extension _GameReducer*Flow on GameReducer` private (`part`/`part of`
   đã gặp ở M24 auth dialog; mới ở private `extension` qua part
   files).
 - Trace được `reduce`: switch exhaustive 13 arm → handler trong
   part file; guard trả `_result(state)` (same-instance → không
-  notify); `flowToken` tăng tại mọi transition tạo-delay *hoặc
+  notify); `flowToken` tăng tại mọi transition tạo delay *hoặc
   reset flow* (`_startGame`) và `*Elapsed` no-op khi
-  `flowToken != state.flowToken` (A-32).
+ `flowToken != state.flowToken`.
 - `_withSaveResult` → `GameSaveResult` op: save là *kết quả của
-  reduce*, idempotent qua `hasSavedResult` (A-22 → F-34).
+ reduce*, idempotent qua `hasSavedResult` (→).
 - `test/view_models/game/game_reducer_test.dart` — 10 test thuần,
   không Flutter/fake/`async`. +10 → **251/251**.
 
@@ -43,24 +43,24 @@ VM** — `reducer.reduce(state, action)` trả `DreResult` assert
 thẳng; (2) **guard tập trung** — mọi "điều kiện để chuyển" là một
 nhánh `if` trả `_result(state)`; (3) **stale guard thành luật
 data** — `flowToken != state.flowToken` nằm ngay đầu mỗi
-`*Elapsed` handler (A-32). Và senior chia `part` theo *flow
+`*Elapsed` handler. Và senior chia `part` theo *flow
 domain* vì reducer được đọc theo miền — không phải theo
-kiểu-chữ (D-45).
+kiểu chữ.
 
 ## Bạn đã biết gì
 
 - Toàn bộ contract Bài 3 (`GameState`/`GameAction`/`GameEffect`/
   `GameAsyncOp`/`DreResult`); 6 phase + sealed dialog family
-  (A-18, D-26/D-27); `copyWith` + cờ `clear*` (D-34).
-- `hasSavedResult` idempotence (A-22); `flowToken`/`_requestId`
-  ý-tưởng-stale (D-42 → A-32); `isA<T>()`/`is!` + pattern
-  `(:final field)` destructure (D-27 nâng).
+; `copyWith` + cờ `clear*`.
+- `hasSavedResult` idempotence; `flowToken`/`_requestId`
+ ý tưởng stale (→); `isA<T>()`/`is!` + pattern
+ `(final field)` destructure (nâng).
 - Helpers sẵn: `calculateGameWalkAwayAmount`,
   `buildGameMoneyLadderItems`, `buildGameAudiencePoll`,
-  `applyGameFiftyFifty`, `formatGameMoney` (M19/M20 — A-20 gia
+ `applyGameFiftyFifty`, `formatGameMoney` (M19/M20 — gia
   đình).
 
-## Mental model mới — "một library, năm file" + "guard là data" (D-45 + A-31, CORE)
+## Mental model mới — "một library, năm file" + "guard là data" (+, CORE)
 
 ```text
 game_reducer.dart ── part 'game_reducer_answer_flow.dart'
@@ -79,7 +79,7 @@ imports, chia sẻ private members — `_submitAnswer` định nghĩa ở
 part answer nhưng `reduce` ở main file gọi được vì cùng library;
 tên extension private `_GameReducer*Flow` nên không lộ ra ngoài.
 Vì sao chia theo *flow domain*: mỗi file trả lời một câu
-hỏi-nghiệp-vụ ("trả lời chạy thế nào?", "lifeline chạy thế
+hỏi nghiệp vụ ("trả lời chạy thế nào?", "lifeline chạy thế
 nào?") — ~510 dòng luật đọc như bốn chương.
 
 Và nhịp của mọi handler:
@@ -96,10 +96,10 @@ _handler(state, …):
 
 | Construct | Vai trò |
 |---|---|
-| `part 'file.dart'` / `part of 'lib.dart'` | split một library thành nhiều file — chia sẻ import + private (D-45 mới) |
-| `extension _Name on GameReducer` | method-mở-rộng private trong part — tên private nên không lộ ra ngoài (D-45) |
-| `GameAnswerSubmitted(:final answerText) =>` | object pattern destructure ngay trong switch arm — D-27 nâng |
-| `is! GameAIAssistantDialog` | negated type test — guard dialog-đúng-loại |
+| `part 'file.dart'` / `part of 'lib.dart'` | split một library thành nhiều file — chia sẻ import + private (mới) |
+| `extension _Name on GameReducer` | method mở rộng private trong part — tên private nên không lộ ra ngoài |
+| `GameAnswerSubmitted(final answerText) =>` | object pattern destructure ngay trong switch arm — nâng |
+| `is! GameAIAssistantDialog` | negated type test — guard dialog đúng loại |
 | `_result(state, {effects, asyncOp})` | helper private gói `DreResult` — điểm chung mọi nhánh |
 
 ## Flutter cần dùng
@@ -165,7 +165,33 @@ stateless (`questions`/`timePerQuestion` là config bất biến), mọi
 | `game_reducer_timer_flow.dart` | `_tickTimer` — verbatim |
 | `test/view_models/game/game_reducer_test.dart` | 10 test verbatim (đổi package import) |
 
+:::note[Bản đồ bài dài — năm pha, không một mạch]
+Bài này port một reducer ~4 file `part` + 10 test — đọc một hơi sẽ
+quá tải. Đi theo pha, mỗi pha có mốc kiểm:
+
+| Pha | Bạn đã biết | Model mới | Kiểm trước khi tiếp |
+|---|---|---|---|
+| **1 — transition thuần** | `copyWith`, sealed switch (Bài 2–3) | reducer = hàm thuần (state, action) → (state, effects) | DartPad mini-reducer chạy được |
+| **2 — skeleton + flow đầu** | `part`/`part of` chưa gặp | một class rải qua nhiều file cùng-library | đọc được switch kiệt hợp trên `GameAction` |
+| **3 — session flow + op** | effect là data (Bài 3) | action→effect→op→action mới | chỉ ra được op nào phát action nào |
+| **4 — feature flow** | lifeline semantics (M19–M21) | guard tập trung trong reducer | nêu được vì sao guard không ở VM |
+| **5 — regression + debug** | `expect`/`group` | reducer test = pure function test | phá một guard → đúng một test đỏ |
+:::
+
+:::caution[DRE là lựa chọn của project này — không phải luật Flutter]
+Reducer/effect/op là *kiến trúc senior chọn* để quản một màn hình 733
+dòng nhiều timer. Đa số app Flutter không cần nó — `ChangeNotifier`
+đơn giản đã đủ khi state nhỏ. **Dùng khi:** nhiều nguồn thay đổi cùng
+một state, transition phải test được mà không cần UI, async effect
+phải tách khỏi logic. **Overkill khi:** một màn hình một stream,
+không transition phức tạp. Đừng mang pattern này vào mọi project —
+mang *cách suy luận* (state là data, side-effect là ý định) thì luôn
+đúng.
+:::
+
 ## Build it step by step
+
+**PHA 2 — skeleton + flow đầu.**
 
 **Bước 1 — `lib/view_models/game/reducer/game_reducer.dart`**
 (file mới — verbatim senior; imports gồm `core/dre/dre.dart`,
@@ -286,6 +312,8 @@ extension _GameReducerAnswerFlow on GameReducer {
 }
 ```
 
+**PHA 3 — session flow + op.**
+
 **Bước 4 — `game_reducer_session_flow.dart`** (verbatim senior;
 trích `_withSaveResult` — bảng dưới map các handler còn lại):
 
@@ -320,6 +348,8 @@ trích `_withSaveResult` — bảng dưới map các handler còn lại):
 | `_endGame` | — | `gameOver` + `GameEndedDialog(guaranteedAmount)` | `_withSaveResult` + `GameStopTimer` |
 | `_confirmWalkAway` | — (guard ở bước mở dialog) | `victory` + `GameVictoryDialog(walkAway)` | `_withSaveResult` + `GameStopTimer` |
 | `_backToMenu` | — | `remainingTime: zero` | `_withSaveResult` + `[GameStopTimer, GameNavigateToMenu]` |
+
+**PHA 4 — feature flow.**
 
 **Bước 5 — `game_reducer_feature_flow.dart`** (verbatim senior;
 trích `_selectFeature` + `_canUseFeature` — các handler
@@ -358,6 +388,8 @@ trích `_selectFeature` + `_canUseFeature` — các handler
   }
 ```
 
+**PHA 5 — regression + debug.**
+
 **Bước 6 — `test/view_models/game/game_reducer_test.dart`** (file
 mới — 10 test verbatim senior; trích 2 test + helpers):
 
@@ -390,7 +422,7 @@ mới — 10 test verbatim senior; trích 2 test + helpers):
 
 — setUp (`const GameReducer(questions: gameSampleQuestions,
 timePerQuestion: Duration(seconds: 30))` + `GameState.initial`)
-và ba helper tái-dùng mọi test (port verbatim):
+và ba helper tái dùng mọi test (port verbatim):
 
 ```dart
 GameState _started(GameReducer reducer, GameState initialState) =>
@@ -426,10 +458,10 @@ scheduled).
    ghi `flowToken: token` vào state *và* vào
    `GameScheduleAnswerReveal(token)`; bridge re-dispatch
    `GameAnswerRevealElapsed(token)`; reducer check lệch → no-op
-   (A-32). Ba lần nhìn thấy cùng một con số trên ba loại.
+. Ba lần nhìn thấy cùng một con số trên ba loại.
 3. **`_withSaveResult` — save được *khai báo* trong reduce.** Op
    `GameSaveResult` đi kèm state đã `hasSavedResult: true` → op
-   chạy với snapshot post-reduce thấy flag bật (F-34). Khi đã
+ chạy với snapshot post-reduce thấy flag bật. Khi đã
    saved, `_result(state, effects: effects)` vẫn để effects đi
    qua: `backToMenu` lần hai vẫn navigate, chỉ save bị chặn.
 4. **`_dismissDialog` default-branch → +1 notify (divergence).**
@@ -466,7 +498,7 @@ _playing(…), const GameBackToMenuRequested())` khi
   questionCount: index+1)`.
 - `true` → state chỉ `remainingTime: zero` (flag giữ); effects y
   hệt (nav vẫn emit!); **asyncOp null** — save-once là
-  reducer-guard, không phải VM-guard (A-22).
+ reducer-guard, không phải VM-guard.
 </details>
 
 ## Lỗi hay gặp
@@ -476,7 +508,7 @@ _playing(…), const GameBackToMenuRequested())` khi
 2. **Trả `state.copyWith()` cho guard** — instance mới → notify
    dư; guard phải `_result(state)` same-instance.
 3. **Quên `flowToken: token` khi schedule** — token không tăng →
-   stale guard mất nghĩa; mọi transition tạo-delay phải bump.
+   stale guard mất nghĩa; mọi transition tạo delay phải bump.
 4. **Hai async-op một reduce** — `asyncOp` là `O?` một slot;
    `_withSaveResult` là chỗ duy nhất quyết op của session.
 5. **Đặt handler trong main file** — compile được nhưng mất
@@ -536,7 +568,7 @@ Scratch test: `_playing` (token=1 —
   lời — stale result lọt vào flow mới. Shipped suite **không
   bắt** (không test nào đi đúng chuỗi này) — bug chỉ lộ khi tự
   viết ca đó; đây là lý do guard-token tồn tại ở MỌI `*Elapsed`
-  handler, kể cả khi guard-thứ-hai có vẻ đủ.
+  handler, kể cả khi guard thứ hai có vẻ đủ.
 </details>
 
 ## Kiểm tra hiểu biết
@@ -544,7 +576,7 @@ Scratch test: `_playing` (token=1 —
 - **Hỏi:** vì sao senior chia reducer thành `part` theo flow? —
   **Đáp:** đọc theo miền nghiệp vụ; `part`/`part of` chia sẻ
   import + private members như một library — extension private
-  không lộ ra ngoài (D-45).
+ không lộ ra ngoài.
 - **Hỏi:** `same(state)` nghĩa gì trong guard test? — **Đáp:**
   identical object — `GameState` không `==` nên "giống hệt" =
   cùng instance; guard trả đúng instance → dispatch không notify.
@@ -559,8 +591,8 @@ Scratch test: `_playing` (token=1 —
 ## Ta cố ý chưa thêm
 
 - VM mới cắm reducer + bridge thực hiện effects — **Bài 5**.
-- Share arm `GameShareRequested` → `GameShareResult` — **M27**
-  (FR-33); switch cố ý chỉ 13 arm.
+- Share arm `GameShareRequested` → `GameShareResult` — **M27**;
+  switch cố ý chỉ 13 arm.
 - Platform extras — **M27**; visual parity — **M28**;
   `MenuDialogLayer` — **M29**.
 - `==` cho `GameState`, middleware/logging — senior không có.
@@ -569,7 +601,7 @@ Scratch test: `_playing` (token=1 —
 
 - [ ] `reducer/` đủ 5 file: `game_reducer.dart` + 4 `part of` —
   reduce là switch exhaustive 13 arm, mọi guard `_result(state)`.
-- [ ] `flowToken` tăng tại mọi transition tạo-delay hoặc reset
+- [ ] `flowToken` tăng tại mọi transition tạo delay hoặc reset
   flow; `*Elapsed` check `flowToken != state.flowToken` đầu
   handler.
 - [ ] `test/view_models/game/game_reducer_test.dart` 10 test xanh

@@ -1,6 +1,6 @@
 ---
 title: "Bài 03 — Leaderboard pipeline: DTO có asset, mapper deterministic, snapshot có pin"
-description: "FR-14-residual converge: `LeaderboardEntryData` +`avatarAsset`/`avatarUrl`/`rankAsset`/`LeaderboardRowStyle{first,second,third,glass,currentUser}`; `_LeaderboardRecord.fromMap→toEntry` — `_rankAsset`/`_avatarAsset`/`_rowStyle` mapper deterministic từ rank; `SupabaseLeaderboardRepository.loadLeaderboard` top-10 + `_loadCurrentEntry` (`maybeSingle`); `DisabledLeaderboardRepository` trả static entries; seam `@visibleForTesting entryFromRow`. `LeaderboardDialogViewModel`: `requestId` chống stale, refresh giữ entries (isRefreshing flag), `_profileBackedCurrentLeaderboardEntry` overlay profile local. `LeaderboardAvatar`: ring màu theo rank + glow + `Image.network` chỉ-http/https + initial-fallback. `LeaderboardEntryCard` trophy+subtitle (menu card). +8 test: 321/321."
+description: "Converge residual leaderboard: `LeaderboardEntryData` +`avatarAsset`/`avatarUrl`/`rankAsset`/`LeaderboardRowStyle{first,second,third,glass,currentUser}`; `_LeaderboardRecord.fromMap→toEntry` — `_rankAsset`/`_avatarAsset`/`_rowStyle` mapper deterministic từ rank; `SupabaseLeaderboardRepository.loadLeaderboard` top-10 + `_loadCurrentEntry` (`maybeSingle`); `DisabledLeaderboardRepository` trả static entries; seam `@visibleForTesting entryFromRow`. `LeaderboardDialogViewModel`: `requestId` chống stale, refresh giữ entries (isRefreshing flag), `_profileBackedCurrentLeaderboardEntry` overlay profile local. `LeaderboardAvatar`: ring màu theo rank + glow + `Image.network` chỉ http/https + initial-fallback. `LeaderboardEntryCard` trophy+subtitle (menu card). +8 test: 321/321."
 sidebar:
   order: 3
   label: Đường ống leaderboard
@@ -12,13 +12,13 @@ sidebar:
 
 Sau bài này bạn sẽ:
 
-- Hiểu pipeline đầy-đủ của một màn hình **remote-data**: Supabase
-  row → private `_LeaderboardRecord` (parse phòng-thủ) →
+- Hiểu pipeline đầy đủ của một màn hình **remote-data**: Supabase
+  row → private `_LeaderboardRecord` (parse phòng thủ) →
   `LeaderboardEntryData` (presentation DTO) → `LeaderboardRow`
   (vẽ theo `rankAsset`/`style`).
 - Biết vì sao DTO mang **cả `avatarAsset` lẫn `avatarUrl`**
   nullable — asset là fallback deterministic từ rank, URL là
-  ảnh thật khi có; UI quyết định ưu-tiên nào, không phải repo.
+  ảnh thật khi có; UI quyết định ưu tiên nào, không phải repo.
 - Nắm được 3 mapper **deterministic** trong repo:
   `_rankAsset(rank)` (medal SVG), `_rowStyle(rank)` (gradient
   theo hạng), `_avatarAsset(rank)` (clamp vào 6 avatar) —
@@ -27,9 +27,9 @@ Sau bài này bạn sẽ:
   không nằm trong top-10 nhưng vẫn hiển thị ghim dưới — qua
   hai query (`top-10` + `eq(auth_uuid).maybeSingle()`) hợp
   thành `LeaderboardSnapshot`.
-- Ôn lại và thấy-lại-ở-chỗ-mới: `_requestId` chống stale async
-  (D-42), sealed `LeaderboardPopupState` 4-variant (D-26),
-  `@visibleForTesting` seam (mẫu F-37).
+- Ôn lại và thấy lại ở chỗ mới: `_requestId` chống stale async
+, sealed `LeaderboardPopupState` 4-variant,
+ `@visibleForTesting` seam (mẫu).
 
 ## Bạn đang ở đâu
 
@@ -51,9 +51,9 @@ senior:
   avatar ưu-tiên URL http/https → initial → asset
 ```
 
-FR-14-residual ghi gọn: "leaderboard entry card + row asset
+Phần residual ghi gọn: "leaderboard entry card + row asset
 pipeline". "Pipeline" là từ khoá — không phải vá row, mà là
-xây lại **toàn tuyến** dữ-liệu-từ-DB-đến-pixel.
+xây lại **toàn tuyến** dữ liệu từ-DB-đến pixel.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -63,22 +63,22 @@ local (username/level/avatarUrl của bạn), và static fallback
 (disabled repo → dev/preview không cần DB). Cách nó ghép ba
 nguồn — repo cho remote, VM overlay profile lên pinned entry,
 const list cho offline — là mẫu sẽ tái dùng ở mọi remote-screen
-sau này. Và đây là bài kiểm-tra A-40 khắt-khe nhất: repo file
-là verbatim gần-như-tuyệt-đối, chỉ thêm đúng **một seam**
+sau này. Và đây là bài kiểm tra khắt khe nhất: repo file
+là verbatim gần như tuyệt đối, chỉ thêm đúng **một seam**
 `entryFromRow` được documented.
 
 ## Bạn đã biết gì
 
 | Đã học | Ở đâu | Nhắc ngắn |
 |---|---|---|
-| **A-23** Remote repository sau contract | M23 | `LeaderboardRepository` là interface; `Supabase…` và `Disabled…` là 2 impl DI chọn |
-| **A-24** Conditional DI | M23 | `main()` chọn impl theo cấu hình; test/preview dùng Disabled/Fake |
-| **D-26/D-27** sealed state family | M15 | `LeaderboardPopupState` 4-variant: Loading/Success/Empty/Error — switch kiệt hợp |
-| **D-42** `_requestId` chống stale | M23 | Response trễ không được ghi đè state của request mới hơn |
-| **A-15** Dialog-scoped VM | M16, M29·02 | `LeaderboardDialogViewModel` tạo trong scope, chết cùng dialog |
-| **F-37** Injected-function seam | M27 | `@visibleForTesting static entryFromRow` — cùng mẫu seam-documented của `loadAppVersion`: bóc logic ra test, body verbatim |
-| **F-32** `RefreshIndicator` | M23 | Pull-to-refresh gọi `vm.refresh()` |
-| **A-20** Presentation mapper | M19 | DTO ≠ DB row — `_formatScore`/`_rankAsset` là tầng trình bày ở repo |
+| Remote repository sau contract | M23 | `LeaderboardRepository` là interface; `Supabase…` và `Disabled…` là 2 impl DI chọn |
+| Conditional DI | M23 | `main()` chọn impl theo cấu hình; test/preview dùng Disabled/Fake |
+| sealed state family | M15 | `LeaderboardPopupState` 4-variant: Loading/Success/Empty/Error — switch kiệt hợp |
+| `_requestId` chống stale | M23 | Response trễ không được ghi đè state của request mới hơn |
+| Dialog-scoped VM | M16, M29·02 | `LeaderboardDialogViewModel` tạo trong scope, chết cùng dialog |
+| Injected-function seam | M27 | `@visibleForTesting static entryFromRow` — cùng mẫu seam-documented của `loadAppVersion`: bóc logic ra test, body verbatim |
+| `RefreshIndicator` | M23 | Pull-to-refresh gọi `vm.refresh()` |
+| Presentation mapper | M19 | DTO ≠ DB row — `_formatScore`/`_rankAsset` là tầng trình bày ở repo |
 
 ## Mental model củng cố — "DTO là hợp đồng giữa data và pixel"
 
@@ -97,9 +97,9 @@ LeaderboardRow — không biết DB tồn tại: chỉ đọc field DTO
 ```
 
 Điểm cốt lõi: **row widget không hỏi "rank mấy thì vẽ gì"** —
-nó đọc `entry.rankAsset`/`entry.style` đã-quyết-định-sẵn. Mọi
-quy-tắc "rank 1 thì vàng" sống ở *một* chỗ (repo mapper); UI
-là nơi thi-hành, không phải nơi suy-luận. Ngày senior đổi bảng
+nó đọc `entry.rankAsset`/`entry.style` đã quyết định sẵn. Mọi
+quy tắc "rank 1 thì vàng" sống ở *một* chỗ (repo mapper); UI
+là nơi thi hành, không phải nơi suy luận. Ngày senior đổi bảng
 màu rank 4, bạn diff một hàm `_rowStyle` — không lùng 40 chỗ
 render.
 
@@ -107,13 +107,13 @@ render.
 
 | Dart | Vai trò ở đây | Xem lại |
 |---|---|---|
-| `switch (rank) { 1 => …, _ => … }` | mapper deterministic — expression, exhaustive trên int bằng `_` | D-27 |
-| `LeaderboardRowStyle` enum | style là *giá trị của enum*, không literal | D-06 |
-| `(rank - 1).clamp(0, len - 1).toInt()` | index an-toàn vào list avatar | mới tại đây |
-| `value is int / is num → toInt()` | parse phòng-thủ JSON loose-typed | D-41 |
-| `String? → Uri.tryParse → scheme check` | validate `avatarUrl` trước `Image.network` | D-41 |
-| `maybeSingle()` | query "0 hoặc 1 hàng" — không throw khi rỗng | D-41 |
-| `@visibleForTesting static` | seam bóc private mapper ra test | F-37 |
+| `switch (rank) { 1 => …, _ => … }` | mapper deterministic — expression, exhaustive trên int bằng `_` | |
+| `LeaderboardRowStyle` enum | style là *giá trị của enum*, không literal | |
+| `(rank - 1).clamp(0, len - 1).toInt()` | index an toàn vào list avatar | mới tại đây |
+| `value is int / is num → toInt()` | parse phòng thủ JSON loose-typed | |
+| `String? → Uri.tryParse → scheme check` | validate `avatarUrl` trước `Image.network` | |
+| `maybeSingle()` | query "0 hoặc 1 hàng" — không throw khi rỗng | |
+| `@visibleForTesting static` | seam bóc private mapper ra test | |
 
 ## Flutter cần dùng
 
@@ -121,9 +121,9 @@ render.
 |---|---|---|
 | `Image.network(url, errorBuilder:)` | avatar remote — fallback initial khi lỗi | mới tại đây |
 | `Image.asset(entry.avatarAsset)` | avatar fallback deterministic | catalogue Bài 01 |
-| `Border.all` + `BoxShadow` ring | ring màu + glow theo rank | F-30-family |
-| `SvgPicture.asset(entry.rankAsset)` + `Semantics` | medal SVG + `rankSemanticLabel` | F-42/F-43 |
-| `RefreshIndicator` | `vm.refresh()` — isRefreshing giữ entries | F-32 |
+| `Border.all` + `BoxShadow` ring | ring màu + glow theo rank | -family |
+| `SvgPicture.asset(entry.rankAsset)` + `Semantics` | medal SVG + `rankSemanticLabel` | / |
+| `RefreshIndicator` | `vm.refresh()` — isRefreshing giữ entries | |
 
 ## Ví dụ độc lập — deterministic mapper
 
@@ -157,16 +157,16 @@ void main() {
 :::note[Android / Compose bridge — "DTO tại tầng repo"]
 - **SIMILARITY**: `record.toEntry()` tương đương
   `ResponseDto.toUiModel()` trong data-layer — mapping là
-  *trách nhiệm của repo*, ViewModel nhận đồ-đã-bày.
+  *trách nhiệm của repo*, ViewModel nhận đồ đã bày.
 - **IMPORTANT DIFFERENCE**: `isCurrentUser` là tham số của
   `toEntry`, không phải field DB — cùng một row render khác
-  (style `currentUser`, medal `RankCurrent`) tuỳ ngữ-cảnh.
+  (style `currentUser`, medal `RankCurrent`) tuỳ ngữ cảnh.
   Row của bạn trong top-10 và row pin của bạn dùng cùng DTO,
   khác *flag*.
 - **DO NOT ASSUME**: đừng cho rằng `avatarUrl` nullable nghĩa
-  là "luôn hiển thị asset". Ưu-tiên senior: URL hợp-lệ →
+  là "luôn hiển thị asset". Ưu tiên senior: URL hợp lệ →
   `Image.network`; URL xấu/lỗi → initial letter; chỉ entry
-  không-URL và không-phải-current-user mới `_assetAvatar`.
+  không-URL và không phải current user mới `_assetAvatar`.
 :::
 
 ## Senior project connection
@@ -175,10 +175,10 @@ void main() {
 |---|---|
 | `lib/data/leaderboard/leaderboard_entry_data.dart` | DTO 9-field + `LeaderboardRowStyle` enum + sealed `LeaderboardPopupState` + static entries |
 | `lib/repositories/leaderboard/leaderboard_repository.dart` | `_LeaderboardRecord` + 3 mapper + 2 impl + seam `entryFromRow` (seam là learner-doc, body verbatim) |
-| `lib/view_models/leaderboard/leaderboard_dialog_view_model.dart` | `requestId`, refresh-giữ-pin, `_profileBackedCurrentLeaderboardEntry` |
+| `lib/view_models/leaderboard/leaderboard_dialog_view_model.dart` | `requestId`, refresh giữ pin, `_profileBackedCurrentLeaderboardEntry` |
 | `lib/widgets/leaderboard/{leaderboard_avatar,leaderboard_row,leaderboard_list,leaderboard_popup_body}.dart` | vẽ medal+avatar+gradient+score-coin |
 | `lib/widgets/menu/leaderboard/leaderboard_entry_card.dart` | menu card 44px trophy + `menuLeaderboardEntrySubtitle` (key mới Bài 01) |
-| `lib/widgets/menu/leaderboard/{menu_leaderboard_dialog,menu_leaderboard_dialog_scope}.dart` | dialog + scope (A-15) |
+| `lib/widgets/menu/leaderboard/{menu_leaderboard_dialog,menu_leaderboard_dialog_scope}.dart` | dialog + scope |
 | `test/widgets/{leaderboard_avatar_test(5),menu_leaderboard_dialog_test(11)}` | test port; net +8 sau retire learner-predecessors |
 
 ## Build it step by step
@@ -203,14 +203,14 @@ enum LeaderboardRowStyle { first, second, third, glass, currentUser }
 ```
 
 :::note[Hai trường avatar — tại sao không gộp?]
-`avatarUrl` là *dữ kiện remote* (có/không, hợp-lệ/không — do
-network quyết); `avatarAsset` là *dự-phòng deterministic* (luôn
-có, do rank quyết). Gộp một field sẽ xoá khả-năng "thử URL,
+`avatarUrl` là *dữ kiện remote* (có/không, hợp lệ/không — do
+network quyết); `avatarAsset` là *dự phòng deterministic* (luôn
+có, do rank quyết). Gộp một field sẽ xoá khả năng "thử URL,
 rớt về asset" — chính logic của `_AvatarImage`. Giữ tách =
-giữ được chuỗi-fallback.
+giữ được chuỗi fallback.
 :::
 
-### Bước 2 — Parse phòng-thủ → DTO qua mapper
+### Bước 2 — Parse phòng thủ → DTO qua mapper
 
 ```dart
 // learner-app/lib/repositories/leaderboard/leaderboard_repository.dart (trích)
@@ -263,7 +263,7 @@ static String _avatarAsset(int rank) {
 
 :::tip[Clamp, không modulo]
 `_avatarAsset` dùng `clamp` chứ không `%` — rank 125 lấy avatar
-cuối, không quay vòng về avatar 1. Quyết-định-visual nhỏ này
+cuối, không quay vòng về avatar 1. Quyết định visual nhỏ này
 là của senior: hạng xa vẫn có avatar "phù hợp tính cách" nhất
 định chứ không ngẫu nhiên.
 :::
@@ -291,11 +291,11 @@ Future<LeaderboardSnapshot> loadLeaderboard({String? currentUserId}) async {
 // → row của bạn dù KHÔNG trong top-10; null → guest/no-row
 ```
 
-`maybeSingle()` là chi tiết quan-trọng (D-41): "0 hoặc 1 hàng"
-— guest (uid null) hoặc user chưa-có-row đều trả `null` thay
+`maybeSingle()` là chi tiết quan trọng : "0 hoặc 1 hàng"
+— guest (uid null) hoặc user chưa có row đều trả `null` thay
 vì throw. VM nhận `null` → tự build entry-pin từ profile local.
 
-### Bước 4 — VM: requestId, refresh-giữ-pin, overlay profile
+### Bước 4 — VM: requestId, refresh giữ pin, overlay profile
 
 ```dart
 // learner-app/lib/view_models/leaderboard/leaderboard_dialog_view_model.dart (trích)
@@ -333,11 +333,11 @@ return LeaderboardEntryData(
 
 Vì sao overlay? — DB của bạn có thể cũ vài giây (username mới
 đổi chưa sync). VM ghép *rank/score remote* với *avatarUrl/
-username local* → pin luôn phản-ánh "bạn" nhất có thể. Ngược
-lại `avatarAsset`/`rankAsset`/`style` luôn cố-định cho
+username local* → pin luôn phản ánh "bạn" nhất có thể. Ngược
+lại `avatarAsset`/`rankAsset`/`style` luôn cố định cho
 currentUser — không phụ thuộc DB.
 
-### Bước 5 — Avatar: chuỗi-fallback 3 tầng
+### Bước 5 — Avatar: chuỗi fallback 3 tầng
 
 ```dart
 // learner-app/lib/widgets/leaderboard/leaderboard_avatar.dart (trích)
@@ -367,13 +367,13 @@ _fallbackAvatar: currentUser hoặc có-url ─► _initialAvatar
 
 :::caution[Vì sao chặn non-http scheme?]
 `Uri.tryParse` nhận cả `file:///etc/passwd` hay `data:` URI.
-`Image.network` không hiểu `file:` — và cho-phép-scheme-tùy-ý
+`Image.network` không hiểu `file:` — và cho phép scheme tùy ý
 là lỗ hổng (asset-path traversal). Whitelist `http||https` là
-phòng-thủ-đầu-vào (D-41) ngay ở lớp widget — senior không tin
+phòng thủ đầu vào ngay ở lớp widget — senior không tin
 dữ liệu DB.
 :::
 
-### Bước 6 — Seam cho test (deviation được-document)
+### Bước 6 — Seam cho test (deviation được document)
 
 ```dart
 // learner-app/lib/repositories/leaderboard/leaderboard_repository.dart (trích)
@@ -387,33 +387,33 @@ static LeaderboardEntryData entryFromRow(
 }) => _LeaderboardRecord.fromMap(row).toEntry(isCurrentUser: isCurrentUser);
 ```
 
-Đây là ví dụ mẫu của "documented deviation" trong A-40: senior
-không có seam này, nhưng thêm nó cho-phép test
+Đây là ví dụ mẫu của "documented deviation" trong sweep: senior
+không có seam này, nhưng thêm nó cho phép test
 `_intValue`/`_stringValue`/mapper mà không mock Supabase.
-Logic bên trong vẫn verbatim — chỉ cửa-vào là mới. Register
-ghi rõ `TEST_SEAM` thay vì `CONVERGED`-mập-mờ.
+Logic bên trong vẫn verbatim — chỉ cửa vào là mới. Register
+ghi rõ `TEST_SEAM` thay vì `CONVERGED`-mập mờ.
 
 ## Hiểu code — 6 chi tiết dễ trượt
 
 **1. `_formatScore` trừ chữ ' VNĐ'** — `UserProfileData
 .formatVnd(2210000)` → `'2.210.000 VNĐ'`; leaderboard chỉ muốn
-số → `replaceAll(' VNĐ','')`. Format-tiền vẫn một nguồn
-(UserProfileData), leaderboard chỉ cắt hậu-tố.
+số → `replaceAll(' VNĐ','')`. Format tiền vẫn một nguồn
+(UserProfileData), leaderboard chỉ cắt hậu tố.
 
 **2. `order('total_money_won').order('rank')`** — sắp cạnh
-tiền-trước, rank-sau: hai người cùng tiền thì rank (server-side)
-phân định. Bỏ order thứ hai = thứ-tự-không-xác-định cho điểm
+tiền trước, rank-sau: hai người cùng tiền thì rank (server-side)
+phân định. Bỏ order thứ hai = thứ tự không xác định cho điểm
 hòa.
 
 **3. `LeaderboardPopupSuccess` có default-const** —
 `entries = leaderboardEntries, currentEntry = currentLeaderboardEntry`
-— `const LeaderboardPopupSuccess()` *là* offline-preview hợp-lệ;
+— `const LeaderboardPopupSuccess()` *là* offline-preview hợp lệ;
 `DisabledLeaderboardRepository` trả đúng static đó. Dev-mode
-và preview không cần DB (A-24).
+và preview không cần DB.
 
 **4. `isRefreshing` là flag trong Success, không phải variant** —
-refresh *trong khi thành-công* khác *đang-tải-lần-đầu*: variant
-riêng sẽ mất entries→nhấp-nháy; flag giữ list + hiện indicator.
+refresh *trong khi thành công* khác *đang tải lần đầu*: variant
+riêng sẽ mất entries→nhấp nháy; flag giữ list + hiện indicator.
 
 **5. Ring-current-user khác ring-rank** — `_isCurrentUserEntry`
 cho `green400` + `_ringInset` bỏ gap (ring sát mép); còn rank
@@ -421,8 +421,8 @@ cho `green400` + `_ringInset` bỏ gap (ring sát mép); còn rank
 10 màu @alpha-0x66). Hai lookup-table riêng cho viền và quầng.
 
 **6. `_initial` dùng `runes.first`** — không `value[0]`: rune
-lấy đúng code-point đầu (an-toàn với emoji/dấu), `toUpperCase`
-chuẩn-hoá hiển thị.
+lấy đúng code-point đầu (an toàn với emoji/dấu), `toUpperCase`
+chuẩn hoá hiển thị.
 
 ## Chạy và quan sát
 
@@ -437,7 +437,7 @@ grep -rn "entryFromRow" lib/ test/   # seam chỉ test dùng
 
 Quan sát trong app (disabled-repo): mở leaderboard → 6 hàng
 static với medal vàng/bạc/đồng, avatar PNG theo rank, row pin
-xanh-lá ở dưới. Pull-to-refresh: list **không biến mất**, chỉ
+xanh lá ở dưới. Pull-to-refresh: list **không biến mất**, chỉ
 indicator chạy — đó là `isRefreshing` đang giữ pin+entries.
 
 ## Thử nghiệm
@@ -446,16 +446,16 @@ indicator chạy — đó là `isRefreshing` đang giữ pin+entries.
 |---|---|---|
 | Sửa `_avatarAsset` dùng `% assets.length` | Rank 125 nhận avatar nào? | `125 % 6 = 5` → avatar thứ 5 thay vì cuối — khác biệt nhỏ nhưng **sai**: hạng xa quay vòng, người rank 7 và rank 13 trùng avatar. Clamp giữ "xa nhất" |
 | Repo trả `avatarUrl: 'javascript:alert(1)'` | UI hiện gì? | `_validAvatarUrl` chặn scheme → null → fallback — whitelist cứu cả payload lạ lẫn DB-bẩn |
-| Bỏ `isRefreshing` mà set `LeaderboardPopupLoading` khi refresh | Nhìn thấy gì? | Toàn list biến thành spinner rồi quay lại — nhấp-nháy. Flag-in-variant giữ UX "đang làm mới chứ không mất dữ liệu" |
-| `currentUserId` rỗng-chuỗi `''` | `_loadCurrentEntry` làm gì? | `isEmpty` check → null sớm, không query `.eq('auth_uuid','')` vô-nghĩa — guard cả hai dạng "không-có-user" |
+| Bỏ `isRefreshing` mà set `LeaderboardPopupLoading` khi refresh | Nhìn thấy gì? | Toàn list biến thành spinner rồi quay lại — nhấp nháy. Flag-in-variant giữ UX "đang làm mới chứ không mất dữ liệu" |
+| `currentUserId` rỗng chuỗi `''` | `_loadCurrentEntry` làm gì? | `isEmpty` check → null sớm, không query `.eq('auth_uuid','')` vô nghĩa — guard cả hai dạng "không có user" |
 
 ## Lỗi hay gặp
 
 | Lỗi | Vì sao | Sửa |
 |---|---|---|
-| Medal đồng-hạt cho mọi hạng | `_rankAsset` bị gỡ switch chỉ trả `RankCurrent` | khôi phục switch; nhớ `isCurrentUser` bypass mapper (luôn RankCurrent) |
+| Medal đồng hạt cho mọi hạng | `_rankAsset` bị gỡ switch chỉ trả `RankCurrent` | khôi phục switch; nhớ `isCurrentUser` bypass mapper (luôn RankCurrent) |
 | Refresh xong list chớp rỗng | refresh không truyền `isRefresh:true` → Loading variant | `refresh() => loadLeaderboard(isRefresh: true)` |
-| Avatar mạng không hiện dù URL đúng | URL khoảng-trắng/host rỗng → `_validAvatarUrl` null | đây là đúng-hành-vi; sửa data ở DB, không nới validator |
+| Avatar mạng không hiện dù URL đúng | URL khoảng trắng/host rỗng → `_validAvatarUrl` null | đây là đúng hành vi; sửa data ở DB, không nới validator |
 | Test muốn gọi `_LeaderboardRecord` trực tiếp | class private | dùng seam `SupabaseLeaderboardRepository.entryFromRow` |
 | Pin current-user biến mất sau refresh | quên `currentEntry` trong Success copy | success-refresh giữ cả `entries` lẫn `currentEntry` |
 
@@ -474,10 +474,10 @@ lấy từ đâu trước?
 <summary>Đáp án</summary>
 
 Avatar **local** (mới đổi) hiển thị — `userData.avatarUrl ??
-currentEntry.avatarUrl` ưu-tiên stream profile local trên giá
+currentEntry.avatarUrl` ưu tiên stream profile local trên giá
 trị DB. Đây là lý do overlay tồn tại: pinned entry = "bạn" và
-app tin bản-local về *chính bạn* hơn bản-remote-có-thể-trễ.
-Rank/score vẫn lấy remote (local không biết xếp-hạng).
+app tin bản local về *chính bạn* hơn bản remote có thể trễ.
+Rank/score vẫn lấy remote (local không biết xếp hạng).
 
 </details>
 
@@ -486,7 +486,7 @@ mất hoàn toàn, nhưng senior vẫn hiện pin 'Tàu hủ đi chill'".
 Repo trả `currentEntry: null` đúng chuẩn. Bug ở đâu?
 
 :::note[Gợi ý]
-Null từ repo không có nghĩa "không-pin". Xem VM làm gì khi
+Null từ repo không có nghĩa "không pin". Xem VM làm gì khi
 `snapshot.currentEntry == null` nhưng `entries` không rỗng.
 :::
 
@@ -497,7 +497,7 @@ Bug trong `_profileBackedCurrentLeaderboardEntry` (hoặc phiên
 bản learner cũ trả `null` thẳng). Senior: `currentEntry == null
 → _currentUserLeaderboardEntry()` — build pin từ profile local
 (username/level/avatarUrl của chính user + asset/rankAsset/
-style cố-định). Guest vẫn có pin "bạn" — chỉ khi *cả entries
+style cố định). Guest vẫn có pin "bạn" — chỉ khi *cả entries
 và currentEntry* đều trống VM mới vào `PopupEmpty`.
 
 </details>
@@ -522,24 +522,24 @@ final class LeaderboardPopupRateLimited extends LeaderboardPopupState {
 
 Mọi switch-expression kiệt hợp trên `LeaderboardPopupState`
 (`leaderboard_popup_body.dart` — nơi render state→widget) báo
-"missing case". Đây chính là lý-do-sống của sealed family:
-thêm variant = compiler tự liệt kê danh-sách-việc; một `if/
-else` lỏng sẽ âm-thầm render nhầm.
+"missing case". Đây chính là lý do sống của sealed family:
+thêm variant = compiler tự liệt kê danh sách việc; một `if/
+else` lỏng sẽ âm thầm render nhầm.
 
 </details>
 
 ## Kiểm tra hiểu biết
 
 **H: Vì sao mapper (`_rankAsset`/`_rowStyle`/`_avatarAsset`)
-nằm ở repo chứ không ở widget?** — Vì nó là *trình-bày-của-
-dữ-liệu*, không phải *vẽ*: cùng một entry có thể render bởi
-nhiều widget (row, entry-card, preview) — quy-tắc-một-chỗ.
-Widget đọc `entry.rankAsset`, không suy-luận lại (A-20).
+nằm ở repo chứ không ở widget?** — Vì nó là *trình bày của
+dữ liệu*, không phải *vẽ*: cùng một entry có thể render bởi
+nhiều widget (row, entry-card, preview) — quy tắc một chỗ.
+Widget đọc `entry.rankAsset`, không suy luận lại.
 
 **H: `isCurrentUser` là param `toEntry` — sao không lưu vào
 `_LeaderboardRecord`?** — Record là *hình chiếu của row*;
-"đây là tôi" là *ngữ-cảnh request* (`currentUserId`), không
-phải cột DB. Giữ record thuần-row cho phép cùng một row render
+"đây là tôi" là *ngữ cảnh request* (`currentUserId`), không
+phải cột DB. Giữ record thuần row cho phép cùng một row render
 hai vai (trong top-10 vs hàng pin).
 
 **H: Sealed `LeaderboardPopupState` và enum `LeaderboardPopup
@@ -551,12 +551,12 @@ phân tầng "trạng thái" vs "chi tiết trạng thái".
 **H: Seam `entryFromRow` có phải divergence không?** — Có, và
 được *documented đúng* trong register (`TEST_SEAM`): nó bóc
 private-mapper ra test không đổi logic; senior không cần vì
-senior test qua mock client. A-40 cho phép deviation kiểu này
-— miễn là ghi rõ, không-improve-lén.
+senior test qua mock client. cho phép deviation kiểu này
+— miễn là ghi rõ, không improve lén.
 
 ## Ta cố ý chưa thêm
 
-- **Không port phần popup/list "nâng-cao" hơn senior** —
+- **Không port phần popup/list "nâng cao" hơn senior** —
   `leaderboard_list.dart`/`leaderboard_popup_body.dart` chỉ
   theo senior (RefreshIndicator + state-switch); không thêm
   skeleton-shimmer hay infinite-scroll senior không có.
@@ -574,14 +574,14 @@ senior test qua mock client. A-40 cho phép deviation kiểu này
 - [x] `LeaderboardEntryData`: +`avatarAsset`/`avatarUrl`/
       `rankAsset`/`LeaderboardRowStyle`; static entries mang
       asset-path.
-- [x] Repo: `_LeaderboardRecord.fromMap` phòng-thủ + `toEntry`
+- [x] Repo: `_LeaderboardRecord.fromMap` phòng thủ + `toEntry`
       3-mapper deterministic; top-10 + `maybeSingle` pin;
       `DisabledLeaderboardRepository` trả static.
 - [x] VM: `requestId` chống stale; refresh `isRefreshing` giữ
       pin; `_profileBackedCurrentLeaderboardEntry` overlay
       profile local.
 - [x] `LeaderboardAvatar`: ring+glow theo rank; `Image.network`
-      chỉ http/https; fallback initial→asset đúng thứ-tự.
+      chỉ http/https; fallback initial→asset đúng thứ tự.
 - [x] Seam `@visibleForTesting entryFromRow` — deviation
       documented, body verbatim.
 - [x] `flutter analyze` clean · `flutter test` **321/321**

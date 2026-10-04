@@ -1,6 +1,6 @@
 ---
 title: "Bài 5 · Share chain — cưỡi effects-stream M26"
-description: "Share KHÔNG phải kiến trúc mới — cưỡi DRE/effects-stream M26 (A-33 reuse): `_DialogShareButton` (TEACHING SCAFFOLD) → layer build chuỗi l10n → `viewModel.shareResult` → `GameShareRequested{text}` → reducer arm không-đổi-state + `[GameShareResult]` → bridge `_events.add(GameShareResultEvent)` → screen `RenderBox`/`sharePositionOrigin` → `SharePlus.instance.share(ShareParams)` (F-35) → catch → `Clipboard` + `resultCopiedSnackBar`. ARB +4 key. +0 test → 259."
+description: "Share KHÔNG phải kiến trúc mới — cưỡi DRE/effects-stream M26 (reuse): `_DialogShareButton` (TEACHING SCAFFOLD) → layer build chuỗi l10n → `viewModel.shareResult` → `GameShareRequested{text}` → reducer arm không đổi state + `[GameShareResult]` → bridge `_events.add(GameShareResultEvent)` → screen `RenderBox`/`sharePositionOrigin` → `SharePlus.instance.share(ShareParams)` → catch → `Clipboard` + `resultCopiedSnackBar`. ARB +4 key. +0 test → 259."
 sidebar:
   label: "Bài 5 · share chain"
   order: 5
@@ -12,14 +12,14 @@ sidebar:
   chuỗi → VM `shareResult` → `GameShareRequested` action → reducer
   → `GameShareResult` effect → bridge → `GameShareResultEvent` →
   screen gọi plugin.
-- Hiểu vì sao share **cưỡi effects-stream** (A-33) thay vì kiến
-  trúc riêng: "mở share sheet" là effect một-lần, không phải
+- Hiểu vì sao share **cưỡi effects-stream** thay vì kiến
+  trúc riêng: "mở share sheet" là effect một lần, không phải
   state — giống `GameNavigateToMenu`.
 - Dùng `context.findRenderObject() as RenderBox?` +
   `localToGlobal(Offset.zero) & box.size` làm `sharePositionOrigin`
-  (F-35) — vùng neo cho share sheet trên tablet.
+ — vùng neo cho share sheet trên tablet.
 - Fallback: `SharePlus.instance.share` throw (web…) → `Clipboard
-  .setData` + snackbar `resultCopiedSnackBar` — degrade thay vì
+.setData` + snackbar `resultCopiedSnackBar` — degrade thay vì
   im lặng.
 - ARB +4 key (`shareResultButton`, `shareResultMessage`,
   `shareVictoryResultMessage` placeholders, `resultCopiedSnackBar`).
@@ -41,7 +41,7 @@ sidebar:
 ## Vì sao việc này quan trọng ngay bây giờ
 
 Nút share cám dỗ viết thẳng `onTap: () => Share.share(text)` trong
-dialog — và đó là cách nhanh nhất để phá ranh giới A-35 (widget
+dialog — và đó là cách nhanh nhất để phá ranh giới (widget
 import plugin) + làm share không test được + đặt `sharePosition
 Origin` sai chỗ (dialog context ≠ screen context). Senior đi
 vòng qua DRE chain vì: VM không chạm context; effect là data →
@@ -54,16 +54,16 @@ Messenger` — mới là chỗ đúng cho platform call. Một dòng
 - Toàn bộ DRE chain M26: `dispatch(action)` → `reduce(state,
   action)` → `DreResult(state, effects, asyncOp)` → bridge
   `_handleEffect` → `_events.add(UiEvent)` → screen listen —
-  reducer thuần (A-31), effects-stream→bridge (A-33), marker
-  interfaces `DreAction`/`DreEffect` (D-46); share đi đường
-  *effects*, không đụng `asyncOp` (A-32) hay `flowToken` (A-34).
+ reducer thuần, effects-stream→bridge, marker
+ interfaces `DreAction`/`DreEffect`; share đi đường
+ *effects*, không đụng `asyncOp` hay `flowToken`.
 - `part`/`part of` extension `_handleEffect` trong
-  `game_screen_view_model_effects.dart` (M24/M26 — D-45).
+ `game_screen_view_model_effects.dart` (M24/M26).
 - Dialog in-tree: `GameDialogLayer` render theo `dialogState`
-  với callback `ValueChanged`/`VoidCallback` (M21 — A-21);
+ với callback `ValueChanged`/`VoidCallback` (M21);
   `l10n.*` lấy ở layer, view nhận chuỗi — "UI sở hữu chữ,
-  VM context-free" (M17 — A-16/F-25); `.arb` + `@key`
-  placeholders (M17 — D-31).
+ VM context-free" (M17); `.arb` + `@key`
+ placeholders (M17).
 - `_snackBarText` pattern enum→l10n (M16/Bài 3);
   `ScaffoldMessenger.showSnackBar` đã biết (M13). `Clipboard`
   (`package:flutter/services.dart`) là **lần đầu** trong codebase
@@ -97,7 +97,7 @@ Messenger` — mới là chỗ đúng cho platform call. Một dòng
 ```
 
 Vì sao *không* để dialog gọi plugin thẳng: (1) widget import
-plugin = phá A-35; (2) dialog context không phải chỗ đúng cho
+plugin = phá; (2) dialog context không phải chỗ đúng cho
 `RenderBox` (screen box = anchor đúng); (3) reducer/bridge làm
 share **testable ở mức data** — `reduce` trả `GameShareResult`
 assert được mà không cần share sheet.
@@ -110,9 +110,9 @@ screen tự resolve `RenderBox` lúc xử lý event.
 
 | Construct | Vai trò |
 |---|---|
-| `SharePlus.instance.share(ShareParams(text:…, sharePositionOrigin:…))` | instance API của `share_plus` 13.x — `ShareParams` là named-param object (F-35 — mới) |
+| `SharePlus.instance.share(ShareParams(text:…, sharePositionOrigin:…))` | instance API của `share_plus` 13.x — `ShareParams` là named-param object (mới) |
 | `context.findRenderObject() as RenderBox?` | lấy `RenderBox` của screen — origin anchor cho share sheet (iPad popover) |
-| `box.localToGlobal(Offset.zero) & box.size` | `Offset & Size` → `Rect` — toạ-độ-màn-hình của cả screen làm vùng neo |
+| `box.localToGlobal(Offset.zero) & box.size` | `Offset & Size` → `Rect` — toạ độ màn hình của cả screen làm vùng neo |
 | `Future<void> _handleUiEvent(...)` | event handler giờ `async` — `listen` nhận `Future<void> Function` gán vào `void Function` vẫn hợp lệ (Future bị bỏ qua — cố ý, comment trong file ghi rõ) |
 | `Clipboard.setData(ClipboardData(text: …))` (`package:flutter/services.dart`) | fallback khi share throw — copy vào clipboard OS |
 
@@ -149,12 +149,12 @@ ignore).
 **SIMILARITY — `SharePlus.instance.share(ShareParams(text:…))` ≈
 `Intent(Intent.ACTION_SEND).putExtra(Intent.EXTRA_TEXT, …)` +
 `startActivity(createChooser)`.** Một dòng Dart bọc toàn bộ intent
-chooser — kết quả user-chọn-app về cho OS, app không nhận lại.
+chooser — kết quả user chọn app về cho OS, app không nhận lại.
 
 **IMPORTANT DIFFERENCE — `sharePositionOrigin` là chuyện iPad,
 không phải Android.** Popover trên iPad bắt buộc anchor Rect —
 Android share sheet không dùng field này. Vẫn truyền vì cùng API
-cho cả hai, và box-null → `null` vẫn compile/an-toàn.
+cho cả hai, và box-null → `null` vẫn compile/an toàn.
 
 **DO NOT ASSUME — share sheet không throw → không có catch.**
 Trên web/unsupported platform plugin throw → không fallback thì
@@ -324,7 +324,7 @@ style có sẵn của learner để wire được chuỗi share *ngay* mà khôn
 kéo `GameDialogButton` của senior (gradient + glow + icon slot +
 `shareColor` `#325DFA`/`green500`) vào milestone này. Ngữ nghĩa
 đã đúng senior — icon share + label uppercase + `onTap` — còn
-visual parity là **FR-32/FR-34 → M28**. Đừng "làm đẹp" nút này
+visual parity là **/ → M28**. Đừng "làm đẹp" nút này
 ở đây: giữ scaffold, tập trung vào chuỗi.
 :::
 
@@ -469,7 +469,7 @@ chỉ là vá call-site).
 1. **Chuỗi share build ở layer, không phải VM.** `shareResult
    Message(amount)` cần cả `l10n` (context) *và* `data.earnedAmount`
    — layer là điểm duy nhất có cả hai. VM chỉ nhận `String` thô
-   → VM/contract giữ sạch khỏi `AppLocalizations` (A-16).
+ → VM/contract giữ sạch khỏi `AppLocalizations`.
 2. **`_handleUiEvent` → `Future<void>` an toàn.** `listen` chấp
    nhận `void Function`; truyền `Future<void> Function()` vẫn gán
    được — Future "lơ lửng" cố ý (share/clipboard là fire-and-
@@ -480,7 +480,7 @@ chỉ là vá call-site).
    sheet hiện).
 4. **Fallback *trong* `catch`, không else.** `Clipboard` chỉ chạy
    khi `share` throw — web/unsupported → user vẫn copy được.
-   `!mounted` re-guard sau `await` vì sheet có thể đóng-cùng-pop.
+   `!mounted` re-guard sau `await` vì sheet có thể đóng cùng pop.
 5. **`state` không đổi trong reducer arm.** Share là side-effect
    thuần — `_result(state, effects:…)` giữ nguyên instance;
    dialog state/phase/game gì cũng không đổi. Test reducer chỉ
@@ -493,7 +493,7 @@ flutter analyze  → No issues found!
 flutter test     → +259: All tests passed!
 ```
 
-Thật-máy: end game → dialog → SHARE → share sheet bật với chuỗi
+Thật máy: end game → dialog → SHARE → share sheet bật với chuỗi
 "Tôi đã thắng $X trong Flutter Accelerator AI!" — **nhưng**
 `REAL_DEVICE_PLATFORM_CHECK: NOT_PERFORMED`; trên web bấm SHARE
 → clipboard + snackbar "Đã sao chép kết quả".
@@ -569,7 +569,7 @@ DreResult.shape đủ, VM path được widget test gánh.
   Requested` → reducer → `GameShareResult` → bridge → `GameShare
   ResultEvent` → screen `SharePlus`/`Clipboard`.
 - **Hỏi:** vì sao share qua effect thay vì dialog gọi plugin? —
-  **Đáp:** (1) widget không import plugin (A-35); (2) screen có
+ **Đáp:** (1) widget không import plugin; (2) screen có
   `RenderBox` đúng cho anchor + `ScaffoldMessenger` cho fallback;
   (3) reducer phát *data* → testable không cần OS.
 - **Hỏi:** `sharePositionOrigin` để làm gì? — **Đáp:** anchor Rect
@@ -581,8 +581,8 @@ DreResult.shape đủ, VM path được widget test gánh.
 ## Ta cố ý chưa thêm
 
 - `GameDialogButton` gradient/glow/icon + `shareColor` token —
-  **M28** (visual parity FR-32/FR-34); `_DialogShareButton` là
-  scaffold đã-caution.
+ **M28** (visual parity); `_DialogShareButton` là
+  scaffold đã caution.
 - Share có ảnh/screenshot (`ShareFiles`) — senior chỉ text.
 - iPad popover verify thật — không device (Bài 6 honesty note).
 - Share analytics/đếm lượt — senior không track.

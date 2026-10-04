@@ -1,6 +1,6 @@
 ---
 title: "Bài 5 · VM migration + bridges — DreChangeNotifier thật"
-description: "Rewrite `game_screen_view_model.dart` 733→166 dòng: `extends DreChangeNotifier<GameState,GameAction,GameEffect,GameAsyncOp>`; ctor wire `GameReducer` + `GameState.initial`; `effects.listen(_handleEffect)` → timers/delay/nav (F-33); `executeAsyncOp` → `_saveGameResult` (F-34); 2 `part 'bridge/…'`; xoá `GameSessionState` khỏi `data/`. Public API giữ nguyên → zero call-site edits → 251 xanh nguyên."
+description: "Rewrite `game_screen_view_model.dart` 733→166 dòng: `extends DreChangeNotifier<GameState,GameAction,GameEffect,GameAsyncOp>`; ctor wire `GameReducer` + `GameState.initial`; `effects.listen(_handleEffect)` → timers/delay/nav; `executeAsyncOp` → `_saveGameResult`; 2 `part 'bridge/…'`; xoá `GameSessionState` khỏi `data/`. Public API giữ nguyên → zero call-site edits → 251 xanh nguyên."
 sidebar:
   label: "Bài 5 · VM migration + bridges"
   order: 5
@@ -16,10 +16,10 @@ sidebar:
   one-liner; `dispose` cancel timer/subscription/events → `super`.
 - Tạo hai `part 'bridge/…'`: `game_screen_view_model_effects.dart`
   (`_handleEffect` switch → `_startTimer`/`_pauseTimer`/
-  `_stopTimer`/`_schedule*`/`_events.add` — F-33) và
+ `_stopTimer`/`_schedule*`/`_events.add`) và
   `game_screen_view_model_result_persistence.dart`
   (`_saveGameResult`/`_syncSavedGameResult`/`_applyLevelProgression`/
-  `_normalizedLevel` verbatim — A-22/A-30 giữ).
+ `_normalizedLevel` verbatim — / giữ).
 - Xoá `GameSessionState` khỏi `data/game/
   game_session_state_data.dart` (+ unused import) — senior giữ
   session-model trong `dre/`.
@@ -45,7 +45,7 @@ sidebar:
 transition và trở thành *bộ chuyển tiếp* — UI gọi method public,
 method dispatch action, reducer quyết transition, effects/asyncOp
 quay lại VM dưới dạng `Timer`/`Future`/repository-call. Điểm
-mạnh của refactor đúng-kiểu: `game_screen.dart` không đổi một
+mạnh của refactor đúng kiểu: `game_screen.dart` không đổi một
 dòng, `startedVm` không đổi, 251 test xanh nguyên — vì contract
 với thế giới bên ngoài (`screenData`, `dialogState`, `uiEvents`,
 public methods, `ListenableBuilder`) được giữ nguyên trong khi
@@ -54,17 +54,17 @@ toàn bộ cơ chế bên trong đổi chủ.
 ## Bạn đã biết gì
 
 - `DreChangeNotifier` + dispatch loop + `executeAsyncOp` +
-  `onAsyncOpError` (Bài 2 — F-34); `GameReducer` + effects +
+ `onAsyncOpError` (Bài 2); `GameReducer` + effects +
   `GameSaveResult` op (Bài 3–4).
-- `part`/`part of` + private extension (Bài 4 — D-45); `unawaited`
-  (D-17); `_isDisposed` guard trên delayed callback (M13/M19);
+- `part`/`part of` + private extension (Bài 4); `unawaited`
+; `_isDisposed` guard trên delayed callback (M13/M19);
   `StreamController.broadcast` + `_events` kênh UI-event (M13).
 - `_saveGameResult`/`_syncSavedGameResult`/`_applyLevelProgression`
-  từ bản trung gian (M22/M25 — A-22, A-30): code *giữ verbatim*,
+ từ bản trung gian (M22/M25): code *giữ verbatim*,
   chỉ đổi *chỗ đứng* (part file) và *đường gọi* (op thay
   `_emitWithSaveResult`).
 
-## Mental model — "VM = bộ chuyển tiếp hai chiều" (F-33/F-34, NORMAL)
+## Mental model — "VM = bộ chuyển tiếp hai chiều" (NORMAL)
 
 ```text
 UI tap ──→ public method ──→ dispatch(GameAction)
@@ -84,18 +84,18 @@ UI tap ──→ public method ──→ dispatch(GameAction)
                                Timer/Future/repo/stream
 ```
 
-Hai `part 'bridge/…'` chính là nơi *ý-định-thành-hành-động*:
+Hai `part 'bridge/…'` chính là nơi *ý định thành hành động*:
 reducer không biết `Timer` tồn tại — bridge biết, và đó là lý
-do bridge sống ở VM (F-33).
+do bridge sống ở VM.
 
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
 |---|---|
-| `part 'bridge/game_screen_view_model_effects.dart'` | part lần ba trong course (sau M24 dialog, Bài 4 reducer) — VM-side bridges (D-45 reuse) |
+| `part 'bridge/game_screen_view_model_effects.dart'` | part lần ba trong course (sau M24 dialog, Bài 4 reducer) — VM-side bridges (reuse) |
 | `super(reducer: …, initialState: …)` | base ctor named args — wire reducer + state khởi đầu |
-| `effects.listen(_handleEffect)` trong ctor + `late final StreamSubscription` | subscribe ngay khi tạo; cancel ở dispose — D-10 |
-| `case GameSaveResult(:final earnedAmount, :final isWin, :final questionCount)` | object pattern destructure op — D-27 |
+| `effects.listen(_handleEffect)` trong ctor + `late final StreamSubscription` | subscribe ngay khi tạo; cancel ở dispose — |
+| `case GameSaveResult(final earnedAmount, :final isWin, :final questionCount)` | object pattern destructure op — |
 | `void _dispatchGameAction(GameAction a) => dispatch(a)` | private helper: bridge re-dispatch `*Elapsed`/`GameTimerTicked` (dispatch là `@protected`) |
 | `switch (effect)` / `switch (asyncOp)` | exhaustive trên sealed family — Dart bắt đủ case |
 
@@ -157,7 +157,7 @@ cần CAS-loop.
 
 **DO NOT ASSUME — bridge không phải nơi đặt luật.** `_handleEffect`
 chỉ *thực hiện*; quyết định "khi nào pause timer" đã chốt trong
-reducer. Logic nghiệp-vụ lọt vào bridge = reducer mất vai.
+reducer. Logic nghiệp vụ lọt vào bridge = reducer mất vai.
 
 ## Senior project connection
 
@@ -380,17 +380,17 @@ không một dòng test/call-site nào phải sửa.
 2. **Delayed re-dispatch là vòng kín data.** `_scheduleAnswerReveal`
    → `Future.delayed(1500ms)` → `_isDisposed` check →
    `_dispatchGameAction(GameAnswerRevealElapsed(token))` — token
-   đi state→effect→action→reducer check (A-32). `Timer.periodic`
+ đi state→effect→action→reducer check. `Timer.periodic`
    cũng vậy: tick → `GameTimerTicked` — mọi "sự kiện ngoài" quay
    lại là *action*, không phải mutation trực tiếp.
 3. **`handleFeatureClick` giữ `if (!button.isEnabled) return;`**
-   — guard ngoài-dispatch (senior verbatim): `_canUseFeature`
+   — guard ngoài dispatch (senior verbatim): `_canUseFeature`
    vẫn chặn bên trong reducer; guard ngoài là fast-path + giữ
    contract UI quen thuộc.
 4. **`executeAsyncOp` nhận snapshot POST-reduce.** Op
    `GameSaveResult` mang `earnedAmount/isWin/questionCount` trong
    *payload* — `_saveGameResult` đọc từ op chứ không đọc `state`
-   (state có thể đã đổi tiếp khi op chạy `unawaited` — F-34).
+ (state có thể đã đổi tiếp khi op chạy `unawaited`).
 5. **Dispose order:** `_isDisposed = true` → `_timer?.cancel()` →
    `_effectSubscription.cancel()` → `_events.close()` →
    `super.dispose()` (đóng effects stream + flag base). Quên
@@ -434,7 +434,7 @@ hai vai khác nhau: UI-guard (không nên bấm được) vs reducer-guard
    dispose; dù `_isDisposed` chặn dispatch, subscription vẫn giữ
    reference (leak).
 4. **Đọc `state` trực tiếp trong `_saveGameResult` thay payload
-   op** — op-snapshot là điểm-đóng-băng post-reduce; state có thể
+   op** — op-snapshot là điểm đóng băng post-reduce; state có thể
    đổi tiếp trước khi op chạy.
 5. **Để `onAsyncOpError` throw ngầm** — game không override hook
    (senior); `_saveGameResult` tự try/catch nuốt+log. Override
@@ -462,9 +462,9 @@ bridge re-dispatch `GameBackToMenuRequested` → reducer lại emit
 `hasSavedResult` đã true) → lại dispatch… qua stream listener,
 không bao giờ settle — app đơ. `saveCallCount` vẫn `== 1` nhờ
 guard `hasSavedResult` — save-once được giữ, nhưng guard không
-cứu được vòng-lặp effect→action→effect. Bài học: effect là
-*điểm cuối* (hành động), không phải đầu-vào — re-dispatch effect
-về action cha phá chiều dữ-liệu.
+cứu được vòng lặp effect→action→effect. Bài học: effect là
+*điểm cuối* (hành động), không phải đầu vào — re-dispatch effect
+về action cha phá chiều dữ liệu.
 </details>
 
 ## Kiểm tra hiểu biết
@@ -480,7 +480,7 @@ về action cha phá chiều dữ-liệu.
 - **Hỏi:** vì sao `GameSessionState` bị xoá khỏi `data/`? —
   **Đáp:** senior giữ session-model cùng contract trong `dre/`;
   `data/` chỉ còn `GamePhase`/`GameDialogState`/`GameScreenUiEvent`
-  — type dùng-chung UI + VM.
+  — type dùng chung UI + VM.
 - **Hỏi:** vì sao 251 test không cần sửa? — **Đáp:** public API
   giữ nguyên (`startNewGame`…`uiEvents`, `state`, `dialogState`,
   `screenData`); refactor đổi cơ chế bên trong, contract đông cứng.
@@ -488,7 +488,7 @@ về action cha phá chiều dữ-liệu.
 ## Ta cố ý chưa thêm
 
 - `shareResult` + `GameShareRequested`/`GameShareResult`/
-  `GameShareResultEvent` — **M27** (FR-33).
+ `GameShareResultEvent` — **M27**.
 - `onAsyncOpError` override — senior game không override;
   `_saveGameResult` tự xử.
 - Platform extras (notification/version) — **M27**; visual parity

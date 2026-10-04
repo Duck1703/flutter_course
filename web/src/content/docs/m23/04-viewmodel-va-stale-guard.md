@@ -1,33 +1,33 @@
 ---
 title: "Bài 4 · LeaderboardDialogViewModel — 4 state & stale guard"
-description: "VM của dialog: loadLeaderboard({isRefresh}) với chuyển Loading/Success/Empty/Error, isRefreshing giữ list cũ, retry() unawaited, _requestId monotonic guard 'câu trả lời cũ không được thắng', fallback hàng-bạn từ profile local, guest seam _currentLeaderboardUserId()→null (M24). 9 test → 175 → 184. Tự làm DEBUG: xoá _isLatestRequest."
+description: "VM của dialog: loadLeaderboard({isRefresh}) với chuyển Loading/Success/Empty/Error, isRefreshing giữ list cũ, retry unawaited, _requestId monotonic guard 'câu trả lời cũ không được thắng', fallback hàng bạn từ profile local, guest seam _currentLeaderboardUserId→null (M24). 9 test → 175 → 184. Tự làm DEBUG: xoá _isLatestRequest."
 sidebar:
-  label: "Bài 4 · VM + stale guard"
-  order: 4
+ label: "Bài 4 · VM + stale guard"
+ order: 4
 ---
 
 ## Mục tiêu
 
 - Port `LeaderboardDialogViewModel` verbatim-minus-auth: ctor
-  `(leaderboardRepository, userProfileRepository)` — chưa có
-  `AuthRepository` (guest seam → M24).
+ `(leaderboardRepository, userProfileRepository)` — chưa có
+ `AuthRepository` (guest seam → M24).
 - Hiểu máy trạng thái của `loadLeaderboard({isRefresh})`: Loading /
-  Success(+`isRefreshing`) / Empty / Error — và `refresh()`/`retry()`
-  là hai cửa vào cùng đường load.
+ Success(+`isRefreshing`) / Empty / Error — và `refresh()`/`retry()`
+ là hai cửa vào cùng đường load.
 - Hiểu `_requestId` — guard chống **stale response**: response của
-  request cũ về sau phải bị bỏ, không ghi đè request mới.
+ request cũ về sau phải bị bỏ, không ghi đè request mới.
 - Hiểu fallback "hàng bạn" từ profile local khi remote trả `null`.
 - 9 test VM → suite **175 → 184**.
 
 ## Bạn đang ở đâu
 
 - Bài 3: repo + fake + snapshot đã hiểu; 4 `LeaderboardPopup*`
-  variant nằm sẵn trong `leaderboard_entry_data.dart` từ Bài 2.
+ variant nằm sẵn trong `leaderboard_entry_data.dart` từ Bài 2.
 - Bài này nối chúng: VM biến `Future<LeaderboardSnapshot>` thành
-  `LeaderboardPopupState` mà Bài 5 sẽ render.
+ `LeaderboardPopupState` mà Bài 5 sẽ render.
 - Vị trí file: `lib/view_models/leaderboard/
   leaderboard_dialog_view_model.dart` — VM sống TRONG dialog
-  (dialog-scoped — A-15), scope widget tạo/dispose nó ở Bài 5.
+ (dialog-scoped), scope widget tạo/dispose nó ở Bài 5.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -41,18 +41,17 @@ cancel, chỉ so sánh số.
 
 ## Bạn đã biết gì
 
-- `ChangeNotifier`/`notifyListeners` + `_isDisposed` guard (M11 —
-  F-15; pattern giống `MenuViewModel`).
-- Sealed state + switch kiệt hợp (M15 — D-26, D-27); state-driven
-  UI (A-14).
-- `Future`/`async`/`await` + `try/catch` (D-09); `unawaited` (D-17).
-- Dialog-scoped VM — provider trong subtree dialog (M16 — A-15).
-- `ValueStream.value` — đọc giá trị mới nhất của stream (M14 — A-08);
-  `FakeUserProfileRepository` (A-11).
+- `ChangeNotifier`/`notifyListeners` + `_isDisposed` guard (M11 —; pattern giống `MenuViewModel`).
+- Sealed state + switch kiệt hợp (M15); state-driven
+ UI.
+- `Future`/`async`/`await` + `try/catch`; `unawaited`.
+- Dialog-scoped VM — provider trong subtree dialog (M16).
+- `ValueStream.value` — đọc giá trị mới nhất của stream (M14);
+ `FakeUserProfileRepository`.
 - Fake repo + `Completer` điều khiển thời điểm resolve (Bài 3);
-  `pumpEventQueue` (D-24).
+ `pumpEventQueue`.
 
-## Mental model mới — "câu trả lời cũ không được thắng" (**D-42**, NORMAL)
+## Mental model mới — "câu trả lời cũ không được thắng" (NORMAL)
 
 ```text
 _requestId = 0
@@ -120,16 +119,16 @@ Future<void> loadLeaderboard({bool isRefresh = false}) async {
 Bốn quyết định cần thấy:
 
 - **②** `isRefresh` + đang Success → emit Success giữ nguyên entries
-  với `isRefreshing: true` — pull-to-refresh KHÔNG xoá màn hình
-  xuống spinner (UX của senior: list cũ đứng yên + progress bar nhỏ).
+ với `isRefreshing: true` — pull-to-refresh KHÔNG xoá màn hình
+ xuống spinner (UX của senior: list cũ đứng yên + progress bar nhỏ).
 - **④/④'** cặp guard sau mọi `await` — success lẫn error.
 - **⑤** Empty chỉ khi *cả hai* rỗng: không top VÀ không hàng mình.
-  (Impl Disabled không bao giờ ra Empty — luôn có 6 hàng mẫu.)
+ (Impl Disabled không bao giờ ra Empty — luôn có 6 hàng mẫu.)
 - **⑥** `currentEntry` trên state luôn đi qua
-  `_profileBackedCurrentLeaderboardEntry` — remote trả hàng thì dùng
-  số liệu remote, avatar ưu tiên bản profile mới hơn; remote `null`
-  (guest / chưa có hạng) → dựng hàng từ `userProfileStream.value`
-  với rank mượn `currentLeaderboardEntry.rank` (125).
+ `_profileBackedCurrentLeaderboardEntry` — remote trả hàng thì dùng
+ số liệu remote, avatar ưu tiên bản profile mới hơn; remote `null`
+ (guest / chưa có hạng) → dựng hàng từ `userProfileStream.value`
+ với rank mượn `currentLeaderboardEntry.rank` (125).
 
 ```dart
 void retry() {
@@ -237,20 +236,20 @@ kết quả bị bỏ. Hai request bay, chỉ một thắng — đúng guard.
 ## Lỗi hay gặp
 
 1. **Tăng `_requestId` SAU await.** `++` phải chạy TRƯỚC
-   `_leaderboardRepository.loadLeaderboard` — tăng sau thì request
-   chậm nhất lại mang số lớn nhất, guard bảo vệ ngược.
+ `_leaderboardRepository.loadLeaderboard` — tăng sau thì request
+ chậm nhất lại mang số lớn nhất, guard bảo vệ ngược.
 2. **Check stale TRƯỚC await rồi bỏ check sau.** Trước await mọi id
-   đều "mới nhất" — check ở đó vô nghĩa; race xảy ra *trong lúc* chờ.
+ đều "mới nhất" — check ở đó vô nghĩa; race xảy ra *trong lúc* chờ.
 3. **Quên guard trong `catch`.** Stale request mà throw → Error phủ
-   lên Success của request mới hơn. Senior đặt `!_isLatestRequest`
-   ở cả hai nhánh.
-4. **`retry()` dùng `isRefresh: true`.** Retry từ Error mà giữ-state
-   sẽ không về Success (previous không phải Success) → vẫn Loading;
-   nhưng về semantics nút THỬ LẠI nên là load mới sạch — senior
-   gọi `loadLeaderboard()` thường.
+ lên Success của request mới hơn. Senior đặt `!_isLatestRequest`
+ ở cả hai nhánh.
+4. **`retry()` dùng `isRefresh: true`.** Retry từ Error mà giữ state
+ sẽ không về Success (previous không phải Success) → vẫn Loading;
+ nhưng về semantics nút THỬ LẠI nên là load mới sạch — senior
+ gọi `loadLeaderboard()` thường.
 5. **`notifyListeners` sau dispose.** Dialog đóng giữa chừng →
-   response về sau → `_setState`/`_isLatestRequest` đều check
-   `_isDisposed` — guard kép (mạng + vòng đời) dùng chung một cờ.
+ response về sau → `_setState`/`_isLatestRequest` đều check
+ `_isDisposed` — guard kép (mạng + vòng đời) dùng chung một cờ.
 
 ## Tự làm — DEBUG (bug có chủ đích)
 
@@ -272,43 +271,43 @@ leaderboard_dialog_view_model_test.dart` kiểm chứng.
 
 - **Chỉ một test đỏ**: `response STALE không được ghi đè kết quả
   request mới hơn`. Tám test còn lại vẫn xanh — mỗi test ấy chỉ có
-  một request nên guard không bao giờ được dùng.
+ một request nên guard không bao giờ được dùng.
 - Cơ chế: request 2 complete trước → ghi `'SECOND PLAYER'` ✓. Rồi
-  request 1 (stale) complete → không còn check →
-  `_setState(LeaderboardPopupSuccess(entries: [_remoteEntry]))` chạy
-  tràn → assert cuối `expect(state.entries.single.name,
+ request 1 (stale) complete → không còn check →
+ `_setState(LeaderboardPopupSuccess(entries: [_remoteEntry]))` chạy
+ tràn → assert cuối `expect(state.entries.single.name,
   'SECOND PLAYER')` nhận `'REMOTE PLAYER'` → FAIL.
 - Guard trong `catch` giữ nguyên nên test error vẫn xanh — bug chỉ
-  lộ trên đường success của response chậm. Đây là bằng chứng guard
-  phải đứng ở MỌI nhánh thoát async, không phải một chỗ.
+ lộ trên đường success của response chậm. Đây là bằng chứng guard
+ phải đứng ở MỌI nhánh thoát async, không phải một chỗ.
 - Bài học: stale guard không bao giờ "fail sớm" — nó fail **đúng
-  kịch bản nó tồn tại để chặn** (hai request chồng nhau). Đó là lý
-  do test 6 dùng `Completer` để dựng race có kiểm soát.
+ kịch bản nó tồn tại để chặn** (hai request chồng nhau). Đó là lý
+ do test 6 dùng `Completer` để dựng race có kiểm soát.
 
 </details>
 
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** vì sao `refresh()` không nhảy về `Loading`? — **Đáp:**
-  nhánh `isRefresh && previous is Success` emit Success mới giữ
-  nguyên entries + `isRefreshing: true` — list đứng yên, chỉ thanh
-  progress mỏng báo đang tải (Bài 5 render nó).
+ nhánh `isRefresh && previous is Success` emit Success mới giữ
+ nguyên entries + `isRefreshing: true` — list đứng yên, chỉ thanh
+ progress mỏng báo đang tải (Bài 5 render nó).
 - **Hỏi:** guest mở bảng — hàng "bạn" đến từ đâu? — **Đáp:**
-  `_currentLeaderboardUserId() → null` → remote trả
-  `currentEntry: null` → `_currentUserLeaderboardEntry` dựng từ
-  `userProfileStream.value` (rank mượn 125 của static
-  `currentLeaderboardEntry`).
+ `_currentLeaderboardUserId() → null` → remote trả
+ `currentEntry: null` → `_currentUserLeaderboardEntry` dựng từ
+ `userProfileStream.value` (rank mượn 125 của static
+ `currentLeaderboardEntry`).
 - **Hỏi:** hai chỗ `_isLatestRequest` bảo vệ khác nhau gì? —
-  **Đáp:** sau `await` trong `try` chặn stale *data*; trong `catch`
-  chặn stale *error* — cùng một nguyên tắc: chỉ request mới nhất
-  được ghi state.
+ **Đáp:** sau `await` trong `try` chặn stale *data*; trong `catch`
+ chặn stale *error* — cùng một nguyên tắc: chỉ request mới nhất
+ được ghi state.
 
 ## Ta cố ý chưa thêm
 
 - `AuthRepository` trên ctor + `switch(authState)` trả uid —
-  **M24** (guest seam, register đã ghi).
+ **M24** (guest seam, register đã ghi).
 - `DreChangeNotifier`/`asyncOp` + huỷ request thật của senior bản
-  DRE — **M26**; `_requestId` đã đủ cho pull-to-refresh race.
+ DRE — **M26**; `_requestId` đã đủ cho pull-to-refresh race.
 - Taxonomy lỗi (network vs 4xx/5xx) — senior cũng chỉ `catch →
   LeaderboardPopupError`.
 - UI tiêu thụ state — **Bài 5**.
@@ -316,11 +315,11 @@ leaderboard_dialog_view_model_test.dart` kiểm chứng.
 ## Checkpoint hoàn thành
 
 - [ ] `lib/view_models/leaderboard/leaderboard_dialog_view_model.dart`
-  tồn tại, ctor đúng hai repo, `_currentLeaderboardUserId()` → null
-  kèm comment M24.
+ tồn tại, ctor đúng hai repo, `_currentLeaderboardUserId()` → null
+ kèm comment M24.
 - [ ] Giải thích được luồng: `++_requestId` → emit Loading/Success-
-  refreshing → await repo → guard → Success/Empty/Error.
+ refreshing → await repo → guard → Success/Empty/Error.
 - [ ] `flutter test` **184/184**; test stale dùng hai `Completer`
-  kiểm soát thứ tự resolve.
+ kiểm soát thứ tự resolve.
 - [ ] (Tự làm) Xoá guard success → đúng 1 test đỏ với `'REMOTE
   PLAYER'` thay `'SECOND PLAYER'`; revert lại xanh.

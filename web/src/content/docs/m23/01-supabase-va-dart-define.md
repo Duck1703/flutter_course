@@ -2,31 +2,31 @@
 title: "Bài 1 · Supabase, dart-define & bức tường bảo mật"
 description: "Supabase làm gì trong app này (hosted Postgres + Data API); String.fromEnvironment + --dart-define — config là plumbing, không phải state; publishable key ≠ service-role; public.leaderboard là VIEW còn public.users nằm sau RLS. Thêm SupabaseEnvironment + 3 test → 168 → 171."
 sidebar:
-  label: "Bài 1 · Supabase + dart-define"
-  order: 1
+ label: "Bài 1 · Supabase + dart-define"
+ order: 1
 ---
 
 ## Mục tiêu
 
 - Giải thích được Supabase cung cấp **gì** cho app này: Postgres có
-  sẵn trên cloud + Data API tự sinh (auth sẽ đến ở M24).
+ sẵn trên cloud + Data API tự sinh (auth sẽ đến ở M24).
 - Viết được `SupabaseEnvironment` đọc `String.fromEnvironment` — bốn
-  key đúng senior — và nói được vì sao nó KHÔNG phải file `.env`.
+ key đúng senior — và nói được vì sao nó KHÔNG phải file `.env`.
 - Chỉ được ranh giới bảo mật: publishable/anon key là công khai theo
-  thiết kế; quyền hạn nằm ở RLS phía server, không nằm trong code
-  client; `public.leaderboard` là VIEW còn `public.users` là bảng
-  owner-only.
+ thiết kế; quyền hạn nằm ở RLS phía server, không nằm trong code
+ client; `public.leaderboard` là VIEW còn `public.users` là bảng
+ owner-only.
 - Thêm 3 test env → suite **168 → 171**.
 
 ## Bạn đang ở đâu
 
 - Cuối M22: `flutter test` 168/168, mọi repository đều LOCAL —
-  `UserProfileRepositoryImpl`/`UserSettingsRepositoryImpl`/
-  `OnboardingRepositoryImpl` đọc-ghi SharedPreferences.
+ `UserProfileRepositoryImpl`/`UserSettingsRepositoryImpl`/
+ `OnboardingRepositoryImpl` đọc ghi SharedPreferences.
 - Menu đã có `_LeaderboardEntry` — hàng "Bảng xếp hạng" NHÌN được
-  nhưng chưa bấm được (FR-14 chờ đúng milestone này).
+ nhưng chưa bấm được (chờ đúng milestone này).
 - Chưa có `supabase_flutter`, chưa có `lib/services/`, chưa có file
-  nào của leaderboard.
+ nào của leaderboard.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -46,39 +46,39 @@ repo?**
 ## Bạn đã biết gì
 
 - `abstract interface class` + `implements` — contract repository
-  (M14 — D-19); DI bằng `Provider<CONTRACT>.value` trong
-  `AppDependencyScope` (M14 — A-07, F-21).
-- Fake repository viết tay cho test (M14 — A-11).
-- `const`/`static const` + `String.trim().isNotEmpty` (D-01, D-15).
-- Null safety `T?`/`??`/getter `bool get` (D-03, D-04).
-- `test`/`expect`/`group` (D-23 — MASTERED).
+ (M14); DI bằng `Provider<CONTRACT>.value` trong
+ `AppDependencyScope` (M14).
+- Fake repository viết tay cho test (M14).
+- `const`/`static const` + `String.trim().isNotEmpty`.
+- Null safety `T?`/`??`/getter `bool get`.
+- `test`/`expect`/`group` (MASTERED).
 - `main()` `async` + `WidgetsFlutterBinding.ensureInitialized()`
-  (M05 — F-20, A-12).
+ (M05).
 
 ## Mental model mới — hai cái cùng lúc
 
 **① "Config là plumbing, không phải state"** (concept mới M23 —
-registry D-40).
+registry).
 
 `String.fromEnvironment('KEY')` đọc một **hằng số biên dịch**: giá
 trị được "đóng gói" vào binary lúc build qua `--dart-define=KEY=giá
 trị`. Ba hệ quả cần thuộc:
 
 - Nó **không phải runtime**: đổi giá trị = build lại, không có
-  hot-reload nào thay được.
+ hot-reload nào thay được.
 - Không truyền gì → chuỗi rỗng `''` (hoặc `defaultValue` nếu có) —
-  KHÔNG throw, KHÔNG null. Kiểm "có cấu hình hay chưa" đơn giản là
-  `trim().isNotEmpty`.
+ KHÔNG throw, KHÔNG null. Kiểm "có cấu hình hay chưa" đơn giản là
+ `trim().isNotEmpty`.
 - Nó **không phải file `.env`**: không file nào trong repo chứa giá
-  trị thật — tên key nằm trong code, giá trị nằm trên dòng lệnh
-  build (hoặc CI secret). Đó là lý do repo sạch credentials được.
+ trị thật — tên key nằm trong code, giá trị nằm trên dòng lệnh
+ build (hoặc CI secret). Đó là lý do repo sạch credentials được.
 
 Vì config là plumbing nên *thiếu config không phải lỗi*: app nhận
 ra "chưa cấu hình" → chọn impl tĩnh → chạy tiếp bình thường. Bài 2
 sẽ thấy điểm rẽ đó trong `main()`.
 
 **② "Khoá không phải bức tường — RLS mới là"** (backend awareness —
-registry B-01/B-02).
+registry).
 
 Người mới thường nghĩ "giấu key đi thì an toàn". Đúng ngược lại:
 
@@ -101,7 +101,7 @@ bí mật thật, chỉ sống trên server/dashboard, tuyệt đối không đ�
 vào client. Rule ngắn: **publishable key ship cùng app; service-role
 không bao giờ rời máy chủ.**
 
-`public.leaderboard` là VIEW, không phải bảng (B-02): nó là "câu
+`public.leaderboard` là VIEW, không phải bảng : nó là "câu
 query được đặt tên" chạy với quyền owner — đọc toàn bộ `users` để
 xếp hạng, rồi chỉ lộ các cột public. Client đọc view; không ai đọc
 bảng gốc trừ chủ nhân từng dòng.
@@ -230,14 +230,14 @@ grant select on table public.leaderboard to anon, authenticated;
 ```
 
 - `row_number() over (order by ...)` = **rank được server tính sẵn**
-  — client không tự xếp hạng.
+ — client không tự xếp hạng.
 - `auth_uuid` chỉ hiện **trên dòng của chính caller** (`auth.uid()`)
-  — app dùng nó để query ".eq('auth_uuid', uid)" lấy hàng "bạn";
-  của người khác luôn `null`.
+ — app dùng nó để query ".eq('auth_uuid', uid)" lấy hàng "bạn";
+ của người khác luôn `null`.
 - `security_barrier = true` chặn predicate của caller chui xuống
-  dưới lớp che — một lớp phòng thủ của Postgres.
+ dưới lớp che — một lớp phòng thủ của Postgres.
 - Grant `select` cho **cả anon** — guest cũng xem được bảng (đúng
-  trải nghiệm app: chưa đăng nhập vẫn mở leaderboard được).
+ trải nghiệm app: chưa đăng nhập vẫn mở leaderboard được).
 
 ## Build it step by step
 
@@ -363,11 +363,11 @@ void main() {
 ## Hiểu code — hai chi tiết dễ trượt
 
 - `configurationError` trả **lỗi đầu tiên theo thứ tự**: thiếu
-  Supabase báo Supabase trước; đủ Supabase nhưng thiếu Google báo
-  Google. Nó là chuỗi `String?` — `null` = "đủ hết", không phải
-  "không có cấu hình".
+ Supabase báo Supabase trước; đủ Supabase nhưng thiếu Google báo
+ Google. Nó là chuỗi `String?` — `null` = "đủ hết", không phải
+ "không có cấu hình".
 - `isGoogleConfigured` chỉ check `googleWebClientId` — đúng senior
-  (iOS id tham gia field nhưng predicate web là đủ cho gate).
+ (iOS id tham gia field nhưng predicate web là đủ cho gate).
 
 ## Chạy và quan sát
 
@@ -386,36 +386,36 @@ flutter test test/core/supabase_environment_test.dart → 3/3 xanh
 
 - `env(url: 'https://x.supabase.co', key: ' ').configurationError` → ?
 - `env(key: 'pk', webId: 'w').configurationError` → báo lỗi nào
-  TRƯỚC: Supabase hay Google?
+ TRƯỚC: Supabase hay Google?
 
 <details>
 <summary>Đáp án</summary>
 
 - `'Supabase is not configured.'` — key toàn khoảng trắng trim về
-  `''` → `isSupabaseConfigured` false → nhánh đầu tiên.
+ `''` → `isSupabaseConfigured` false → nhánh đầu tiên.
 - Vẫn `'Supabase is not configured.'` — `configurationError` check
-  theo THỨ TỰ: Supabase trước, Google sau. Dù `isGoogleConfigured`
-  đã true, nhánh đầu fail vẫn thắng.
+ theo THỨ TỰ: Supabase trước, Google sau. Dù `isGoogleConfigured`
+ đã true, nhánh đầu fail vẫn thắng.
 </details>
 
 ## Lỗi hay gặp
 
 1. **Nghĩ config đến từ `.env`/file JSON trong assets.** Không có
-   file nào cả — `String.fromEnvironment` chỉ đọc cờ build. File
-   `.env` commit vào repo là rò rỉ, và là cách *khác* (senior không
-   dùng).
+ file nào cả — `String.fromEnvironment` chỉ đọc cờ build. File
+ `.env` commit vào repo là rò rỉ, và là cách *khác* (senior không
+ dùng).
 2. **Hardcode URL/key thật vào file Dart.** Về mặt kỹ thuật chạy
-   được — về mặt quy trình là commit secret. Tên key ở trong code,
-   giá trị ở trên dòng lệnh.
+ được — về mặt quy trình là commit secret. Tên key ở trong code,
+ giá trị ở trên dòng lệnh.
 3. **Coi publishable key là bí mật bị lộ.** Nó ĐƯỢC THIẾT KẾ public
-   (anon key) — bảo vệ dữ liệu là việc của RLS. Bí mật thật là
-   service-role — thứ không bao giờ xuất hiện trong repo này.
+ (anon key) — bảo vệ dữ liệu là việc của RLS. Bí mật thật là
+ service-role — thứ không bao giờ xuất hiện trong repo này.
 4. **Gõ sai tên dart-define.** `SUPABASE_ULR` không báo lỗi — chỉ
-   lặng lẽ `''` → `isSupabaseConfigured` false → app chạy bản
-   disabled. Debug config = in `debugPrint` predicates, không phải
-   in giá trị key.
+ lặng lẽ `''` → `isSupabaseConfigured` false → app chạy bản
+ disabled. Debug config = in `debugPrint` predicates, không phải
+ in giá trị key.
 5. **Gọi `String.fromEnvironment` non-const.** Trên AOT/web có thể
-   trả rỗng — luôn `const` (hoặc trong const context).
+ trả rỗng — luôn `const` (hoặc trong const context).
 
 ## Tự làm — PREDICT
 
@@ -434,10 +434,10 @@ Không sửa app. Cho từng tổ hợp khởi chạy, viết ra giấy ba giá 
 
 - a → `false` / `false` / `'Supabase is not configured.'`
 - b → `false` / `false` / `'Supabase is not configured.'` (thiếu
-  key vẫn thiếu — hai điều kiện AND).
+ key vẫn thiếu — hai điều kiện AND).
 - c → `true` / `false` / `'Google sign-in is not configured.'` —
-  Supabase đủ → init remote được (Bài 2); Google báo thiếu nhưng
-  M24 mới cần.
+ Supabase đủ → init remote được (Bài 2); Google báo thiếu nhưng
+ M24 mới cần.
 - d → `true` / `true` / `null`.
 
 </details>
@@ -445,38 +445,38 @@ Không sửa app. Cho từng tổ hợp khởi chạy, viết ra giấy ba giá 
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** `String.fromEnvironment` khác đọc file `.env` ở điểm
-  nào? — **Đáp:** nó là hằng biên dịch nướng vào binary qua cờ
-  `--dart-define`; không file nào tồn tại trong repo, không đọc ghi
-  lúc chạy.
+ nào? — **Đáp:** nó là hằng biên dịch nướng vào binary qua cờ
+ `--dart-define`; không file nào tồn tại trong repo, không đọc ghi
+ lúc chạy.
 - **Hỏi:** publishable key lộ trong client — sao dữ liệu vẫn an
-  toàn? — **Đáp:** key anon chỉ "xin quyền anon"; quyền thật do RLS
-  + grants phía server quyết (`public.users` owner-only, view
-  `security_barrier` chỉ lộ cột public). Service-role mới là bí mật
-  — và nó không nằm trong app.
+ toàn? — **Đáp:** key anon chỉ "xin quyền anon"; quyền thật do RLS
+ + grants phía server quyết (`public.users` owner-only, view
+ `security_barrier` chỉ lộ cột public). Service-role mới là bí mật
+ — và nó không nằm trong app.
 - **Hỏi:** `public.leaderboard` là bảng hay view, khác nhau ra
-  sao? — **Đáp:** VIEW chạy quyền owner: rank sẵn bằng `row_number()`,
-  che `auth_uuid` của người khác; bảng `users` gốc không ai đọc được
-  ngoài chủ dòng.
+ sao? — **Đáp:** VIEW chạy quyền owner: rank sẵn bằng `row_number()`,
+ che `auth_uuid` của người khác; bảng `users` gốc không ai đọc được
+ ngoài chủ dòng.
 
 ## Ta cố ý chưa thêm
 
-- `Supabase.initialize` / `SupabaseClient` — Bài 2 (F-31).
+- `Supabase.initialize` / `SupabaseClient` — Bài 2.
 - Dùng hai key `GOOGLE_*` — **M24** (auth); giờ chỉ giữ shape.
 - Chạy app với project Supabase thật — Bài 5, OPTIONAL và phụ thuộc
-  môi trường (không credential nào tồn tại trong môi trường này).
+ môi trường (không credential nào tồn tại trong môi trường này).
 - File `.env`, package `flutter_dotenv` — **không bao giờ**: senior
-  không dùng, dart-define là cơ chế duy nhất của khóa.
+ không dùng, dart-define là cơ chế duy nhất của khóa.
 
 ## Checkpoint hoàn thành
 
 - [ ] `pubspec.yaml` có `supabase_flutter: 2.14.2`, `flutter pub get`
-  xanh.
+ xanh.
 - [ ] `lib/core/supabase_environment.dart` tồn tại với đúng 4
-  dart-define + 2 predicates + `configurationError`.
+ dart-define + 2 predicates + `configurationError`.
 - [ ] `supabase/student-setup/01-setup-database.sql` có trong repo
-  (copy nguyên văn, không chỉnh sửa, không secret).
+ (copy nguyên văn, không chỉnh sửa, không secret).
 - [ ] `flutter analyze` sạch; `flutter test` **171/171**.
 - [ ] Trả lời được: thiếu `SUPABASE_PUBLISHABLE_KEY` thì
-  `isSupabaseConfigured` ra gì, và ai chịu trách nhiệm "khóa" dữ
-  liệu `public.users` (RLS server-side — không phải key trong
-  client).
+ `isSupabaseConfigured` ra gì, và ai chịu trách nhiệm "khóa" dữ
+ liệu `public.users` (RLS server-side — không phải key trong
+ client).

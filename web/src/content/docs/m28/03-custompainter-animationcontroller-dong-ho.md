@@ -1,6 +1,6 @@
 ---
 title: "Bài 3 · CustomPainter + AnimationController — đồng hồ đếm ngược"
-description: "Hai CORE concept đầu của milestone. `AnimationController` + `vsync`/`TickerProviderStateMixin` (F-38): timer sở hữu HAI controller — `_pulseController` repeat(reverse) bounds 1→1.08 ở ≤20%, `_progressController` lái Tween progress 1s giữa các nhịp giây. `CustomPainter` (F-39): stadium `Path` + `computeMetrics`+`extractPath` + `Paint` stroke gradient round-cap + `shouldRepaint`. `didUpdateWidget` (F-40) sync controller khi data đổi — animate vs snap. `GameScreenTopBar` host đầu tiên. +7 test → 270."
+description: "Hai CORE concept đầu của milestone. `AnimationController` + `vsync`/`TickerProviderStateMixin` : timer sở hữu HAI controller — `_pulseController` repeat(reverse) bounds 1→1.08 ở ≤20%, `_progressController` lái Tween progress 1s giữa các nhịp giây. `CustomPainter` : stadium `Path` + `computeMetrics`+`extractPath` + `Paint` stroke gradient round-cap + `shouldRepaint`. `didUpdateWidget` sync controller khi data đổi — animate vs snap. `GameScreenTopBar` host đầu tiên. +7 test → 270."
 sidebar:
   label: "Bài 3 · painter + controller"
   order: 3
@@ -8,21 +8,21 @@ sidebar:
 
 ## Mục tiêu
 
-- Phát biểu mental model **F-38**: `AnimationController` là
+- Phát biểu mental model : `AnimationController` là
   *ticker mình sở hữu* — `vsync` để nhịp theo frame, `duration`
   cho một chu kỳ, `forward/reverse/repeat/stop` điều khiển,
   `dispose` bắt buộc; khác `AnimatedOpacity` ở chỗ widget
   implicit *tự* sở hữu controller, còn explicit controller mình
   phải tự quản lifecycle.
-- Phát biểu mental model **F-39**: `CustomPainter` là
+- Phát biểu mental model : `CustomPainter` là
   *render-object tự vẽ* — `paint(Canvas, Size)` phát lệnh vẽ
   thuần (`Paint` = cọ/màu, `Path` = hình, `Canvas` = mặt vẽ);
   `shouldRepaint` là hợp đồng "delegate đổi → vẽ lại".
-- Phát biểu mental model **F-40**: `didUpdateWidget` là *điểm
+- Phát biểu mental model : `didUpdateWidget` là *điểm
   đồng bộ* — khi widget config đổi (progress mới), State quyết
-  định animate-tới hay snap-ngay.
+  định animate tới hay snap-ngay.
 - Port `GameCountdownTimer` + `_PillProgressPainter` (qua
-  `part`/`part of` — D-45 reuse) + `GameScreenTopBar` verbatim.
+ `part`/`part of` — reuse) + `GameScreenTopBar` verbatim.
 - Đọc được hai controller cùng tồn tại: pulse (cosmetic loop
   vô hạn) vs progress (one-shot 1s mỗi nhịp giây) — và vì sao
   pulse **cố ý** không honor `disableAnimations`.
@@ -54,31 +54,31 @@ sidebar:
   nhau** — một loop vô hạn (pulse ở critical) + một one-shot
   (progress tween mỗi giây) — implicit widgets không làm được
   chuyện "chạy khi nào mình bảo" này.
-- Painter là cách duy nhất vẽ *viền-tiến-trình-quanh-pill*:
+- Painter là cách duy nhất vẽ *viền tiến trình quanh pill*:
   không widget nào render được "stroke theo stadium path với
-  gradient, dừng ở phân-đoạn-progress" — phải `Canvas` thật.
+  gradient, dừng ở phân đoạn progress" — phải `Canvas` thật.
 
 ## Bạn đã biết gì
 
-- `StatefulWidget` + `State` + `initState`/`dispose` (F-04/F-05)
+- `StatefulWidget` + `State` + `initState`/`dispose` 
   — lifecycle sẵn có để gắn controller.
-- `AnimatedSwitcher`/`AnimatedOpacity`/`FadeTransition` (F-29/F-30)
+- `AnimatedSwitcher`/`AnimatedOpacity`/`FadeTransition` 
   — implicit animation + `AnimatedBuilder`; `AnimationController`
-  là cấp-thấp hơn của cùng cơ chế.
-- `part`/`part of` (D-45, M24/M26) — painter file là `part of`
+  là cấp thấp hơn của cùng cơ chế.
+- `part`/`part of` (M24/M26) — painter file là `part of`
   timer file: chia sẻ private `_strokeWidth`/`_PillProgressPainter`.
 - `GameTimerData` (`progress`, `formattedTime`) — DTO M19;
-  `Semantics(container: true, label: …)` — F-28 reuse.
+ `Semantics(container: true, label: …)` — reuse.
 - `@visibleForTesting` — `buildGameCountdownTimer
   ProgressPath`/`debugGameCountdownTimerPaintProgress` là seam
   test đã quen.
 - `Tween`/curve concept — `Curves.easeOutCubic` đã thấy ở
   `switchInCurve` (M21); `Tween(begin,end).animate(controller)`
-  là explicit-phiên-bản.
+  là explicit phiên bản.
 
 ## Mental model mới — hai khối, một bài
 
-### F-38 — "`AnimationController` là ticker mình sở hữu"
+### — "`AnimationController` là ticker mình sở hữu"
 
 Implicit widgets (`AnimatedOpacity`) giấu controller: bạn đổi
 `opacity`, widget tự tween trong `duration`. `AnimationController`
@@ -107,7 +107,7 @@ late final AnimationController _c = AnimationController(
 4. **`dispose()`** — State sở hữu ticker; quên dispose = ticker
    chạy ngầm sau khi widget unmount (leak + exception).
 
-### F-39 — "`CustomPainter` là render-object tự vẽ"
+### — "`CustomPainter` là render-object tự vẽ"
 
 `CustomPaint` là widget mỏng bọc một `CustomPainter` delegate:
 Flutter layout xong, gọi `painter.paint(canvas, size)` với
@@ -129,7 +129,7 @@ Ba khái niệm: **`Canvas`** = mặt vẽ (phát `drawPath`/`drawRect`/
 `PathMetric` → `.extractPath(0, length * progress)` cắt đoạn
 đầu path theo tỉ lệ → **viền tiến trình** chạy quanh stadium.
 
-### F-40 — "`didUpdateWidget` là điểm đồng bộ prop→controller"
+### — "`didUpdateWidget` là điểm đồng bộ prop→controller"
 
 Stateful widget giữ `State` sống *qua* rebuild; khi parent
 build widget mới với data mới, Flutter gọi `didUpdateWidget(
@@ -149,8 +149,8 @@ void didUpdateWidget(covariant GameCountdownTimer oldWidget) {
 
 | Construct | Vai trò |
 |---|---|
-| `part of 'game_countdown_timer.dart'` | painter file chia sẻ private của library — `_PillProgressPainter`, `_strokeWidth` (D-45 reuse) |
-| `late final AnimationController _c = AnimationController(…)` | `late final` khởi tạo ngay tại field — `this` làm `vsync` an toàn vì State đã tồn tại trước khi field chạy (D-30 reuse) |
+| `part of 'game_countdown_timer.dart'` | painter file chia sẻ private của library — `_PillProgressPainter`, `_strokeWidth` (reuse) |
+| `late final AnimationController _c = AnimationController(…)` | `late final` khởi tạo ngay tại field — `this` làm `vsync` an toàn vì State đã tồn tại trước khi field chạy (reuse) |
 | `covariant GameCountdownTimer oldWidget` | `didUpdateWidget` override — `covariant` cho param hẹp hơn kiểu cha |
 | `Tween<double>(begin: _animatedProgress, end: target).animate(_progressController)` | nối `Tween` vào controller → `Animation<double>`; `.value` nội suy giữa hai mốc |
 | `..addListener(_updateAnimatedProgress)` | cascade gắn listener — mỗi frame controller tick → `setState` đọc `animation.value` |
@@ -164,10 +164,10 @@ void didUpdateWidget(covariant GameCountdownTimer oldWidget) {
 | `TickerProviderStateMixin` | cấp `vsync` cho **nhiều** controller — timer có hai (`SingleTickerProviderStateMixin` chỉ đủ một — Bài 4) |
 | `AnimationController({vsync, duration, lowerBound, upperBound})` | explicit ticker — repeat/reverse/forward/stop/value |
 | `ScaleTransition(scale: _pulseController, child: …)` | implicit-widget lái bởi explicit-controller — `scale` nhận `Animation<double>` trực tiếp (bounds 1→1.08 nghĩa đen là scale) |
-| `AnimatedDefaultTextStyle(duration: …, style: …, child: Text)` | implicit-đổi `TextStyle` — màu chữ crossfade `motionMedium` khi `_timerColor` đổi (chi tiết family ở Bài 5 — F-41 preview) |
+| `AnimatedDefaultTextStyle(duration: …, style: …, child: Text)` | implicit đổi `TextStyle` — màu chữ crossfade `motionMedium` khi `_timerColor` đổi (chi tiết family ở Bài 5 — preview) |
 | `CustomPaint(foregroundPainter: …, child: …)` | `foregroundPainter` vẽ *trên* child — viền tiến trình phủ lên pill |
-| `Canvas.drawPath(path, paint)` | một lệnh vẽ duy nhất — gradient-stroke đoạn-progress |
-| `Path.computeMetrics()` → `PathMetric.extractPath(0, len*p)` | cắt đoạn-đầu path theo tỉ lệ — kỹ thuật "progress dọc đường cong" |
+| `Canvas.drawPath(path, paint)` | một lệnh vẽ duy nhất — gradient-stroke đoạn progress |
+| `Path.computeMetrics()` → `PathMetric.extractPath(0, len*p)` | cắt đoạn đầu path theo tỉ lệ — kỹ thuật "progress dọc đường cong" |
 | `Paint()..shader=…createShader(rect)..style=stroke..strokeCap=round` | cọ viền gradient — `createShader` cần `Rect` để map gradient lên box |
 | `Semantics(container: true, label: l10n.timeRemainingSemanticLabel(…))` | a11y — đọc "Time remaining 00:24" (key Bài 1) |
 
@@ -262,7 +262,7 @@ cần hook để quyết animate-vs-snap.
 `PathMetric` — chiều dài *hình học* của đường (đơn vị logical
 pixel của bản vẽ); `extractPath(0, len*p)` cắt theo *độ dài cung*,
 không theo thời gian hay x-ratio. Stadium path có hai đoạn
-thẳng + hai nửa-cung — test `'builds progress border path'`
+thẳng + hai nửa cung — test `'builds progress border path'`
 assert `metric.length ≈ 2*straight + 2πr` chính là tổng độ
 dài hình học đó.
 
@@ -333,7 +333,7 @@ one-shot mỗi nhịp giây.
   }
 ```
 
-`_syncProgress` — *animate hay snap* (F-40 đúng-nghĩa):
+`_syncProgress` — *animate hay snap* (đúng nghĩa):
 
 ```dart
   void _syncProgress(GameTimerData oldData) {
@@ -455,7 +455,7 @@ class _PillProgressPainter extends CustomPainter {
 }
 ```
 
-Stadium `Path` (đỉnh-giữa → phải → xuống → trái → lên → về
+Stadium `Path` (đỉnh giữa → phải → xuống → trái → lên → về
 đỉnh, bo tròn 4 góc bằng `arcToPoint` với radius = nửa cạnh
 ngắn) là `@visibleForTesting` nên test assert được hình học
 mà không render pixel:
@@ -544,7 +544,7 @@ flutter test     → +270: All tests passed!
    bug. `ScaleTransition` vẫn loop khi user bật reduce-motion.
 2. **`ScaleTransition` bọc *ngoài* pill, không phải painter.**
    Pulse là scale của *toàn bộ timer* (chữ + viền) — painter
-   chỉ lo viền-progress; scale là việc của widget layer. Tách
+   chỉ lo viền progress; scale là việc của widget layer. Tách
    hai loại motion: controller-pulse → `ScaleTransition`,
    controller-progress → painter `progress:` param.
 3. **`_animatedProgress` là state riêng, không phải
@@ -552,14 +552,14 @@ flutter test     → +270: All tests passed!
    Progress` là *vị trí hiện tại* — painter nhận `_animated
    Progress` để viền chạy mượt giữa hai giây. Khi `widget.data`
    cập nhật mỗi giây, controller tween `_animatedProgress`
-   từ vị-trí-cũ tới vị-trí-mới — đây là lý do test assert
+   từ vị trí cũ tới vị trí mới — đây là lý do test assert
    24.5/30 sau 500ms (giữa chừng).
 4. **`part of` chia sẻ private.** `_PillProgressPainter` và
-   `_strokeWidth` là private-của-library — file `part` tham
+   `_strokeWidth` là private của library — file `part` tham
    gia cùng library nên dùng được; đồng thời `buildGameCountdown
    TimerProgressPath`/`debugGameCountdownTimerPaintProgress`
-   không-gạch-dưới + `@visibleForTesting` → public-cho-test mà
-   không public-cho-app (D-45 reuse `part of`; `@visibleForTesting` chưa có registry row).
+   không gạch dưới + `@visibleForTesting` → public-cho-test mà
+ không public-cho-app (reuse `part of`; `@visibleForTesting` chưa có registry row).
 
 ## Chạy và quan sát
 
@@ -570,7 +570,7 @@ flutter test     → +270: All tests passed!   (263 + 7)
 ```
 
 `GameScreenTopBar` chưa có ai gọi (screen mới ở Bài 6) —
-compile-độc-lập; top-bar-fit test trong file chứng minh nó
+compile độc lập; top-bar-fit test trong file chứng minh nó
 layout đúng với back button.
 
 ## Thử nghiệm
@@ -583,12 +583,12 @@ critical state'` có đỏ không, và visual khác gì.
 <summary>Đáp án</summary>
 
 Test **không đỏ** — nó chỉ assert `ValueKey('game-countdown-
-timer-pulse')` tồn-tại-khi-critical, không đo dáng lặp. Trên
+timer-pulse')` tồn tại khi critical, không đo dáng lặp. Trên
 màn: `repeat()` (không reverse) nhảy scale 1→1.08 rồi *giật
 về 1* đột ngột mỗi 450ms — pulse "giật" thay vì "thở". Với
 `reverse: true`, controller đếm lên rồi đếm xuống trong cùng
 `duration` → chuyển động mượt hai chiều. Đây là lý do senior
-chọn reverse — và cũng là loại khác-biệt-visual mà test không
+chọn reverse — và cũng là loại khác biệt visual mà test không
 gánh (REAL_DEVICE_VISUAL_CHECK: NOT_PERFORMED).
 </details>
 
@@ -619,7 +619,7 @@ Giả sử ai đó **bỏ `..value = 0` trong `_syncProgress`** (giữ
 `'animates progress smoothly between second ticks'`:
 
 (a) Test có đỏ không? Ở assert nào?  (b) Vì sao `forward()`
-từ `value` hiện-tại (không reset) phá tween?
+từ `value` hiện tại (không reset) phá tween?
 
 :::note[Gợi ý]
 `forward()` chạy từ `value` hiện tại tới `upperBound`. Sau
@@ -635,7 +635,7 @@ nhịp đầu (25→24s, 1s), `value` đã là 1.0. Nhịp tiếp theo gọi
 mới `begin:24/30 end:23/30` nhưng chỉ `forward()` từ `1.0`:
 controller đã ở đích (upperBound=1) → `forward()` không đi
 đâu → `animation.value` kẹt ở `end=23/30` ngay lập tức (hoặc
-đứng im nếu đã-complete). Assert `_paintProgress ==
+đứng im nếu đã complete). Assert `_paintProgress ==
 closeTo(23.5/30)` sau 500ms sẽ nhận `23/30` (snap ngay tới
 đích, không nội suy) → FAIL. (b) `..value = 0` là bước *re-arm*
 tween: reset controller về đầu để `forward()` chạy trọn 0→1
@@ -656,8 +656,8 @@ một tween mới từ đầu" — `..value = 0` + `..forward()` đi
   thật) — pulse phản ứng *state logic*, không phải vị trí
   tween đang chạy; viền mới dùng `_animatedProgress`.
 - **Hỏi:** `extractPath(0, metric.length * p)` cắt theo gì? —
-  **Đáp:** theo *độ dài cung* của stadium path — đoạn-đầu
-  path dài `p` phần-trăm chu vi; không theo thời gian.
+  **Đáp:** theo *độ dài cung* của stadium path — đoạn đầu
+  path dài `p` phần trăm chu vi; không theo thời gian.
 - **Hỏi:** pulse có tắt khi `disableAnimations` bật không? —
   **Đáp:** không — parity cố ý: senior không gate pulse; chỉ
   money-motion/reveal-blink/dialog-transition honor (Bài 4/5).
@@ -675,7 +675,7 @@ một tween mới từ đầu" — `..value = 0` + `..forward()` đi
 - `GameFeatureButton` painter (gradient xoay + ripple) —
   **Bài 6** (hai controller + `Listenable.merge`, painter
   circle khác stadium).
-- `AnimatedDefaultTextStyle` giải-kỹ — F-41 family ở Bài 5;
+- `AnimatedDefaultTextStyle` giải kỹ — family ở Bài 5;
   ở đây nó chỉ là "implicit đổi TextStyle".
 - `Interval` stagger + `CurvedAnimation` — Bài 5 answer-list.
 - Test `disableAnimations` cho pulse — không có, vì pulse

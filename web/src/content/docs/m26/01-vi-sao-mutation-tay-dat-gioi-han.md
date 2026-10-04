@@ -8,10 +8,10 @@ sidebar:
 
 ## Mục tiêu
 
-- Nêu được bài toán-cảm-nhận: `GameScreenViewModel` 733 dòng trộn
+- Nêu được bài toán cảm nhận: `GameScreenViewModel` 733 dòng trộn
   bốn chủng việc — transition state, `Timer`/`Future.delayed`,
   repository IO, lifecycle/stale guard — và vì sao mỗi flow mới
-  đều phải sửa nhiều chỗ trong cùng file (A-31).
+ đều phải sửa nhiều chỗ trong cùng file.
 - Phát biểu chính xác DRE là gì **trong repo này**: bốn vai —
   `DreAction`, `DreEffect`, `DreAsyncOp`, `DreReducer` — cộng
   `DreResult`. Repo **không bao giờ mở rộng từ viết tắt**: không
@@ -27,8 +27,8 @@ sidebar:
 ## Bạn đang ở đâu
 
 - Cuối M25: `flutter test` 236/236. Game chơi đủ — máy 6 phase
-  (A-18), dialog in-tree từ `dialogState` (A-21), save + sync sau
-  ván (A-22, A-30).
+, dialog in-tree từ `dialogState`, save + sync sau
+ ván.
 - VM hiện tại là bản trung gian cố ý từ M19: `extends
   ChangeNotifier`; session model `GameSessionState` sống trong
   `data/game/game_session_state_data.dart`; mutation bằng
@@ -44,29 +44,29 @@ Mở `game_screen_view_model.dart` và đếm chủng việc trong một file:
 (1) transition `copyWith` trên ~13 field; (2) `Timer.periodic` +
 ba `Future.delayed` khác nhau; (3) `loadUserProfile`/
 `saveUserProfile`/`syncUserProfile` IO; (4) `_isDisposed`/
-`_flowToken`/`hasSavedResult` guard rải rác. Ba đau-điểm cụ thể:
+`_flowToken`/`hasSavedResult` guard rải rác. Ba đau điểm cụ thể:
 mọi guard nằm *trong method* nên một flow mới phải sửa đúng chỗ
 trong 733 dòng; delay-check chủ yếu bằng `phase` — callback trễ
 của flow cũ vẫn có thể chạy vào flow mới cùng phase; và transition
 **không test được riêng** — muốn assert "submit ngoài playing bị
 bỏ" phải dựng cả VM + 3 fake repo + FakeAsync, trong khi luật đó
-thuần-tuý không cần gì hết. Đây là giới hạn của "VM mutation tay",
+thuần tuý không cần gì hết. Đây là giới hạn của "VM mutation tay",
 không phải lỗi của cách M19–M25 đi — bản trung gian là scaffold có
 chủ đích để tới đây mới trả.
 
 ## Bạn đã biết gì
 
-- Máy 6 phase `GamePhase` + transition tay (M19 — A-18);
+- Máy 6 phase `GamePhase` + transition tay (M19);
   `copyWith` + `clearSelectedAnswer`/`clearAudiencePercentiles`
-  (D-34).
-- Sealed `GameDialogState` + switch exhaustive (M15 — D-26/D-27);
-  dialog render in-tree từ state (M21 — A-21); mapper
-  `buildGameScreenPresentation` (A-20).
-- Save boundary `hasSavedResult` + `unawaited` (M22 — A-22, D-17);
-  stale-result guard `_requestId` (M23 — D-42); re-entrancy
-  `_isSyncing` (M25 — A-29).
+.
+- Sealed `GameDialogState` + switch exhaustive (M15);
+ dialog render in-tree từ state (M21); mapper
+ `buildGameScreenPresentation`.
+- Save boundary `hasSavedResult` + `unawaited` (M22);
+ stale-result guard `_requestId` (M23); re-entrancy
+ `_isSyncing` (M25).
 
-## Mental model mới — "reducer trả về kết quả, không làm việc" (A-31, CORE)
+## Mental model mới — "reducer trả về kết quả, không làm việc" (CORE)
 
 ```text
 TRƯỚC (M19–M25, trung gian):
@@ -93,21 +93,21 @@ SAU (M26):
 
 Ba kênh ra của một transition:
 - **`state`** — cái UI vẽ: `screenData`/`dialogState` đọc qua
-  mapper (A-20) y như cũ.
+ mapper y như cũ.
 - **`effects`** — *ý định* nằm ngoài reducer: bật/dừng timer, hẹn
-  delay, điều hướng. Là **data**, không phải `Timer` thật (F-33).
-- **`asyncOp`** — tối đa MỘT việc async per reduce (F-34): game có
+ delay, điều hướng. Là **data**, không phải `Timer` thật.
+- **`asyncOp`** — tối đa MỘT việc async per reduce : game có
   đúng một op — `GameSaveResult`.
 
-Giới hạn của model: reducer không nhận kết-quả-IO (save xong không
+Giới hạn của model: reducer không nhận kết quả-IO (save xong không
 báo lại reducer); không rollback; và "DRE" chỉ là tên — repo không
 định nghĩa expansion, đừng bịa.
 
-## Dart cần dùng (bài đọc-hiểu — chưa cần construct mới)
+## Dart cần dùng (bài đọc hiểu — chưa cần construct mới)
 
 | Construct | Vai trò |
 |---|---|
-| `sealed class` + `final class` variant | tập đóng action/effect — D-26/D-27 reuse |
+| `sealed class` + `final class` variant | tập đóng action/effect — / reuse |
 | `switch` expression exhaustive | reduce = bảng tra; Dart bắt đủ case |
 | `implements` vs `extends` | reducer *implement* contract — không kế thừa code |
 
@@ -166,17 +166,17 @@ void main() {
 ```
 
 Đây là `GameReducer` ở quy mô tối thiểu: state vào + action vào →
-state mới + danh sách ý định ra; guard là nhánh trả state-cũ,
+state mới + danh sách ý định ra; guard là nhánh trả state cũ,
 không phải exception.
 
 ## Android / Compose bridge
 
 **SIMILARITY — MVI/`reduce(state, intent)` của UDF.** Sealed
 intent, state bất biến, reducer thuần trả state mới — cùng tư
-tưởng; list effect ≈ mô tả side-effect một-lần.
+tưởng; list effect ≈ mô tả side-effect một lần.
 
 **IMPORTANT DIFFERENCE — DRE là project-local, không thư viện.**
-Không `Store`, không middleware, không dispatch-chuỗi, không
+Không `Store`, không middleware, không dispatch chuỗi, không
 time-travel; async boundary là MỘT slot `asyncOp` + một broadcast
 stream — tối giản hơn mọi MVI framework quen thuộc.
 
@@ -194,7 +194,7 @@ nó trả mô tả, executor sống ở notifier/bridge.
 | `lib/view_models/game/reducer/game_reducer*.dart` | reducer thuần chia 4 `part` theo flow domain |
 | `lib/view_models/game/game_screen_view_model.dart` + `bridge/` | VM mỏng: dispatch wrappers + effect bridge + op executor |
 
-## Build it step by step — đọc-hiểu, không file mới
+## Build it step by step — đọc hiểu, không file mới
 
 1. Mở `lib/view_models/game/game_screen_view_model.dart` (trạng
    thái cuối M25): đánh dấu bốn chủng việc — `_emit(copyWith)`
@@ -213,12 +213,12 @@ nó trả mô tả, executor sống ở notifier/bridge.
    ↔ `GamePauseTimer()` trong game — reducer không gọi
    `timer.cancel()`; nó trả object mô tả ý định. Ai thực hiện là
    chuyện của bridge (Bài 5). Delay không còn "chôn" trong method.
-2. **Guard = trả state-cũ, không throw.** `Decrement` ở count 0 →
+2. **Guard = trả state cũ, không throw.** `Decrement` ở count 0 →
    `CounterResult(s, …)` cùng instance → notifier không notify
-   (chứng minh ở Bài 2). Action trở thành no-op có-chủ-đích.
+   (chứng minh ở Bài 2). Action trở thành no-op có chủ đích.
 3. **`asyncOp` chỉ một slot.** Reducer buộc chọn "việc async quan
    trọng nhất" — game chọn save result; save→sync vẫn nằm TRONG
-   `_saveGameResult` (chuỗi nội-bộ op, không phải hai op).
+   `_saveGameResult` (chuỗi nội bộ op, không phải hai op).
 
 ## Chạy và quan sát
 
@@ -251,14 +251,14 @@ chuỗi `[Increment, Increment, Reset]` in gì?
 2. **Cho rằng reducer chạy effect** — gọi `Timer`/`Future` trong
    `reduce` phá purity và không test được thuần.
 3. **Đợi asyncOp "xong" trong reduce** — reduce đồng bộ; op chạy
-   `unawaited` sau (F-34).
+ `unawaited` sau.
 4. **Nghĩ phải refactor UI** — contract là `screenData`/
    `dialogState`/`uiEvents` + `ListenableBuilder`; giữ nguyên.
 
 ## Tự làm — PRODUCE
 
 Thêm action `Multiply(int factor)` cho counter reducer (trên
-DartPad, KHÔNG vào repo). Yêu cầu: `factor == 0` → trả state-cũ +
+DartPad, KHÔNG vào repo). Yêu cầu: `factor == 0` → trả state cũ +
 effect `['noop']`; khác 0 → `count * factor`. Viết xong đoán
 output `[Increment(), Multiply(3), Multiply(0)]` từ `count=0`.
 
@@ -295,12 +295,12 @@ guard-underflow: same-state + effect nói ý định.
   expansion".
 - **Hỏi:** guard trong reducer khác `throw`/early-return thế
   nào? — **Đáp:** trả cùng state instance → `previousState !=
-  next` false → không notify; no-op có-chủ-đích, không phải lỗi.
+  next` false → không notify; no-op có chủ đích, không phải lỗi.
 
 ## Ta cố ý chưa thêm
 
 - Share plumbing `GameShareRequested`/`GameShareResult`/
-  `GameShareResultEvent`/`shareResult` — **M27** (FR-33).
+ `GameShareResultEvent`/`shareResult` — **M27**.
 - Platform extras (notification, version text) — **M27**.
 - Visual parity — **M28**. `MenuDialogLayer` — **M29**.
 - Bất kỳ file DRE nào vào learner — Bài 2 mới port; bài này cố ý

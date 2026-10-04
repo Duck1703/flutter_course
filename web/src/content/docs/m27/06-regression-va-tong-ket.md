@@ -1,6 +1,6 @@
 ---
 title: "Bài 6 · Regression + tổng kết — app đã ra khỏi lồng Dart"
-description: "Recap boundary→coordinator→permission→effect→platform call; fake counters = deterministic OS substitute (vì sao 12 test settings VM không chạm plugin); FR-27/FR-28-residual/FR-33 → CONVERGED; REAL_DEVICE_PLATFORM_CHECK NOT_PERFORMED honesty; còn M28 visual parity + M29 MenuDialogLayer. Final: analyze clean + 259/259 + build web PASS."
+description: "Recap boundary→coordinator→permission→effect→platform call; fake counters = deterministic OS substitute (vì sao 12 test settings VM không chạm plugin); residual → CONVERGED; REAL_DEVICE_PLATFORM_CHECK NOT_PERFORMED honesty; còn M28 visual parity + M29 MenuDialogLayer. Final: analyze clean + 259/259 + build web PASS."
 sidebar:
   label: "Bài 6 · regression + tổng kết"
   order: 6
@@ -13,8 +13,8 @@ sidebar:
 - Giải thích được vai trò của fake counters như "OS thay thế
   deterministic" — vì sao 12 test settings VM không import plugin
   vẫn cover được permission/schedule/rollback.
-- Đọc bảng FR convergence: FR-27 (notification flow), FR-28
-  residual (version text), FR-33 (share chain) → CONVERGED.
+- Đọc bảng FR convergence: notification flow, version-text
+  residual và share chain đều → CONVERGED.
 - Chấp nhận và nói được thành phần honesty:
   `REAL_DEVICE_PLATFORM_CHECK: NOT_PERFORMED` — những đường nào
   test *không* chứng minh được.
@@ -44,7 +44,7 @@ này — và là thứ reviewer/QA nhìn vào khi chấm milestone.
 Mọi thứ của M27 + M26 — bài này không có construct mới; nó là
 tổng hợp có cấu trúc.
 
-## Mental model mới — bản đồ một-trang của platform extras
+## Mental model mới — bản đồ một trang của platform extras
 
 ```text
   ┌──────────────────────────── UI ────────────────────────────┐
@@ -74,24 +74,24 @@ tổng hợp có cấu trúc.
 ```
 
 Một đường nữa ngoài sơ đồ: `loadSettingsAppVersion` →
-`PackageInfo.fromPlatform().version` → `v…` row (F-37).
+`PackageInfo.fromPlatform().version` → `v…` row.
 
 ## Dart cần dùng / Dart mới
 
 Không construct mới — recap checklist:
 
-- [ ] `abstract interface class` contract (A-35)
+- [ ] `abstract interface class` contract 
 - [ ] `resolvePlatformSpecificImplementation<T>()` + `kIsWeb`
-  (D-47)
+ 
 - [ ] `tz.TZDateTime`/`setLocalLocation`/`initializeTimeZones`
-  + `DateTimeComponents.time` + `inexactAllowWhileIdle` (F-36)
+ + `DateTimeComponents.time` + `inexactAllowWhileIdle` 
 - [ ] Coordinator callback `Future<void> Function(X)` + tear-off
-  rollback (A-36)
-- [ ] `Future.wait` 3-việc + `as` unwrap results (A-37/D-09)
+ rollback 
+- [ ] `Future.wait` 3-việc + `as` unwrap results 
 - [ ] `PackageInfo.fromPlatform().version` + `Function()` seam
-  (F-37)
+ 
 - [ ] `RenderBox`/`localToGlobal`/`&` Rect + `ShareParams` +
-  `Clipboard` (F-35)
+ `Clipboard` 
 
 ## Flutter cần dùng
 
@@ -141,20 +141,20 @@ assert ý định mà không `TestDefaultBinaryMessenger` phức tạp.
 **DO NOT ASSUME — suite xanh ≠ platform thật chạy.** `flutter
 test` không pump plugin, không mở share sheet, không bắn
 notification. Xanh = ý định đúng; device-check vẫn cần tay —
-milestone ghi `NOT_PERFORMED` thành limitation đã-biết, không giả
+milestone ghi `NOT_PERFORMED` thành limitation đã biết, không giả
 vờ đã làm.
 
 ## Senior project connection — bảng convergence
 
-| FR | Trước M27 | Sau M27 | Trạng thái |
+| Feature | Trước M27 | Sau M27 | Trạng thái |
 |---|---|---|---|
-| **FR-27** notifications | switch chỉ persist flag; onboarding giả `true`; không service | contract+impl verbatim; coordinator rollback; permission AND-gate; `Future.wait`×3; onboarding `requestPermission` thật; snackbar `notificationPermissionRequired` | **CONVERGED** |
-| **FR-28** (residual) | dialog không có `v…` | `loadSettingsAppVersion` seam + `_appVersion` + `v…` bottom-right `isNotEmpty`-gated | **CONVERGED** (phần version; account-row visual → M28) |
-| **FR-33** share | không action/effect/event share; 2 nút kết thúc | `GameShareRequested`→`GameShareResult`→`GameShareResultEvent`→`SharePlus`+`Clipboard`; SHARE trên cả Ended+Victory | **CONVERGED** |
+| notifications | switch chỉ persist flag; onboarding giả `true`; không service | contract+impl verbatim; coordinator rollback; permission AND-gate; `Future.wait`×3; onboarding `requestPermission` thật; snackbar `notificationPermissionRequired` | **CONVERGED** |
+| version text (residual) | dialog không có `v…` | `loadSettingsAppVersion` seam + `_appVersion` + `v…` bottom-right `isNotEmpty`-gated | **CONVERGED** (phần version; account-row visual → M28) |
+| share | không action/effect/event share; 2 nút kết thúc | `GameShareRequested`→`GameShareResult`→`GameShareResultEvent`→`SharePlus`+`Clipboard`; SHARE trên cả Ended+Victory | **CONVERGED** |
 
-Deferred còn lại: FR-29 (`MenuDialogLayer` transport) → M29;
-FR-30/32/34 visuals (`SettingsDialogShell`, `GameDialogButton`,
-`shareColor`, icon assets…) → M28; FR-25/31 → milestone khác.
+Deferred còn lại: (`MenuDialogLayer` transport) → M29;
+/32/34 visuals (`SettingsDialogShell`, `GameDialogButton`,
+`shareColor`, icon assets…) → M28; /31 → milestone khác.
 
 ## Build it step by step — regression cuối milestone
 
@@ -165,12 +165,12 @@ FR-30/32/34 visuals (`SettingsDialogShell`, `GameDialogButton`,
 
 **Bước 3 — `flutter build web`** → compile web xanh (plugin có
 web impl federated; `zonedSchedule`/`share` trên web là runtime
-degrade đã-catch, không phải build error).
+degrade đã catch, không phải build error).
 
 **Bước 4 — tự kiểm bằng tay (checklist dưới)** — chạy được đầy đủ
 là đủ; *không* yêu cầu device thật (ghi rõ phần chưa verify).
 
-## Hiểu code — bốn câu tự-hỏi cuối
+## Hiểu code — bốn câu tự hỏi cuối
 
 1. **Vì sao `_hasNotificationPermission` không persist?** — OS
    sở hữu sự thật; user thu hồi quyền ở system Settings lúc app
@@ -180,11 +180,11 @@ là đủ; *không* yêu cầu device thật (ghi rõ phần chưa verify).
    khỏi stream/notify; test được coordinator mà không cần VM.
 3. **Vì sao share qua effect chain thay vì dialog gọi plugin?** —
    plugin call cần `RenderBox`/`ScaffoldMessenger` của screen +
-   giữ ranh giới "widget không import plugin" (A-35); effect là
+ giữ ranh giới "widget không import plugin"; effect là
    data → reducer testable.
 4. **Vì sao `requestPermission` ở onboarding catch `reportError`
    mà settings catch snackbar?** — hai UX khác nhau: onboarding
-   không có snackbar-riêng + muốn flow tiếp tục (degrade denied);
+   không có snackbar riêng + muốn flow tiếp tục (degrade denied);
    settings muốn *báo* user lỗi vì user chủ động bấm.
 
 ## Chạy và quan sát — thành phần verification thật
@@ -221,10 +221,10 @@ repo value, snackbar nào, switch cuối hiển thị gì.
 ## Lỗi hay gặp (tổng kết milestone)
 
 1. **Assume permission persist được** → flag liar.
-2. **Save trước schedule sau** trong `enable` → flag-on-không-
+2. **Save trước schedule sau** trong `enable` → flag on không
    notification (DEBUG Bài 3).
 3. **Nuốt lỗi rollback lẫn lỗi gốc** → snackbar sai nguyên nhân.
-4. **Dialog/widget import plugin** → phá A-35, không test được.
+4. **Dialog/widget import plugin** → phá, không test được.
 5. **`sharePositionOrigin` từ dialog context** → anchor có thể
    đã pop.
 6. **Quên `!mounted` sau await trong event handler** → context
@@ -258,7 +258,7 @@ vô hạn.
 
 ## Kiểm tra hiểu biết — synthesis cuối
 
-- **Hỏi:** vẽ chuỗi bật-thông-báo thành công. — **Đáp:**
+- **Hỏi:** vẽ chuỗi bật thông báo thành công. — **Đáp:**
   `toggleSetting` → `_toggleNotifications` → `!_hasPermission` →
   `requestPermission` true → `coordinator.enable` → `scheduleDaily
   (h,m)` → `saveSettings(on)` → subject → notify → switch on +
@@ -267,9 +267,9 @@ vô hạn.
   **Đáp:** `updateTime` catch → `_restoreSchedule(previousSettings)`
   (giờ cũ) best-effort → rethrow → VM → snackbar `notification
   TimeUpdateFailed`; `notificationHour` không đổi.
-- **Hỏi:** FR nào đóng, phần nào còn? — **Đáp:** FR-27, FR-28
-  (version), FR-33 đóng; FR-28 account-visual + FR-30/32/34 →
-  M28; FR-29 → M29.
+- **Hỏi:** FR nào đóng, phần nào còn? — **Đáp:**, 
+ (version), đóng; account-visual + /32/34 →
+ M28; → M29.
 - **Hỏi:** phần nào suite *không* chứng minh? — **Đáp:** prompt
   OS thật, notification bắn thật, share sheet thật, iPad anchor —
   `NOT_PERFORMED`.
@@ -291,9 +291,9 @@ vô hạn.
 - [ ] `flutter analyze` → `No issues found!`
 - [ ] `flutter test` → **259/259** (+5 net so với đầu milestone).
 - [ ] `flutter build web` → PASS.
-- [ ] FR-27/FR-28-residual/FR-33 kể được đã converge ở file nào.
+- [ ] Kể được notification flow, version-text residual và share chain đã converge ở file nào.
 - [ ] Nói được không script: vì sao contract ở `services/`, vì sao
-  coordinator tách VM, vì sao permission query-không-assume, vì
+  coordinator tách VM, vì sao permission query không assume, vì
   sao share qua effect, vì sao `!kIsWeb` là fallback giá trị.
 - [ ] Ghi nhận trung thực `REAL_DEVICE_PLATFORM_CHECK:
   NOT_PERFORMED` — và liệt kê được những gì nó không cover.

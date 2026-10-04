@@ -2,35 +2,34 @@
 title: "Bài 2 · mergeUserProfileForSync — luật merge local ↔ remote"
 description: "Merge thuần (pure): progression theo leader = level cao hơn thắng, bằng level → currentExp quyết; tổng tích luỹ = max từng field; session identity thắng username/avatar; gamesWon giữ local; profile demo legacy bị normalize về rỗng trước khi đẩy lên remote. +7 test → 226 → 233."
 sidebar:
-  label: "Bài 2 · merge semantics"
-  order: 2
+ label: "Bài 2 · merge semantics"
+ order: 2
 ---
 
 ## Mục tiêu
 
 - Thêm `mergeUserProfileForSync` (top-level, pure) + năm helper
-  private vào `app_user_data.dart` — hàm quyết định **kết quả cuối
-  cùng** của một lần sync: gì giữ từ local, gì lấy từ remote, gì lấy
-  từ session (A-28).
+ private vào `app_user_data.dart` — hàm quyết định **kết quả cuối
+ cùng** của một lần sync: gì giữ từ local, gì lấy từ remote, gì lấy
+ từ session.
 - Nêu được ba lớp luật khác chủng loại: **identity** (session thắng —
-  Google/Apple mới nhất), **progression** (leader = level→exp tiebreak,
-  thắng nguyên khối), **totals** (max từng field — độc lập nhau).
+ Google/Apple mới nhất), **progression** (leader = level→exp tiebreak, thắng nguyên khối), **totals** (max từng field — độc lập nhau).
 - Giải thích được hai quyết định "kỳ" của senior: `gamesWon` luôn lấy
-  local (remote không có cột), và profile demo legacy
-  (`'TÀU HỦ ĐI CHILL'`, lv12, 1M) bị normalize về rỗng trước merge —
-  tiến trình fake không được phép đẩy lên remote.
+ local (remote không có cột), và profile demo legacy
+ (`'TÀU HỦ ĐI CHILL'`, lv12, 1M) bị normalize về rỗng trước merge —
+ tiến trình fake không được phép đẩy lên remote.
 - +7 test (`user_profile_sync_merge_test.dart`) → suite **226 → 233**.
 
 ## Bạn đang ở đâu
 
 - Cuối Bài 1: `AppUserData` đứng ở biên với đủ 4 cửa dịch;
-  `toUpsertMap` khớp cột `public.users` qua test. Suite **226/226**.
+ `toUpsertMap` khớp cột `public.users` qua test. Suite **226/226**.
 - Còn thiếu: *luật* kết hợp hai profile. Repo impl (Bài 3) sẽ fetch
-  row remote → gọi hàm merge này → lưu kết quả local → upsert lại
-  remote. Merge là đoạn "não" của pipeline — và là phần duy nhất có
-  thể unit-test thuần không cần mạng.
-- `UserProfileData.copyWith` (D-05/D-34) đã sẵn — merge được viết
-  hoàn toàn bằng `copyWith` trên bản leader.
+ row remote → gọi hàm merge này → lưu kết quả local → upsert lại
+ remote. Merge là đoạn "não" của pipeline — và là phần duy nhất có
+ thể unit-test thuần không cần mạng.
+- `UserProfileData.copyWith` đã sẵn — merge được viết
+ hoàn toàn bằng `copyWith` trên bản leader.
 
 ## Vì sao việc này quan trọng ngay bây giờ
 
@@ -47,16 +46,16 @@ chỉ dùng cho Supabase: bất cứ đâu có hai bản dữ liệu gặp nhau
 
 ## Bạn đã biết gì
 
-- `AppUserData` + `toProfile()`/`fromProfile()` (Bài 1 — A-27);
-  `UserProfileData` đầy đủ field + `copyWith` + `==` (D-05, D-34).
+- `AppUserData` + `toProfile()`/`fromProfile()` (Bài 1);
+ `UserProfileData` đầy đủ field + `copyWith` + `==`.
 - `AuthSessionAuthenticated{displayName, photoUrl}` nullable
-  (M24 — D-43); `?.`/`??`/`is` (D-03, D-13).
-- Top-level function + private top-level helper `_name` (D-04);
-  ternary `?:` (Dart cơ bản).
-- `LevelConfig` level 1–100 (D-38) — level/exp là progression cặp
-  đôi, không tách rời được.
+ (M24); `?.`/`??`/`is`.
+- Top-level function + private top-level helper `_name`;
+ ternary `?:` (Dart cơ bản).
+- `LevelConfig` level 1–100 — level/exp là progression cặp
+ đôi, không tách rời được.
 
-## Mental model mới — "ba lớp luật, ba chủng loại" (A-28, NORMAL)
+## Mental model mới — "ba lớp luật, ba chủng loại" (NORMAL)
 
 ```text
 identity   → session THẮNG:   username = session.displayName
@@ -90,18 +89,18 @@ Còn `_withoutDemoProgression`: app bản cũ từng seed profile demo
 (`'TÀU HỦ ĐI CHILL'`, lv12, 20 trận, 1M VNĐ). Nếu một thiết bị cũ còn
 profile đó và user đăng nhập → **không normalize thì tiến trình fake
 được merge và upsert lên `public.users` như dữ liệu thật.** Senior
-xử bằng `==` so-khớp-nguyên-profile: khớp đúng bộ demo → reset về
+xử bằng `==` so khớp nguyên profile: khớp đúng bộ demo → reset về
 rỗng trước khi so sánh; lệch một field cũng coi là profile thật.
 
 ## Dart cần dùng / Dart mới
 
 | Construct | Vai trò |
 |---|---|
-| top-level `UserProfileData mergeUserProfileForSync({required …})` | hàm thuần trên import — không class vì không giữ state (D-04) |
-| `levelLeader.copyWith(…)` | kết quả = bản leader vá lại từng nhóm field — D-34 |
-| `_nonEmpty(session.displayName)` | `String?` → `String?` chỉ-giữ-nếu-không-rỗng — chuỗi fallback `??` |
-| `left.currentExp >= right.currentExp` | tiebreak tại-bằng → left (remote) thắng hoà |
-| `profile == const UserProfileData(…)` | so-khớp-nguyên-object nhận diện demo — D-05 |
+| top-level `UserProfileData mergeUserProfileForSync({required …})` | hàm thuần trên import — không class vì không giữ state |
+| `levelLeader.copyWith(…)` | kết quả = bản leader vá lại từng nhóm field — |
+| `_nonEmpty(session.displayName)` | `String?` → `String?` chỉ giữ nếu không rỗng — chuỗi fallback `??` |
+| `left.currentExp >= right.currentExp` | tiebreak tại bằng → left (remote) thắng hoà |
+| `profile == const UserProfileData(…)` | so khớp nguyên object nhận diện demo — |
 
 Chi tiết nhỏ đáng học: `>=` (không phải `>`) trong tiebreak — khi
 level *và* exp đều bằng nhau, **remote thắng hoà** (remote là arg
@@ -154,8 +153,8 @@ rồi worker chỉ còn plumbing. Rule "field group → winner" tương đương
 conflict-resolution strategy (last-write-wins / field-max).
 
 **IMPORTANT DIFFERENCE — không timestamp/LWW.** Android sync hay dựa
-`updatedAt` ai-mới-hơn-thắng; ở đây không có client-clock tin được —
-senior chọn semantic merge (leader theo *level*, không theo *giờ*).
+`updatedAt` ai mới hơn thắng; ở đây không có client-clock tin được —
+senior chọn semantic merge (leader theo *level*, không theo *giờ).
 Kết quả: merge idempotent — chạy hai lần cùng input ra cùng output.
 
 **DO NOT ASSUME — merge không cộng dồn.** `gamesJoined` không phải
@@ -318,21 +317,21 @@ override / remote-null zero-starter / remote-null demo-normalize.
 ## Hiểu code — ba chi tiết dễ trượt
 
 1. **Username fallback ba tầng, KHÔNG phải "leader thắng".** Ngay cả
-   khi *local là leader*, `username` vẫn ưu tiên `remote.displayName`
-   khi session không cung cấp — test 'merge keeps local progression
-   when local money is greater' assert `username == 'REMOTE PLAYER'` dù
-   level/exp/totals đều local. Danh tính và progression là hai chủ
-   đề khác nhau.
+ khi *local là leader*, `username` vẫn ưu tiên `remote.displayName`
+ khi session không cung cấp — test 'merge keeps local progression
+ when local money is greater' assert `username == 'REMOTE PLAYER'` dù
+ level/exp/totals đều local. Danh tính và progression là hai chủ
+ đề khác nhau.
 2. **`avatarUrl` fallback không đối xứng:** `sessionPhoto ??
    localAvatar ?? remote.avatarUrl` — local đứng trước remote
-   (avatar user tự chọn local được giữ; remote chỉ là dự phòng cuối).
-   So với `username` (remote trước leader): hai chuỗi fallback khác
-   thứ tự là cố ý.
+ (avatar user tự chọn local được giữ; remote chỉ là dự phòng cuối).
+ So với `username` (remote trước leader): hai chuỗi fallback khác
+ thứ tự là cố ý.
 3. **Demo-detect bằng `==` nguyên object.** User chơi thật mà tình cờ
-   trùng *một* field với bộ demo (ví dụ cùng level 12) thì
-   `_hasDemoProgression` = false → giữ nguyên. Chỉ khớp đúng bộ sáu
-   field mới bị normalize — cực kỳ hẹp, cố ý để không xoá nhầm
-   profile thật.
+ trùng *một* field với bộ demo (ví dụ cùng level 12) thì
+ `_hasDemoProgression` = false → giữ nguyên. Chỉ khớp đúng bộ sáu
+ field mới bị normalize — cực kỳ hẹp, cố ý để không xoá nhầm
+ profile thật.
 
 ## Chạy và quan sát
 
@@ -360,26 +359,26 @@ trong file merge test: `local(level 1, exp 250)` vs
 là leader. `username` = **'REMOTE PLAYER'** — session không có
 `displayName` → rơi vào `_nonEmpty(remoteProfile.displayName)`;
 leader-username chỉ là tầng cuối. Đây là bẫy "local thắng progression
-nhưng remote vẫn thắng tên" của Hiểu-code #1.
+nhưng remote vẫn thắng tên" của Hiểu code #1.
 </details>
 
 ## Lỗi hay gặp
 
 1. **Gộp leader và totals thành một rule.** "Bên thắng lấy hết" sai:
-   totals max từng field — test 'remote money greater' chứng minh
-   `gamesWon` và từng total được vá riêng trên bản leader.
+ totals max từng field — test 'remote money greater' chứng minh
+ `gamesWon` và từng total được vá riêng trên bản leader.
 2. **Trộn level của A với exp của B** (`level: max, exp: max`) —
-   tạo cặp progression không-tồn-tại; leader phải nguyên khối.
+ tạo cặp progression không tồn tại; leader phải nguyên khối.
 3. **Cho `gamesWon` vào max** — `_maxInt(remote(0), local(5))` vẫn
-   ra 5 trùng kết quả… nhưng remote luôn 0 nên viết `gamesWon:
+ ra 5 trùng kết quả… nhưng remote luôn 0 nên viết `gamesWon:
    normalizedLocalProfile.gamesWon` là nói đúng ý đồ (và an toàn
-   nếu sau này remote thêm cột).
+ nếu sau này remote thêm cột).
 4. **Dùng `>` thay `>=` ở tiebreak** — đổi kết quả khi hoà tuyệt đối;
-   senior chọn remote-thắng-hoà nhất quán với `_maxInt`.
+ senior chọn remote thắng hoà nhất quán với `_maxInt`.
 5. **So sánh bằng `toUpsertMap()` thay vì `toProfile()`** — merge
-   làm việc trên domain; DTO chỉ là hình chiếu.
+ làm việc trên domain; DTO chỉ là hình chiếu.
 
-## Tự làm — DEBUG (bắt buộc, ca trồng-bug thật)
+## Tự làm — DEBUG (bắt buộc, ca trồng bug thật)
 
 **Setup** — không cần file mới: bug trồng thẳng vào
 `lib/data/profile/app_user_data.dart`, test bắt là shipped test.
@@ -424,35 +423,35 @@ max-totals. Khôi phục dòng gốc, chạy lại → 7/7 xanh.
 ## Kiểm tra hiểu biết
 
 - **Hỏi:** vì sao progression chọn "leader nguyên khối" còn totals
-  lại max từng field? — **Đáp:** `level`+`currentExp` ràng nhau
-  (exp chỉ có nghĩa trong level đang đứng) → trộn hai bên tạo cặp
-  vô nghĩa; các tổng tích luỹ độc lập → max per-field an toàn.
+ lại max từng field? — **Đáp:** `level`+`currentExp` ràng nhau
+ (exp chỉ có nghĩa trong level đang đứng) → trộn hai bên tạo cặp
+ vô nghĩa; các tổng tích luỹ độc lập → max per-field an toàn.
 - **Hỏi:** session thắng username/avatar vì lý do gì? — **Đáp:**
-  `displayName`/`photoUrl` vừa được provider cấp trong phiên hiện
-  tại — là nguồn danh tính mới nhất; remote name có thể cũ, local
-  username có thể tự gõ.
+ `displayName`/`photoUrl` vừa được provider cấp trong phiên hiện
+ tại — là nguồn danh tính mới nhất; remote name có thể cũ, local
+ username có thể tự gõ.
 - **Hỏi:** `_hasDemoProgression` nhận diện demo bằng cách nào, và
-  vì sao cách đó an toàn? — **Đáp:** `==` nguyên `UserProfileData`
-  với đúng 6 field bộ demo; lệch một field → profile thật, giữ
-  nguyên — không bao giờ xoá nhầm dữ liệu thật.
+ vì sao cách đó an toàn? — **Đáp:** `==` nguyên `UserProfileData`
+ với đúng 6 field bộ demo; lệch một field → profile thật, giữ
+ nguyên — không bao giờ xoá nhầm dữ liệu thật.
 
 ## Ta cố ý chưa thêm
 
 - Ai gọi `mergeUserProfileForSync`: `UserProfileSyncRepositoryImpl`
-  — **Bài 3**.
+ — **Bài 3**.
 - Conflict-resolution nâng hơn (per-field timestamp, three-way
-  merge với base) — senior không có; luật deterministic này là đủ.
+ merge với base) — senior không có; luật deterministic này là đủ.
 - Merge `UserSettingsData`/leaderboard — sync chỉ phủ profile.
 - Đọc/ghi `public.users` thật — **Bài 3–4**; live run OPTIONAL
-  (`LIVE_PROFILE_SYNC: NOT_PERFORMED`).
+ (`LIVE_PROFILE_SYNC: NOT_PERFORMED`).
 
 ## Checkpoint hoàn thành
 
 - [ ] `app_user_data.dart` có `mergeUserProfileForSync` + 5 helper
-  private, đúng luật: identity session-wins, progression leader,
-  totals max, `gamesWon` local, demo normalize trước merge.
+ private, đúng luật: identity session-wins, progression leader,
+ totals max, `gamesWon` local, demo normalize trước merge.
 - [ ] `test/user_profile_sync_merge_test.dart` 7 test xanh.
 - [ ] `flutter analyze` sạch; `flutter test` **233/233**.
 - [ ] Giải thích được: vì sao `username` có thể là `'REMOTE PLAYER'`
-  khi local vẫn là progression-leader, và điều gì xảy ra nếu bỏ
-  `_withoutDemoProgression` (test nào đỏ, ở assert nào).
+ khi local vẫn là progression-leader, và điều gì xảy ra nếu bỏ
+ `_withoutDemoProgression` (test nào đỏ, ở assert nào).
