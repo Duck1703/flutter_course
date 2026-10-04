@@ -44,8 +44,8 @@ Trả lời được năm câu này là đủ:
 
 ## Còn lại sau M16 (đã register)
 
-- FR-26: `languageCode` guard whitelist → M17.
-- FR-27: notification permission/schedule → M27.
-- FR-28: account row auth + version → M22+/M27.
-- FR-29: `MenuDialogSettings` entry → M21 (dưới ô FR-16).
-- FR-30: `iconAsset` → `IconData` → xem lại M24.
+- `languageCode` guard whitelist → M17.
+- Notification permission/schedule → M27.
+- Account row auth + version → M22+/M27.
+- `MenuDialogSettings` entry → M21.
+- `iconAsset` → `IconData` → xem lại M24.

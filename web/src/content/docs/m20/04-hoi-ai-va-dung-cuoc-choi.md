@@ -45,15 +45,14 @@ field `GameResult?` trên state, **set ngay tại transition**.
 
 ## Bạn đã biết gì
 
-- `Future.delayed` + guard token trong `_schedule` (M19, D-33 +
-  `flowToken`); `unawaited` (M11, D-17).
-- `GameDialogState` sealed family + exhaustive switch (M15/M19,
-  D-27/A-14) — Bài này thêm 2 variant nốt ở Bước 1;
+- `Future.delayed` + guard token trong `_schedule` (M19
+  `flowToken`); `unawaited` (M11).
+- `GameDialogState` sealed family + exhaustive switch (M15/M19) — Bài này thêm 2 variant nốt ở Bước 1;
   `GameAIAssistantDialog` mang `isLoading` — *một variant, hai hình*.
 - `_walkAwayAmount(state)` = `calculateGameWalkAwayAmount`
   (guaranteed>0 ? max(guaranteed, earned) : 0) — M19, verbatim
   senior.
-- `ListenableBuilder` (M11, F-16) — sẽ tái dùng *bên trong* một
+- `ListenableBuilder` (M11) — sẽ tái dùng *bên trong* một
   route `showDialog`.
 
 ## Dart cần dùng / Dart mới
@@ -725,7 +724,7 @@ dialog mới — double protection đúng senior.
   milestone "AI thật" trong roadmap — đây là hành vi cuối.
 - `GameSaveResult` async-op + `hasSavedResult` + VM persist qua
   repository — **M22** (khi đó `resolvedResult`/route-pop
-  transport được thay bằng save-site trong VM, FR-04).
+  transport được thay bằng save-site trong VM ở M22).
 - `GameDialogLayer` trong `Stack` — **M21**; `ListenableBuilder`
   host là bước quá độ hợp lý.
 

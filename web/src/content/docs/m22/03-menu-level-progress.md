@@ -26,7 +26,7 @@ sidebar:
 ## Vì sao việc này quan trọng ngay bây giờ
 
 `MenuLevelProgress` là ví dụ sạch của pattern **derived view-model**
-(**D-39**, NORMAL): model `UserProfileData` giữ `level` + `currentExp`
+(concept mới): model `UserProfileData` giữ `level` + `currentExp`
 thô; mọi con số "để hiển thị" (required, remaining, ratio, formatted)
 được *suy ra* qua `fromProfile` — không lưu thêm field, không đồng bộ
 hai nguồn.
@@ -39,7 +39,7 @@ maintain `gainExp` cập nhật cả hai).
 ## Bạn đã biết gì
 
 - `LevelConfig.getExpRequiredForLevel` (Bài 2).
-- `factory` ctor + `@immutable` class + `==`/`hashCode` (D-16).
+- `factory` ctor + `@immutable` class + `==`/`hashCode`.
 - `double.clamp(0.0, 1.0)`; `int.clamp` (LevelConfig min/max).
 - `Expanded(flex:)` bar hai đoạn (M14 `_LevelCard`).
 

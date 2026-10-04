@@ -46,22 +46,22 @@ Có ba lý do senior **không** trả kết quả qua route:
 
 :::caution[TEACHING SCAFFOLD kết thúc]
 `GameResult` + `Navigator.pop(result)` + `MenuViewModel.applyGameResult`
-là scaffold M10 đã được register FR-04 dặn dò "retire ở M22". Đây là
+là scaffold tạm từ M10, đã được hẹn retire ở M22. Đây là
 bài học "đổi ownership dữ liệu" — không phải fix bug.
 :::
 
 ## Bạn đã biết gì
 
 - `UserProfileRepository` contract + `FakeUserProfileRepository`
-  (M14 — D-19, A-07, A-11).
-- `ValueStream`/`.value` + "stream là nguồn truth" (M14 — A-08, A-10).
-- `unawaited` — fire-and-forget có chủ đích (M11 — D-17).
+  (M14).
+- `ValueStream`/`.value` + "stream là nguồn truth" (M14).
+- `unawaited` — fire-and-forget có chủ đích (M11 — ).
 - `GameSessionState` immutable + `copyWith` + 4 transition kết thúc
-  (M19–M21 — A-18, D-34).
+  (M19–M21).
 - `Navigator.pop(result)` trả giá trị về `await push` (M10 — sắp
   retire tại chính bài này).
 
-## Mental model mới — "save là một *hiệu ứng cạnh* của transition kết thúc" (**A-22**, CORE)
+## Mental model mới — "save là một *hiệu ứng cạnh* của transition kết thúc" (CORE)
 
 Trong senior, reducer thuần không gọi repo — nó *đánh dấu* "transition
 này cần save" bằng một async op `GameSaveResult` đi kèm state mới:

@@ -40,11 +40,11 @@ người chơi; "biến mất" sẽ làm UI nhảy.
 ## Bạn đã biết gì
 
 - Mapper thuần `buildGameScreenPresentation` + `GameScreenData`
-  DTO (M19, A-20); `_answerState` = f(phase) (M19).
-- Guard `phase != playing → return` (M19, A-18); `_schedule` +
-  `flowToken` (M19, D-33 liên quan — dùng ở Bài 4).
-- `Set` dùng-một-lần + `{...old, x}` (Bài 1 — D-35); helper thuần
-  `applyGameFiftyFifty`/`buildGameAudiencePoll` (Bài 2 — D-36).
+  DTO (M19); `_answerState` = f(phase) (M19).
+- Guard `phase != playing → return` (M19); `_schedule` +
+  `flowToken` (M19 — dùng ở Bài 4).
+- `Set` dùng-một-lần + `{...old, x}` (Bài 1); helper thuần
+  `applyGameFiftyFifty`/`buildGameAudiencePoll` (Bài 2).
 - Dialog qua `dialogState` + `GameDialogRequested` + generic
   dismiss resume timer (M19).
 
@@ -59,13 +59,12 @@ người chơi; "biến mất" sẽ làm UI nhảy.
 | `Semantics(button:, enabled:, label:)` | bọc nút custom | a11y label cho screen reader |
 | `IconData` trong DTO | `data.icon` → `Icon(data.icon)` | icon là *data*, widget chỉ render |
 
-:::note[FR-34 — visual depth dời M28]
+:::note[Visual depth dời M28]
 Senior `GameFeatureButton` là ~200 dòng `CustomPainter` (glow,
 border vẽ tay) + icon SVG asset. Learner dùng `IconData` phẳng +
 `AnimatedOpacity` — **hợp đồng hành vi giữ nguyên** (`isEnabled`
-→ mờ + `onTap:null`), chỉ độ sâu visual được dời tới M28 cùng
-FR-32. Đã đăng ký ở `SENIOR_FIDELITY_REGISTER.md` — không phải
-"thiếu sót ngầm".
+→ mờ + `onTap:null`), chỉ độ sâu visual được dời tới M28 — đơn giản hoá
+có chủ đích, không phải "thiếu sót ngầm".
 :::
 
 ## Android / Compose bridge
@@ -88,12 +87,25 @@ FR-32. Đã đăng ký ở `SENIOR_FIDELITY_REGISTER.md` — không phải
   bản; bài này port verbatim.
 - `widgets/game/game_feature_button.dart` + `game_feature_button_bar.dart`
   (senior) — nút ~200 dòng `CustomPainter`; ta giữ hợp đồng, đơn
-  giản visual (FR-34).
+  giản visual.
 - `view_models/game/reducer/game_reducer_feature_flow.dart` (senior)
   — `_useFiftyFifty`/`_showAudiencePoll`/`_audiencePollItems` là
   reducer handlers; learner giữ tên + ngữ nghĩa trong VM.
 
 ## Build it step by step
+
+:::note[Giai đoạn A — data + mapper]
+Bài này dài vì một lifeline chạm **ba lớp**. Ta chia thành ba giai
+đoạn, mỗi giai đoạn kết thúc bằng một thứ *kiểm chứng được*:
+
+- **A (Bước 1–2):** data mới + mapper — xong khi `analyze` chỉ còn
+  lỗi "chưa truyền tham số" ở lớp trên (lỗi *có chủ đích*).
+- **B (Bước 3–4):** VM — seed poll, guard `phase`, single-use.
+- **C (Bước 5–6):** UI thanh lifeline + dialog poll + test.
+
+Đừng đọc lướt A→C một mạch — sau mỗi giai đoạn, dừng và xác minh
+bằng analyze/test trước khi tiếp.
+:::
 
 ### Bước 1 — `GameScreenData.featureButtons` + variant poll
 
@@ -260,6 +272,14 @@ GameFeatureButtonData _feature(
 
 File cần `import 'package:flutter/material.dart'` (IconData/Icons)
 nếu chưa có.
+
+:::note[Giai đoạn B — hành vi của VM]
+Bạn đã biết: sealed state (M15), guard `phase` (M19/04), `copyWith`
+cờ `clear*` (M19/02), Set dùng-một-lần (Bài 1). **Mới trong giai
+đoạn này:** seeding `audiencePercentile` vào state khi bấm lifeline
+và quy tắc "mỗi nút dùng một lần". Kiểm chứng cuối giai đoạn: VM
+compile sạch, test VM cũ vẫn xanh (chưa có test mới — đến Bước 6).
+:::
 
 ### Bước 3 — VM: truyền 4 arg, seed, reset, guard submit
 
@@ -438,6 +458,14 @@ Thêm block lifelines vào VM (import helper ở đầu file):
   đồng hồ chạy tiếp (bạn đang chơi chứ không đang đọc). Poll/AI
   có dialog → pause. Nhỏ nhưng đúng senior.
 
+:::note[Giai đoạn C — UI nhìn state]
+Mọi quyết định đã xong ở A+B. Giai đoạn này chỉ là render: thanh
+lifeline đọc `usedFeatureButtons`, ô đáp án đọc `''` của 50:50,
+dialog poll đọc variant mới. **Không concept mới** — chỉ là sealed
+UI arm + widget hiện có. Kiểm chứng: chạy app, bấm 50:50 thấy hai ô
+trống, mở poll thấy 4 thanh %.
+:::
+
 ### Bước 5 — Màn: thanh lifeline + ô trống + dialog poll
 
 `lib/screens/game_screen.dart`:
@@ -469,7 +497,7 @@ render slot nhưng `onTap: null`:
 ```
 
 **(c)** Hai widget mới cuối file — `_GameFeatureBar` +
-`_GameFeatureButton` (FR-34 flat version):
+`_GameFeatureButton` (bản phẳng — visual depth đến M28):
 
 ```dart
 /// Thanh lifeline — senior `GameFeatureButtonBar` (FR-34: flat
@@ -722,7 +750,7 @@ và +2 test:
 ```
 
 **VM** (`test/game_screen_view_model_test.dart`) — +6 test trong
-ba group. Mẫu đầy đủ của test 50:50 (FakeAsync của M19 — `D-33`):
+ba group. Mẫu đầy đủ của test 50:50 (FakeAsync của M19/04):
 
 ```dart
   /// Tìm button data theo type trong `screenData.featureButtons`.
@@ -884,8 +912,8 @@ không phải để hợp nhất wiring.
 - Nút `aiAssistant`/`walkAway` trong `_buildFeatureButtons` +
   hai arm switch đang `break` — **Bài 4** (cùng `_showAIAssistant`,
   `_showConfirmWalkAway`, `confirmWalkAway`, `resolvedResult`).
-- `GameFeatureButton` painter/SVG — **M28** (FR-34).
-- In-Stack `GameDialogLayer` thay `showDialog` — **M21** (FR-07).
+- `GameFeatureButton` painter/SVG — **M28**.
+- In-Stack `GameDialogLayer` thay `showDialog` — **M21**.
 
 ## Checkpoint hoàn thành
 

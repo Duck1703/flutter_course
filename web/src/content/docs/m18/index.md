@@ -52,15 +52,15 @@ Trả lời được năm câu này là đủ:
    đã xem; quên `List.unmodifiable` → state bẩn không qua notify;
    back button → overlay không đóng (không phải route).
 5. **Cần ở đâu sau?** M21 dialog layer cùng model "render-by-state
-   trong Stack"; M27 permission thật thay simulated grant (FR-27);
-   M28 visual parity (FR-32).
+   trong Stack"; M27 permission thật thay simulated grant;
+   M28 visual parity.
 
 ## Còn lại sau M18 (đã register)
 
-- FR-27 mở rộng: nút "Bật thông báo" mô phỏng granted — permission
+- Nút "Bật thông báo" mô phỏng granted — permission
   thật + lịch hẹn → M27.
-- FR-32: visual onboarding rút gọn (không blur/AnimatedSwitcher/
+- Visual onboarding rút gọn (không blur/AnimatedSwitcher/
   badge/gradient/header-config; scope bỏ StreamBuilder trong) →
   parity pass M28.
-- FR-31: key onboarding đã đổ bộ (16 key senior-verbatim); còn
+- Key onboarding đã đổ bộ (16 key senior-verbatim); còn
   quiz-bank/repo strings + casing convention.

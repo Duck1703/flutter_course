@@ -29,9 +29,9 @@ trạng thái repo mới bắt được.
 
 ## Bạn đã biết gì
 
-- `testWidgets`/`WidgetTester`/`pumpAndSettle` (F-14, M08+);
+- `testWidgets`/`WidgetTester`/`pumpAndSettle` (M08+);
   `ensureVisible` nếu element off-screen.
-- `MultiProvider` + `Provider<Contract>.value(fake)` (M14, A-11).
+- `MultiProvider` + `Provider<Contract>.value(fake)` (M14).
 - `localizedTestApp` helper — delegates + `locale: vi` (M17).
 - Navigation-less overlay: không `Navigator` — assert qua
   `find.text` + repo `value`.
@@ -150,7 +150,7 @@ vì overlay nuốt tap. Hoàn nguyên. Bài học: flag test-host phản ánh
 
 - `pump()` một lần rồi assert → overlay chưa render (Future chưa
   done) → false-fail. Dùng `pumpAndSettle`.
-- Tap text off-viewport → `ensureVisible` trước (F-14).
+- Tap text off-viewport → `ensureVisible` trước.
 - Quên `addTearDown(repo.dispose)` → subject mở giữa các test.
 - Assert chuỗi en trên host `locale: vi` → findsNothing — assertion
   phải đọc cùng locale với host.
@@ -212,7 +212,7 @@ testWidgets('skip intro ở bước notification vẫn persist', (t) async {
 
 ## Ta cố ý chưa thêm
 
-- Test golden/screenshot — visual parity là phạm vi M28 (FR-32).
+- Test golden/screenshot — visual parity là phạm vi M28.
 - Test permission deny path qua UI — nút learner luôn simulated-grant;
   nhánh deny đã cover ở VM unit test (Bài 3).
 - Test locale flip live trong onboarding → l10n switch — đã có

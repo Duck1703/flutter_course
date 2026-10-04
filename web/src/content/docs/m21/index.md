@@ -16,7 +16,7 @@ khi back hệ thống pop route dialog, bridge phải *vá* lại bằng
 bằng đúng kiến trúc senior: **dialog render in-tree trong `Stack`
 của màn hình**, lái hoàn toàn bởi `vm.dialogState`.
 
-:::note[FR-07 đóng ở đây]
+:::note[Dialog-layer đóng ở đây]
 Từ M15 tới M20 dialog của learner là `AlertDialog` trong route
 `showDialog` — đúng chức năng nhưng sai *cơ chế* so với senior.
 M21 là điểm hội tụ đã hẹn: cùng một `dialogState`, khác hẳn phần
@@ -27,9 +27,9 @@ trình bày.
 
 | Bài | Nội dung | Checkpoint |
 |-----|----------|-----------|
-| [01](/m21/01-dialog-la-state-khong-phai-route/) | Tại sao `showDialog` ngừng scale ở 9 variant; mental model "dialog = widget có/không theo state" (A-21, CORE) | hiểu model — chưa code |
-| [02](/m21/02-game-dialog-layer/) | `GameDialogLayer` skeleton: `Positioned.fill` + `IgnorePointer` + backdrop blur + tap-outside rules; 9 view port từ host cũ (F-30) | analyze sạch, **150/150** |
-| [03](/m21/03-animated-switcher-va-keyed-transitions/) | `AnimatedSwitcher` + `ValueKey(runtimeType)` + fade/slide + `disableAnimations` (F-29, D-37 — CORE) | **153/153** |
+| [01](/m21/01-dialog-la-state-khong-phai-route/) | Tại sao `showDialog` ngừng scale ở 9 variant; mental model "dialog = widget có/không theo state" (CORE) | hiểu model — chưa code |
+| [02](/m21/02-game-dialog-layer/) | `GameDialogLayer` skeleton: `Positioned.fill` + `IgnorePointer` + backdrop blur + tap-outside rules; 9 view port từ host cũ | analyze sạch, **150/150** |
+| [03](/m21/03-animated-switcher-va-keyed-transitions/) | `AnimatedSwitcher` + `ValueKey(runtimeType)` + fade/slide + `disableAnimations` (CORE) | **153/153** |
 | [04](/m21/04-popscope-va-back-handling/) | Lắp layer vào `Stack` màn; `PopScope` đầy đủ; `_handleRouteBack` senior; retire scaffold + `GameDialogRequested`; `_afterExit` | **153/153** |
 | [05](/m21/05-tests-regression-tu-lam/) | Hoàn thiện layer test (10 tests kiểu senior) + regression + PRODUCE variant mới end-to-end | **157/157** + build |
 
@@ -49,10 +49,10 @@ trình bày.
 ## Điều milestone này cố ý chưa làm
 
 - Card dialog vẫn là chrome đơn giản (title + body + TextButton) —
-  `GameDialogShell` gradient/sheen/SVG của senior là **FR-32/FR-34 → M28**.
+  `GameDialogShell` gradient/sheen/SVG của senior đến **M28**.
 - Dialog *menu* (settings, sign-out…) vẫn `showDialog` — `MenuDialogLayer`
-  là **FR-16 (phần menu) → M29**.
-- Nút share trên dialog kết quả chưa có — **FR-33 → M27**.
+  đến **M29**.
+- Nút share trên dialog kết quả chưa có — **M27**.
 - `hasSavedResult`/persist kết quả — **M22**; DRE — **M26**.
 
 ## Checkpoint tổng kết
@@ -69,9 +69,8 @@ trình bày.
 
 Trả lời được năm câu này là đủ:
 
-1. **Học gì?** Dialog-route vs in-tree layer (A-21); `AnimatedSwitcher`
-   + key-identity (F-29, D-37); backdrop/`IgnorePointer`/opaque-tap
-   (F-30); `PopScope` + bảng quyết định back của senior.
+1. **Học gì?** Dialog-route vs in-tree layer; `AnimatedSwitcher`
+   + key-identity; backdrop/`IgnorePointer`/opaque-tap; `PopScope` + bảng quyết định back của senior.
 2. **Giải thích được?** Vì sao 10 emit-site `GameDialogRequested` là
    mùi code; vì sao `ValueKey(runtimeType)` (không phải index/payload)
    là đúng key; vì sao terminal action phải chờ animate-out

@@ -39,14 +39,14 @@ là biết ngay đúng/sai, trước khi VM nào dùng tới.
 
 ## Bạn đã biết gì
 
-- `copyWith` + cờ `clear*` trên state bất biến (M19, D-34);
-  `List.unmodifiable` emit discipline (M18, D-32).
-- `sealed class` + exhaustive `switch` (M15, D-27/A-14) —
+- `copyWith` + cờ `clear*` trên state bất biến (M19);
+  `List.unmodifiable` emit discipline (M18).
+- `sealed class` + exhaustive `switch` (M15) —
   `GameDialogState` đã là sealed từ M15.
 - `Set` mental model + `{...old, x}` / `contains` /
-  `Set.unmodifiable` (Bài 1 — D-35).
-- ARB + generated localizations (M17, D-31/F-25); map literal
-  + `jsonDecode` (M10, D-15).
+  `Set.unmodifiable` (Bài 1).
+- ARB + generated localizations (M17); map literal
+  + `jsonDecode` (M10).
 
 ## Mental model mới — "% poll là Map keyed bằng *text đáp án*"
 
@@ -59,7 +59,7 @@ là biết ngay đúng/sai, trước khi VM nào dùng tới.
   `''`) → item của nó 0% — senior dựng items từ
   `visibleOptionTexts` nên ô xóa hiện 0% trong dialog.
 - `null` = "chưa dùng poll câu này" — khác với map rỗng: `null`
-  là *chưa có*, `{}` là *có nhưng trống*. D-34 đã dạy phân biệt
+  là *chưa có*, `{}` là *có nhưng trống*. M19/02 đã dạy phân biệt
   này qua cờ `clear*` — `audiencePercentiles` dùng cùng pattern
   (`clearAudiencePercentiles` khi sang câu).
 
@@ -97,7 +97,7 @@ là biết ngay đúng/sai, trước khi VM nào dùng tới.
   ba field state lifeline thật của senior.
 - `data/game/game_screen_data.dart` (senior) — `GameFeatureButtonType`
   năm giá trị + `GameFeatureButtonData` (senior dùng `iconAsset`
-  `String`; learner dùng `IconData` — FR-34, hội tụ visual ở M28).
+  `String`; learner dùng `IconData` — hội tụ visual ở M28).
 
 ## Build it step by step
 
@@ -220,7 +220,7 @@ và trong thân `return GameSessionState(...)`:
 :::note[Vì sao `audiencePercentiles`/`resolvedResult` cần cờ clear?]
 `param ?? this.param` không phân biệt được "caller không truyền"
 với "caller muốn set `null`" — cờ `clear*` là escape hatch đã học
-ở D-34 (M19). `visibleOptionTexts`/`usedFeatureButtons` không cần
+cờ `clear*` (M19/02). `visibleOptionTexts`/`usedFeatureButtons` không cần
 cờ vì chúng không bao giờ "về null" — reset về list rỗng được
 viết tường minh `visibleOptionTexts: const []` nếu cần.
 :::
@@ -293,7 +293,7 @@ Trên `GameAnswerOptionData` — thêm field optional:
 Class này **chưa có `copyWith` từ M19** — thêm *cả method* (không chỉ
 một dòng). Chú ý cờ `clearAudiencePercentile`: `??` không set được
 `null`, nên xóa % phải qua cờ — cùng pattern `clearSelectedAnswer`
-của `GameSessionState` (D-34):
+của `GameSessionState`:
 
 ```dart
   GameAnswerOptionData copyWith({
@@ -326,6 +326,30 @@ hợp giữ nguyên và tất cả vẫn compile.
 :::
 
 ### Bước 4 — Helper toán thuần (verbatim senior)
+
+:::note[Suy luận trước — bảng luật của bạn, không phải của senior]
+Hai lifeline sắp được port *verbatim* — nhưng trước khi đọc code,
+tự viết bảng luật ra giấy. Cho câu hỏi mẫu:
+
+```
+Q: "Thủ đô Việt Nam?"  đúng = "Hà Nội"
+options = ["Huế", "Hà Nội", "Đà Nẵng", "Cần Thơ"]   difficulty = easy
+```
+
+1. **50:50** — sau khi dùng, `visibleOptionTexts` trông như thế nào?
+   Ô sai nào *còn lại*: ngẫu nhiên? ô đầu? ô cuối? — và ô bị xoá
+   biểu diễn bằng gì trong list `String` (gợi: mapper đọc text rỗng)?
+2. **Hỏi khán giả** — đáp án đúng nhận bao nhiêu % ở độ khó easy,
+   và 3 ô sai chia phần còn lại thế nào để tổng = 100? Viết 4 số
+   theo thứ tự options — không được dùng số "đẹp" tự nghĩ.
+3. Poll là `Map<String,int>` — key là *index* hay *text đáp án*?
+   (Nhớ mental model của bài: key bằng gì thì hai option giống nhau
+   sẽ va chạm thế nào?)
+
+So với bảng luật senior ngay bên dưới — mỗi chỗ lệch là một câu hỏi
+thiết kế đáng hiểu.
+:::
+
 
 File mới
 `lib/view_models/game/support/game_lifeline_helper.dart`:
@@ -577,7 +601,48 @@ thiết kế "phần dư" — khóa invariant bằng test.)*
 - **`Map.unmodifiable` quên bọc** → ai đó `.clear()` map state là
   đổi được state "bất biến" — boundary phải đóng băng.
 
-## Kiểm tra hiểu biết
+## Tự làm — dự đoán output helper trước khi chạy
+
+Cho câu hỏi:
+
+```dart
+const q = GameQuizQuestionData(
+  /* … id/level/… */ question: 'Q',
+  options: ['A1', 'A2', 'A3', 'A4'],
+  correctOption: 'A3',
+  difficulty: GameQuestionDifficulty.hard,
+);
+```
+
+**Phần 1 — bằng tay.** Viết kết quả dự đoán của:
+
+- `applyGameFiftyFifty(q)` — list 4 phần tử chính xác theo thứ tự.
+- `buildGameAudiencePoll(q)` — Map 4 entry, tổng = 100.
+- `buildGameAudiencePollItems` trên `answers` có `audiencePercentile`
+  [68, 16, 10, 6] — field `percentage`/`progress` của từng hàng.
+
+**Phần 2 — kiểm chứng.** Viết test tạm `expect` cả ba output —
+`flutter test` phải xanh. Nếu đỏ: sai ở đâu — luật của bạn hay code?
+
+<details><summary>Đáp án</summary>
+
+- `applyGameFiftyFifty` → `['A1', '', 'A3', '']` — `firstWhere`
+  lấy ô sai ĐẦU TIÊN theo thứ tự list (`'A1'`), giữ `'A1'` + `'A3'`,
+  hai ô sai còn lại thành `''`. Bẫy hay gặp: tưởng "giữ đáp án đúng
+  + một ô sai BẤT KỲ" — không, deterministic theo thứ tự options.
+- `buildGameAudiencePoll` (hard) → đúng `42`; còn lại 58 chia
+  29/19/10 → `{'A1': 29, 'A2': 19, 'A3': 42, 'A4': 10}` — tổng 100,
+  ô cuối nhận phần dư.
+- `buildGameAudiencePollItems` → hàng A3: `percentage '68%'`,
+  `progress 0.68` — `%` là chuỗi đã format, `progress` là 0..1 cho
+  thanh.
+
+Điểm học: helper thuần = luật có thể *đọc như bảng* — ai đọc được
+bảng luật sẽ đọc được code, và test chỉ là bảng đó dưới dạng `expect`.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. `audiencePercentiles` kiểu `Map<String,int>?` — tại sao key là
    *text* đáp án chứ không phải index?
@@ -600,7 +665,7 @@ thiết kế "phần dư" — khóa invariant bằng test.)*
 - `handleFeatureClick`/`_canUseFeature`/mọi method VM — **Bài 3–4**.
 - Widget thanh lifeline + dialog UI — **Bài 3–4**.
 - `GameShareResultEvent` (share kết quả) — chưa assign milestone
-  (FR-33).
+.
 
 ## Checkpoint hoàn thành
 

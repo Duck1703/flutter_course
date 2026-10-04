@@ -1,6 +1,6 @@
 ---
 title: "Bài 3 · MaterialApp.locale lái bởi settings stream"
-description: "CORE: StreamBuilder bọc MaterialApp — locale suy từ userSettingsStream mỗi lần emit; FR-26 whitelist chốt đầu vào của fromMap; languageCode lạ → null → fallback hệ thống."
+description: "CORE: StreamBuilder bọc MaterialApp — locale suy từ userSettingsStream mỗi lần emit; whitelist `languageCode` chốt đầu vào của `fromMap`; languageCode lạ → null → fallback hệ thống."
 sidebar:
   label: "Bài 3 · locale ← stream"
   order: 3
@@ -16,7 +16,7 @@ Sau bài này bạn **làm được**:
 - Viết pattern senior: `StreamBuilder` bọc
   `MaterialApp`, `initialData` = `stream.value` — locale đổi **ngay**
   khi settings đổi, không restart.
-- Hiểu và viết guard FR-26: `fromMap` lọc `languageCode` qua
+- Hiểu và viết guard whitelist: `fromMap` lọc `languageCode` qua
   `SupportedLanguageData.isSupportedCode` — mã lạ/kiểu sai/rỗng →
   `null`.
 
@@ -47,20 +47,20 @@ minh gì mới, chỉ leo scope lên app-root.
 
 ## Bạn đã biết gì
 
-- `StreamBuilder` + `initialData` (F-11, M14) — rebuild khi stream
+- `StreamBuilder` + `initialData` (M14) — rebuild khi stream
   emit, render ngay giá trị hiện có.
-- `userSettingsStream.value` seed (A-08, M14/M16) — BehaviorSubject
+- `userSettingsStream.value` seed (M14/M16) — BehaviorSubject
   giữ giá trị cuối, đọc đồng bộ được.
-- `context.read<T>()` lấy repo từ `AppDependencyScope` (F-17, M12).
+- `context.read<T>()` lấy repo từ `AppDependencyScope` (M12).
 - `SupportedLanguageData.fromCode` — `null` khi mã không hỗ trợ
   (M16).
 - `fromMap` phòng thủ: sai kiểu/ngoài khoảng → default/null (M14) —
-  bài này **siết thêm whitelist** cho `languageCode` (đóng FR-26).
+  bài này **siết thêm whitelist** cho `languageCode`.
 
 ## Flutter cần dùng
 
 - `StreamBuilder<T>({stream, initialData, builder})` — widget rebuild
-  mỗi khi stream emit; `initialData` cho frame đầu (đã học F-11).
+  mỗi khi stream emit; `initialData` cho frame đầu (đã học ở M14).
 - `MaterialApp.locale` — `Locale?`; `null` = theo locale hệ thống.
 - `MaterialApp.localizationsDelegates` / `supportedLocales` — list
   do `AppLocalizations` generated cung cấp; **thiếu delegates →
@@ -149,7 +149,7 @@ Hai nơi senior cần chú ý:
 
 ## Build it step by step
 
-### Bước 1 — FR-26: whitelist `languageCode` trong `fromMap`
+### Bước 1 — whitelist `languageCode` trong `fromMap`
 
 Mở `lib/data/settings/user_settings_data.dart`. Trước hết thêm import
 cho model ngôn ngữ — đặt sau block comment đầu file, ngay trước
@@ -198,7 +198,7 @@ static String? _supportedLanguageCode(Object? value) {
 
 Vì sao lọc **ở `fromMap`** chứ không ở chỗ dùng? Vì đây là *cổng duy
 nhất* dữ kiện disk vào model — lọc ở cổng thì mọi consumer sau đó
-(`Locale`, chips, test) khỏi phòng thủ lại. Đây là đóng **FR-26** —
+(`Locale`, chips, test) khỏi phòng thủ lại —
 đăng ký từ M16, hẹn đúng M17.
 
 ### Bước 2 — `main.dart`: StreamBuilder bọc MaterialApp
@@ -290,7 +290,7 @@ App vẫn hiển thị tiếng Việt literal (bài 4 mới đổi). Nhưng hạ
 - `initialData: settingsStream.value` — không có dòng này,
   `StreamBuilder` render frame đầu với `snapshot.data == null` →
   `locale == null` nháy một frame trước khi stream emit — `.value`
-  seed khử nháy (đã học ở M14/A-08).
+  seed khử nháy (đã học ở M14).
 - `onGenerateTitle` — title hiển thị ở task-switcher OS; callback
   nhận context **dưới** MaterialApp nên `of(context)` hợp lệ. Nếu để
   `title: AppLocalizations.of(context).appTitle` ở args MaterialApp
@@ -326,12 +326,48 @@ sàng phục vụ en, chỉ chờ bài 4 thay literal bằng `l10n.*`.
   nhớ `onGenerateTitle`.
 - `StreamBuilder` quên `initialData` → frame đầu `snapshot.data`
   null → locale nháy; thêm `.value` seed.
-- `languageCode: 'fr'` trong store → sau FR-26, `fromMap` → `null`
+- `languageCode: 'fr'` trong store → whitelist trong `fromMap` → `null`
   → locale null → fallback — **đúng**, đừng "sửa" bằng cách bỏ guard.
 - Gọi `context.watch` ở `AIMillionaireApp.build` để nghe repo → sai:
   repo không phải Listenable; stream mới là cổng emit → StreamBuilder.
 
-## Kiểm tra hiểu biết
+## Tự làm — dự đoán locale cho mọi đầu vào
+
+Điền bảng *trước* khi mở đáp án — với mỗi giá trị `languageCode`
+trong store, dự đoán `MaterialApp.locale` cuối cùng và điều người
+dùng thấy:
+
+| `languageCode` trong store | `Locale?` truyền vào | App hiển thị ngôn ngữ? |
+|---|---|---|
+| `'vi'` | | |
+| `'en'` | | |
+| `'fr'` | | |
+| `null` (chưa bao giờ ghi) | | |
+| `'vi'` rồi user gạt sang `'en'` trong dialog | | |
+
+Kèm: với hàng cuối, trace đường đi đầy đủ từ `save` tới rebuild —
+nêu tên 5 điểm chạm (repository → stream → seed/builder → locale →
+delegates).
+
+<details><summary>Đáp án</summary>
+
+- `'vi'` → `Locale('vi')` → vi. `'en'` → `Locale('en')` → en.
+- `'fr'` → whitelist `fromMap` trả `null` → `locale: null` → Flutter
+  dùng locale hệ thống; nếu hệ thống cũng không nằm trong
+  `supportedLocales` → rớt về template `en`. *Đây là hành vi đúng —
+  đừng "sửa" bằng cách bỏ whitelist.*
+- `null` → `locale: null` → fallback hệ thống → template en.
+- Đổi chip: `settingsRepository.save` ghi `languageCode: 'en'` →
+  `userSettingsStream` emit `UserSettingsData` mới → `StreamBuilder`
+  ở gốc rebuild → `MaterialApp` nhận `locale: Locale('en')` →
+  `AppLocalizations.of(context)` mọi nơi trả bản en — không restart.
+
+Điểm học: **locale không phải state riêng** — nó là *derived state*
+của `languageCode` đã persist, suy ra mỗi lần stream emit.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. Vì sao `locale` là `Locale?` (nullable) thay vì `Locale`?
 2. `languageCode` đổi lúc app đang chạy — trace đường đi từ `save`

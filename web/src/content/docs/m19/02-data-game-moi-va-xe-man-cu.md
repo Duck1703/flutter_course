@@ -37,7 +37,7 @@ VM ở Bài 4 sẽ làm việc trực tiếp trên chúng.
 
 - `enum` với field (`displayName`), `sealed class` + `final class`
   variant (M15 — dialog family của menu cũng thế này).
-- `copyWith` (D-05); `Duration` cơ bản; `const` constructor.
+- `copyWith`; `Duration` cơ bản; `const` constructor.
 - `GameResult` + cơ chế pop-result (M10).
 
 ## Dựng từng phần
@@ -156,7 +156,7 @@ Chín field, chia ba nhóm:
 lưu index). Ba giá trị có nghĩa: `null` = chưa bấm; `''` = hết giờ
 (xử như sai); text thật = đã bấm.
 
-#### `copyWith` + flag `clear*` — CORE D-34
+#### `copyWith` + flag `clear*` — pattern mới quan trọng
 
 ```dart
 GameSessionState copyWith({
@@ -307,7 +307,7 @@ class GameResult {
 
 Trước M19, `applyGameResult` ở profile tự suy tiền từ `correctAnswers`
 (chính sách phẳng). Giờ tiền đến từ thang — game tính, result chở.
-Đây là nửa đầu của FR-03; phần `EXP = earnedAmount`,
+Đây là nửa đầu của việc đóng gói kết quả; phần `EXP = earnedAmount`,
 `totalEarnings`, `totalQuestionCount` thuộc M22.
 
 Cập nhật `UserProfileData.applyGameResult`: dùng `result.earnedAmount`
@@ -408,7 +408,7 @@ này thay stub bằng màn VM-backed thật.
 - `lib/data/game/game_session_state_data.dart` (senior) — file
   nguồn của port: `GamePhase`, `GameDialogState` family (senior có
   thêm 3 variant lifeline → M20), `GameScreenUiEvent` (senior có
-  thêm `GameShareResultEvent` → FR-33).
+  thêm `GameShareResultEvent` — share đến M27).
 - `lib/data/game/game_quiz_question_data.dart` + 3 file bank
   `game_sample_*` (senior) — port nguyên shape; bank learner chứa
   bộ câu hỏi mẫu riêng nhưng cùng schema.
@@ -429,7 +429,66 @@ flutter test         # 95/95
 Và xác nhận game "chết có chủ đích": chạy app, bấm BẮT ĐẦU CHƠI →
 màn stub "Game — M19 WIP". Nếu thấy thế = đúng.
 
-## Kiểm tra hiểu biết
+## Tự làm — viết transition "sang câu mới" bằng tay
+
+Bạn chưa cần VM để luyện `copyWith` + `clear*`. Cho trước:
+
+```dart
+final s = GameSessionState(
+  phase: GamePhase.answeredRevealed,
+  questionIndex: 3,
+  moneyEarned: 500,
+  guaranteedAmount: 200,
+  moneyAnimationTrigger: 1,
+  remainingTime: const Duration(seconds: 12),
+  dialogState: const GameDialogHidden(),
+  flowToken: 2,
+  selectedAnswer: 'Paris',
+);
+```
+
+**Nhiệm vụ** — viết `s.copyWith(...)` tạo state của câu 4 đang chơi:
+
+1. `phase` → `GamePhase.playing`, `questionIndex` → `4`,
+   `remainingTime` → reset đồng hồ (`Duration(seconds: 30)`), và
+   **quên đáp án cũ** — dùng đúng cơ chế `clear*`.
+2. Dự đoán trước khi chạy: `moneyEarned`, `moneyAnimationTrigger`,
+   `flowToken` của state mới là bao nhiêu — và ai sẽ đụng chúng ở
+   transition thật (Bài 4)?
+3. Cố tình viết `selectedAnswer: null` thay vì cờ `clear*` — chạy
+   và in `selectedAnswer` — nó *có* bị xoá không? Giải thích hành vi
+   của `??` trong `copyWith`.
+
+Xác minh bằng `dart run` scratch hoặc `expect` trong test tạm:
+`next.selectedAnswer == null`, `next.phase == GamePhase.playing`,
+`next.flowToken == 2` (giữ nguyên — token chỉ đổi khi VM quyết bắt
+đầu flow mới ở Bài 4).
+
+<details><summary>Đáp án</summary>
+
+```dart
+final next = s.copyWith(
+  phase: GamePhase.playing,
+  questionIndex: 4,
+  remainingTime: const Duration(seconds: 30),
+  clearSelectedAnswer: true,   // null tường minh — ?? không bẫy được
+);
+```
+
+- `moneyEarned`/`guaranteedAmount`/`moneyAnimationTrigger`/`flowToken`
+  giữ nguyên — không truyền = giữ (đó là nghĩa của `??`).
+- `selectedAnswer: null` **không xoá được** — `null ?? this.selectedAnswer`
+  → `'Paris'` sót lại sang câu 4 (bug hiển thị đáp án cũ). Đây chính là
+  lý do flag `clearSelectedAnswer` tồn tại: phân biệt "không truyền" với
+  "truyền null".
+
+Điểm học: immutable snapshot + `copyWith` flag = mỗi transition là một
+*phép tính* bạn tự viết được — VM của Bài 4 chỉ là nơi gọi những phép
+đó theo đúng thứ tự.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. Vì sao `copyWith` cần `clearSelectedAnswer` thay vì cho phép
    `selectedAnswer: null`?
@@ -463,7 +522,7 @@ màn stub "Game — M19 WIP". Nếu thấy thế = đúng.
   trong `GameSessionState` — lifelines M20.
 - `GameConfirmWalkAwayDialog`/`GameAudiencePollDialog`/
   `GameAIAssistantDialog` — M20.
-- `GameShareResultEvent` — FR-33, milestone chưa gán.
+- `GameShareResultEvent` — share đến M27, chưa cần giờ.
 - `hasSavedResult` — lưu kết quả VM-side ở M22.
 
 ## Checkpoint hoàn thành

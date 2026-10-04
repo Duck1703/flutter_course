@@ -47,15 +47,15 @@ sạch; VM test được như unit thường.
 
 ## Bạn đã biết gì
 
-- `ChangeNotifier`/`notifyListeners` (F-15, M11) — VM phát tín hiệu.
-- `ChangeNotifierProvider` create/auto-dispose (F-18, M12) — Provider
+- `ChangeNotifier`/`notifyListeners` (M11) — VM phát tín hiệu.
+- `ChangeNotifierProvider` create/auto-dispose (M12) — Provider
   tạo VM **và** dispose khi bị tháo khỏi cây.
-- `context.read` vs `context.watch` (F-17, M12) — callback vs rebuild.
-- Event bridge 3 khâu (A-05, M13/14): attach ở `didChangeDependencies`,
+- `context.read` vs `context.watch` (M12) — callback vs rebuild.
+- Event bridge 3 khâu (M13/14): attach ở `didChangeDependencies`,
   guard `==`, cancel ở `dispose` — bài này lặp lại nguyên mẫu trong
   dialog.
-- Stream `events` broadcast + sealed event (A-09 + D-26, M13–M15).
-- Repository stream + `.value` seed (A-08, M14/03–06).
+- Stream `events` broadcast + sealed event (M13–M15).
+- Repository stream + `.value` seed (M14/03–06).
 
 ## Mental model mới — "scope = lifetime"
 
@@ -89,7 +89,7 @@ từ caller giữ scope rõ ràng và độc lập với thứ tự provider ph�
 | Cú pháp | Ví dụ | Nghĩa |
 |---|---|---|
 | `StreamController<T>.broadcast()` | `_events = StreamController.broadcast()` | event một-lần: listener đến trễ không nhận lại |
-| `late final` | `late final StreamSubscription _settingsSubscription;` | first-use (D-30): khai báo trước, gán sau — bắt buộc vì subscription chỉ tạo được *trong thân* ctor (sau khi field khác sẵn sàng) |
+| `late final` | `late final StreamSubscription _settingsSubscription;` | first-use: khai báo trước, gán sau — bắt buộc vì subscription chỉ tạo được *trong thân* ctor (sau khi field khác sẵn sàng) |
 | `unawaited(future)` | `unawaited(viewModel.loadSettings())` | "cố ý không chờ" — bỏ lint dangling future |
 | `ChangeNotifierProvider(create:)` trong dialog subtree | bên dưới | Provider tạo+dispose VM theo vòng đời subtree |
 | `context.read` ở caller context | `context.read<UserSettingsRepository>()` | lấy repo TRƯỚC khi vào dialog route |
@@ -505,7 +505,44 @@ analyzer — và tại sao đây là *lợi ích* chứ không phải phiền?
 4. **`notifyListeners()` sau `dispose()`** — luôn qua `_isDisposed`
    guard; subscription phải `cancel()` trong `dispose`.
 
-## Kiểm tra hiểu biết
+## Tự làm — ba VM mới, ba tầng scope
+
+Ba nhu cầu mới giả định. Với **mỗi** cái, quyết định: provider đặt
+ở tầng nào (app / screen / dialog), **ai tạo** instance, **ai
+dispose**, và state sống **bao lâu**. Viết đáp án ra *trước* khi mở
+gợi ý — đây là bài tập thiết kế, không phải nhận diện.
+
+| Nhu cầu | Tầng của bạn? |
+|---|---|
+| (a) `ConfirmResetViewModel` — dialog "Xoá toàn bộ dữ liệu local?" với trạng thái đang-xử-lý + đã-tick-checkbox | |
+| (b) `MenuTabState` — tab nào của menu đang được chọn (persist giữa các lần đẩy dialog, mất khi rời menu) | |
+| (c) `AppLocaleController` — quyết định `MaterialApp.locale`, sống suốt app | |
+
+Kèm câu hỏi bắt buộc cho mỗi hàng: *nếu đặt sai một tầng CAO hơn,
+hậu quả nhìn thấy là gì? nếu đặt THẤP hơn?*
+
+<details><summary>Đáp án + lập luận</summary>
+
+- **(a) Tầng dialog** — trạng thái "đang xử lý" của một dialog chỉ có
+  nghĩa trong một phiên dialog; sinh khi `showDialog` build, chết khi
+  pop. Đặt ở screen-tier → mở lại dialog thấy lại checkbox/spinner
+  cũ (bug UX nguyên mẫu). Đặt app-tier → sống vĩnh viễn, rác lifetime.
+- **(b) Tầng screen** (`MenuScreen` subtree, dưới Navigator) — cần
+  sống khi dialog settings mở/đóng, phải chết khi rời menu. Đặt ở
+  dialog → dialog pop giết nó: tab "quên" mỗi lần mở settings. Đặt
+  app-scope → persist sau khi quay menu lần sau — sai nếu spec muốn
+  tab mặc định khi vào màn.
+- **(c) Tầng app** — locale ảnh hưởng `MaterialApp` nên provider phải
+  nằm *trên* nó (trong `AppDependencyScope`). Đặt dưới screen/dialog
+  → `MaterialApp` không với tới (provider dưới điểm dùng) hoặc chết
+  theo màn.
+
+Quy tắc rút ra: **chọn tầng = trả lời "state này có quyền sống lâu
+hơn thứ hiển thị nó không?"** — không thì đặt đúng tầng của thứ đó.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. Vì sao `timePickerVisible` nằm trong VM thay vì `setState` của
    dialog?
@@ -529,9 +566,9 @@ analyzer — và tại sao đây là *lợi ích* chứ không phải phiền?
 ## Ta cố ý chưa thêm
 
 - `LocalNotificationService` + `SettingsNotificationCoordinator` +
-  `Future.wait` triple-load (xin quyền, version) — **M27** (FR-27/28).
+  `Future.wait` triple-load (xin quyền, version) — **M27**.
 - Variant `notificationPermissionRequired` của snackbar enum — **M27**.
-- Auth action trên account row — **M22+** (FR-28).
+- Auth action trên account row — **M22+**.
 
 ## Checkpoint hoàn thành
 

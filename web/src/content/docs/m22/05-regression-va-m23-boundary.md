@@ -97,7 +97,7 @@ trọn vẹn.
 | DRE `GameSaveResult` asyncOp + reducer queue | M26 | learner VM chưa là `DreChangeNotifier` |
 | `LevelProgressCard` ring/glass/tier-gradient | M28 | visual polish — M22 chỉ cần data |
 | `menuMaxLevelReached` label + `menuExpToNextLevel` | M28 | đi kèm layout mới của card |
-| `shareResult` + `GameShareResultEvent` | M27 | FR-33 — share_plus |
+| `shareResult` + `GameShareResultEvent` | M27 | share_plus |
 
 :::note[Trần level 100 trên menu]
 Ở `isMaxLevel`, `requiredExp = maxExpRequirement` → hàng text "5 /

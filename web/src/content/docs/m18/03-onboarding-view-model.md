@@ -37,7 +37,7 @@ chọn? "Hết bước" persist thế nào? Senior giải bằng một ý tưở
   khi đổi thật" (`value !=` guards M14).
 - `StreamSubscription` + cancel trong `dispose` (M13/M14); repo
   `ValueStream` seeded (M14).
-- `late final` gán trong thân ctor (D-30, M16); sealed family + object
+- `late final` gán trong thân ctor (M16); sealed family + object
   pattern (M15).
 - `UserSettingsRepository.userSettingsStream.value` + `copyWith(
   languageCode:)` (M16–M17).
@@ -45,10 +45,10 @@ chọn? "Hết bước" persist thế nào? Senior giải bằng một ý tưở
 ## Dart cần dùng
 
 - `listEquals` (`flutter/foundation`) — so list *theo phần tử*; `==`
-  mặc định của `List` so reference — khác nhau hoàn toàn (D-32).
+  mặc định của `List` so reference — khác nhau hoàn toàn.
 - `List.unmodifiable(list)` — emit bản read-only: caller không
   `.add()` được vào state đã phát.
-- `List.of(x)..removeAt(0)` — copy rồi consume; cascade `..` (D-18).
+- `List.of(x)..removeAt(0)` — copy rồi consume; cascade `..`.
 - `is! Variant` guard — "chỉ chạy khi đang ở đúng bước".
 
 ## Flutter cần dùng
@@ -129,7 +129,7 @@ class OnboardingViewModel extends ChangeNotifier {
 ```
 
 - `late final _completedSubscription` — gán trong ctor private `._`
-  vì cần `_repository` sẵn (D-30).
+  vì cần `_repository` sẵn.
 - `loadOnboarding`: `await loadOnboardingCompleted()` → `_isDisposed`
   check → `_setSteps(completed ? const [] : _initialSteps())`.
 - `_initialSteps()` seed từ `userSettingsStream.value`: welcome mang
@@ -295,7 +295,7 @@ guard làm việc. Revert guard → xanh lại.
 ## Ta cố ý chưa thêm
 
 - `LocalNotificationService` — nút "Bật thông báo" *mô phỏng* grant
-  ở scope (Bài 4); permission thật + lịch hẹn → M27 (FR-27).
+  ở scope (Bài 4); permission thật + lịch hẹn → M27.
 - `OnboardingUiEvent`/navigation side-channel — senior không có:
   hoàn thành = steps cạn, UI tự ẩn.
 - Reducer/`onboarding_phase` machine — đó là phong cách M19 cho

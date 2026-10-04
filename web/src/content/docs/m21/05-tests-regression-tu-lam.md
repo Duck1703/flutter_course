@@ -243,8 +243,8 @@ terminal) nên back đóng được miễn phí — nhận ra "policy mặc đ�
 1. Tại sao test "cùng variant" assert `findsOneWidget` thay vì đo
    opacity? *(Bằng chứng đơn giản nhất cho "không re-animate": không
    có outgoing child — hai instance chỉ tồn tại khi switcher swap.)*
-2. M21 đóng những register-row nào? *(FR-16 dialog-mechanism:
-   route → in-tree; FR-07 nâng lên 9-variant in-Stack; FR-33 share
+2. M21 đóng những khoảng senior-parity nào? *(dialog cơ chế
+   route → in-tree; nâng lên 9-variant in-Stack; share
    vẫn M27 — *không* đóng ở đây.)*
 3. Ranh giới M21/M22: nút MENU của terminal dialog hiện làm gì, và
    M22 sẽ đổi gì? *(Giờ: `goBack(GameResult)` — transport M10.

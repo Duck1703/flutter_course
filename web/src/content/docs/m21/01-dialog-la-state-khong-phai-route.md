@@ -46,12 +46,12 @@ Scaffold route hoạt động, nhưng giá của nó tăng theo số variant:
 
 ## Bạn đã biết gì
 
-- Sealed class + switch kiệt hợp (M15, D-27); `dialogState` 9
+- Sealed class + switch kiệt hợp (M15); `dialogState` 9
   variant (M19–M20).
-- `Stack` + `Positioned.fill` làm overlay trong màn (M18, A-17).
-- Event một-lần vs state (M13, A-10); `PopScope` dạng tối thiểu
+- `Stack` + `Positioned.fill` làm overlay trong màn (M18).
+- Event một-lần vs state (M13); `PopScope` dạng tối thiểu
   `canPop:false` + `onPopInvokedWithResult` (M19).
-- `Navigator.push/pop` route (M06/M10, A-19).
+- `Navigator.push/pop` route (M06/M10).
 
 ## Mental model mới — "dialog = projection của state"
 
@@ -83,7 +83,7 @@ tại để *mô phỏng* điều mà in-tree làm tự nhiên.
 Không có syntax mới ở bài này — toàn concept. Bài 2–4 mới có
 `AnimatedSwitcher`, `ValueKey(Type)`, `BackdropFilter`.
 
-## Ví dụ độc lập (CORE — A-21)
+## Ví dụ độc lập (CORE)
 
 Đừng nhìn game vội. Ví dụ 40 dòng tự chứa — một "overlay" đồ chơi:
 

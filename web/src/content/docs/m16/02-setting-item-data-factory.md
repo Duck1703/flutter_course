@@ -39,9 +39,9 @@ rồi render theo variant. Lợi ích thật, thấy ngay trong bài 4:
 
 ## Bạn đã biết gì
 
-- `sealed class` + tập variant đóng cùng file (D-26, M15/02).
-- `switch` expression kiệt hợp + object pattern (D-27, M15/03).
-- `enum` (D-06, M08), `copyWith` (D-05, M04), `==`/`hashCode` tự viết
+- `sealed class` + tập variant đóng cùng file (M15/02).
+- `switch` expression kiệt hợp + object pattern (M15/03).
+- `enum` (M08), `copyWith` (M04), `==`/`hashCode` tự viết
   (M14 model files).
 
 ## Dart cần dùng
@@ -53,7 +53,7 @@ rồi render theo variant. Lợi ích thật, thấy ngay trong bài 4:
 | collection-`if` | `if (effective) SettingTimePickerItemData(...)` | hàng chỉ tồn tại khi điều kiện đúng |
 | `String.padLeft` | `'7'.padLeft(2, '0')` → `'07'` | format phút/giờ 2 chữ số |
 
-`padLeft` là lần đầu xuất hiện (D-29): `n.toString().padLeft(2, '0')`
+`padLeft` là lần đầu xuất hiện: `n.toString().padLeft(2, '0')`
 → chuỗi ít nhất 2 ký tự, lấp `'0'` bên trái. `20:07` chứ không `20:7`.
 
 ## Ví dụ độc lập
@@ -98,7 +98,7 @@ Thử xoá case `LinkRow` khỏi `render` — compiler báo ngay
 - `lib/data/settings/setting_item_data.dart` — senior: cùng
   `SettingType` {sound, music, haptic, notifications}, cùng 2 variant;
   khác một chi tiết — senior dùng `iconAsset` (đường dẫn SVG), learner
-  dùng `IconData` vì app chưa có pipeline icon assets (FR-30).
+  dùng `IconData` vì app chưa có pipeline icon assets.
 - `lib/view_models/settings/settings_item_factory.dart` — senior
   `buildSettingItems({settings, effectiveNotificationEnabled, ...})`
   + các chuỗi localized. Learner giữ cùng chữ ký trừ texts (l10n là
@@ -209,8 +209,8 @@ class SupportedLanguageData {
 
 :::caution[TEACHING SCAFFOLD]
 `isSupportedCode`/`fromCode` tồn tại từ bây giờ nhưng
-`UserSettingsData.fromMap` **chưa** gọi chúng — guard whitelist là
-FR-26, hội tụ ở **M17** cùng lúc `MaterialApp.locale` nối vào.
+`UserSettingsData.fromMap` **chưa** gọi chúng — guard whitelist hội
+tụ ở **M17** cùng lúc `MaterialApp.locale` nối vào.
 :::
 
 **Bước 4 — factory `lib/view_models/settings/settings_item_factory.dart`:**
@@ -314,6 +314,65 @@ Trong factory, đổi `if (effectiveNotificationEnabled)` thành
 3. **Đặt time row NGOÀI `if`** — hàng giờ hiển thị cả khi thông báo
    tắt; learner nhìn "giờ" của một tính năng đang tắt.
 
+## Tự làm — "xám đi" thay vì "biến mất"
+
+Yêu cầu mới: hàng **Giờ thông báo** không được *biến mất* khi
+notifications tắt nữa — nó vẫn hiện nhưng **mờ đi** (disabled look),
+để người dùng thấy tính năng tồn tại và hiểu vì sao chưa dùng được.
+
+Quyết định **trước khi** xem đáp án — viết câu trả lời của bạn ra:
+
+1. Hàng giờ giờ phải *luôn* được emit bởi factory — `if` điều kiện
+   trong `buildSettingItems` thay thế bằng gì?
+2. "Đang mờ" là *state* hay *presentation*? Nói khác đi: field mới
+   thuộc về `SettingTimePickerItemData` hay thuộc widget
+   `_SettingTimePickerRow`? Nếu đặt vào data — field kiểu gì, tên gì,
+   map từ đâu trong `UserSettingsData`/param `effective…`?
+3. `==`/`hashCode` của `SettingTimePickerItemData` cần đụng tới
+   không? Vì sao (nhớ emit-guard `!=` ở Bài 3)?
+4. `SettingType` có cần member mới không?
+
+Sau khi quyết xong: implement — factory luôn emit hàng giờ, data
+mang cờ enabled, widget tô mờ. Xác minh:
+
+```bash
+flutter analyze                       # sạch
+# scratch check:
+# buildSettingItems(settings với notificationsEnabled=false,
+#   effectiveNotificationEnabled: false) vẫn chứa
+#   SettingTimePickerItemData với cờ = false
+```
+
+:::note[Gợi ý]
+Đừng nhét "enabled" vào `text` hay suy ra từ `hour == 0` — UI state
+của hàng phải là *dữ kiện riêng* để `==` và test đọc được trực tiếp.
+:::
+
+<details><summary>Đáp án</summary>
+
+1. Bỏ `if (effectiveNotificationEnabled)` — hàng giờ emit
+   **không điều kiện**.
+2. Là *state của item*, không phải việc của widget: thêm
+   `final bool isEnabled` vào `SettingTimePickerItemData`, factory
+   gán `isEnabled: effectiveNotificationEnabled`. Widget chỉ đọc
+   `item.isEnabled` để chọn `Opacity`/màu — dữ liệu mô tả "có dùng
+   được không", widget mô tả "trông thế nào".
+3. Có — `isEnabled` phải vào `==`/`hashCode`, không thì toggle
+   notifications sinh item "bằng" item cũ và emit-guard nuốt mất
+   rebuild.
+4. Không — `SettingType.notifications` đã là key đúng của hàng;
+   "giờ" vẫn là phần phụ của setting đó.
+
+Điểm học: **"ẩn hay mờ" là quyết định UX, nhưng cả hai đều đi qua
+data** — factory quyết hàng nào *tồn tại với dữ kiện gì*, widget
+quyết *render ra sao*. Đó là ranh giới data ↔ widget của pattern
+này.
+
+</details>
+
+## Kiểm tra hiểu biết3. **Đặt time row NGOÀI `if`** — hàng giờ hiển thị cả khi thông báo
+   tắt; learner nhìn "giờ" của một tính năng đang tắt.
+
 ## Kiểm tra hiểu biết
 
 1. Vì sao `SettingType` tồn tại riêng thay vì so sánh `text`?
@@ -337,10 +396,10 @@ Trong factory, đổi `if (effectiveNotificationEnabled)` thành
 ## Ta cố ý chưa thêm
 
 - `iconAsset` String + `SvgPicture` (senior) — learner dùng `IconData`
-  vì chưa có pipeline assets — **FR-30**, xem lại M24.
+  vì chưa có pipeline assets — xem lại M24.
 - Localized text cho label — **M17**.
-- Hàng version dưới account row (senior `v$appVersion`) — **M27**
-  (FR-28), và là **bài Tự làm** ở cuối milestone.
+- Hàng version dưới account row (senior `v$appVersion`) — **M27**,
+và là **bài Tự làm** ở cuối milestone.
 
 ## Checkpoint hoàn thành
 

@@ -172,17 +172,17 @@ feature-gate nào (settings, premium, quyền…).
 
 ## Ta cố ý chưa thêm (toàn milestone)
 
-- **`GameFeatureButton` painter + SVG** — FR-34 → **M28**.
-- **`GameDialogLayer` in-`Stack`** — FR-07 → **M21** (milestone
+- **`GameFeatureButton` painter + SVG** — **M28**.
+- **`GameDialogLayer` in-`Stack`** — **M21** (milestone
   ngay sau — cùng `dialogState` nguồn, chỉ đổi cơ chế hiển thị).
-- **`GameShareResultEvent`/SharePlus** — chưa assign (FR-33).
+- **`GameShareResultEvent`/SharePlus** — chưa assign.
 - **DRE** (`DreChangeNotifier` + reducer + effects) — **M26**:
   `handleFeatureClick`/`_canUseFeature` sẽ trở thành dispatch +
   pure reducer; shape method giữ nguyên nên migration đó là
   cơ học.
 - **VM-side save** (`GameSaveResult` async + repository) —
   **M22**; `resolvedResult` là interim carrier cho route-pop
-  transport (FR-04).
+  transport.
 - **Real notification permission, auth, leaderboard, onboarding
   parity** — M23/M24/M27/M28 theo roadmap.
 

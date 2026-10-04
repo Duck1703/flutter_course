@@ -1,9 +1,9 @@
 # Current State
 
 Project: AI Millionaire — guided Flutter course
-Phase: Step 23 — M01–M13 pedagogy enrichment — COMPLETE.
-M01–M29 course complete; early-course learner practice remediated.
-Awaiting supervisor review before Step 24.
+Phase: Step 24 — M16–M22 targeted pedagogy remediation — COMPLETE.
+M01–M29 course complete; early+mid-course learner practice remediated.
+Awaiting supervisor review before Step 25.
 
 ## Completed
 
@@ -626,11 +626,30 @@ Awaiting supervisor review before Step 24.
   corrected), 13/13 original exercises accounted, 44/44 `Tự làm`
   independently verified, zero leaks, senior/app/M14+ untouched.
   Report: `report/STEP-23A-CLOSEOUT-VERIFICATION.md`.
+- Step 24: **M16–M22 targeted pedagogy remediation** — COMPLETE on
+  branch `remediation/step24-m16-m22-pedagogy` from Step-23 checkpoint
+  `529a544`. All 36 lessons audited; 35 lesson files + 7 indexes
+  modified. Interventions: `## Tự làm` added to m16/02–04, m17/02–04,
+  m19/02, m19/05 (PRODUCE/DEBUG/DERIVE-level tasks, including the
+  m16/05→m17/04 cross-lesson `'Phiên bản'` migration); m20/02
+  DERIVE-first lifeline rule tables before verbatim helpers; m20/03
+  three `Giai đoạn` phase boundaries (no route split); m19/04 three
+  `Điểm nghỉ` pause points; m22/04 explicit save-once mental model
+  wired to its planted-bug exercise. Technical fix: `GamePhase.answered`
+  → `answeredRevealed` prose reference. ~260 learner-facing internal-ID
+  tokens removed across the band (M23–M29 untouched). Per-milestone
+  dual review (Argus + Pedagogy Reviewer) on same `CONTENT_REVISION`
+  + Atlas approval ×7 — all PASS. Regression: analyze clean,
+  **396/396 tests**, `flutter build web` PASS, site build 167 pages,
+  learner app zero diff, M01–M15/M23–M29 untouched, senior untouched,
+  no M30.
+  Report: `report/STEP-24-M16-M22-TARGETED-PEDAGOGY-REMEDIATION.md`.
 
 ## Next recommended task
-Step 23 COMPLETE pending supervisor review. Step-24 candidate:
-targeted re-audit of exercise *quality* (decision-required,
-verifiability) + M14–M29 spot-check under the new dual-review bar.
+Step 24 COMPLETE pending supervisor review. Step-25 candidate:
+M23–M29 derive-first + late learner-noise + advanced cognitive-load
+remediation (late-band Step-21 findings, incl. M26 DRE port-order,
+M28 visual convergence dumps, M29/01 port-process-as-mental-model).
 Remaining human-facing options: device/live verification passes
 (`REAL_DEVICE_*`, `LIVE_SUPABASE_*` NOT_PERFORMED), publish/deploy
 authorization, or new-scope requests.

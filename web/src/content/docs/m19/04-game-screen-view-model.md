@@ -229,6 +229,14 @@ Vì sao `flowToken + 1` thay vì reset về 0? Vì `initial()` trả token
 của phiên mới (0) → callback lỗi thời chạy ngầm trong ván mới. Token
 đơn điệu tăng suốt đời VM là bảo hiểm duy nhất chặn được chuyện đó.
 
+:::note[Điểm nghỉ 1 — gì vừa xong, gì sắp tới]
+Bạn đã có: một state bất biến + một stream event + khung public API
+có guard. **Verify trước khi đi tiếp:** `flutter analyze` sạch, và
+bạn trả lời được "vì sao mọi method public đều check `phase` trước
+khi emit?". Ba bước tiếp (routing dialog, transitions nội bộ, timer)
+đều chỉ là *cách dùng* khung này — không có khái niệm mới.
+:::
+
 ### Bước 3 — `dismissDialog`: routing theo variant
 
 `dialogState` là nguồn thật, `dismissDialog` là *router* — đóng
@@ -315,7 +323,7 @@ Ba quy tắc game nằm đây: đúng → `moneyEarned` nhảy theo `level.amoun
 
 ### Bước 5 — Timer do VM sở hữu + `flowToken`
 
-Đây là D-33 — `Timer.periodic` + `Duration` sống trong VM:
+Đây là pattern trọng tâm của bài — `Timer.periodic` + `Duration` sống trong VM:
 
 ```dart
   void _startTimer() {
@@ -387,6 +395,14 @@ Và `dispose` — lý do timer phải ở VM:
 Widget chỉ *dựng* VM qua `ChangeNotifierProvider` — provider tự
 `dispose` khi screen bị pop. Timer không còn cơ hội sót lại.
 
+:::note[Điểm nghỉ 2 — timer + flowToken là phần nặng nhất]
+Hai khái niệm vừa xếp chồng: **VM sở hữu Timer** (sinh/huỷ theo
+phase, dispose theo VM) và **flowToken** (vô hiệu callback delay của
+phiên cũ). Nếu phần Thử nghiệm "làm flowToken hỏng" ở đầu bài bạn
+chưa chạy — quay lại chạy nó ngay bây giờ, trước khi đọc tiếp; đó
+là cách nhanh nhất để thấy vì sao token tồn tại.
+:::
+
 ### Bước 6 — `buildGameResult`: đóng gói kết quả khi thoát
 
 ```dart
@@ -410,6 +426,13 @@ Widget chỉ *dựng* VM qua `ChangeNotifierProvider` — provider tự
 `switch` kiệt hợp trên `GamePhase` — ba nhánh tiền khớp ba tình
 huống kết thúc. Lưu ý `_` bắt cả `playing`/`notStarted`/pending —
 đó là đường thoát giữa ván (✕/back confirm), tiền = walk-away.
+
+:::note[Điểm nghỉ 3 — chỉ còn một concept mới]
+Phần implementation đã xong. Bước cuối chỉ thêm **một** thứ: đồng
+hồ ảo `FakeAsync` để test timer không phải chờ thật. Nếu phần đầu
+còn mờ — đọc lại Mental model của timer (`VM sở hữu đồng hồ`) trước
+khi vào test.
+:::
 
 ### Bước 7 — Test VM bằng `FakeAsync` (concept mới: đồng hồ ảo)
 
@@ -583,7 +606,7 @@ test('submit lần hai trong answeredPending bị guard chặn', () {
 - `useFeatureButton`/`askAi`/`fiftyFifty`/`walkAway` — M20.
 - `hasSavedResult` + VM-side save — M22 (giờ menu vẫn
   `applyGameResult`).
-- `GameShareResultEvent` — FR-33.
+- `GameShareResultEvent` — share đến M27.
 
 ## Checkpoint hoàn thành
 

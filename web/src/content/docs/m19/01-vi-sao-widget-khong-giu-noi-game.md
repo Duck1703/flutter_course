@@ -55,7 +55,7 @@ máy trạng thái* do ViewModel sở hữu. Milestone này port đúng ý đó.
   (M11–M12).
 - Event một-lần qua `StreamController.broadcast` — `uiEvents`
   (M13/M15).
-- `copyWith` trên object bất biến (D-05, M10).
+- `copyWith` trên object bất biến (M10).
 
 ## Mental model mới — "ván game LÀ máy trạng thái"
 

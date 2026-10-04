@@ -50,10 +50,10 @@ không animate gì cả.
 
 | Construct | Vai trò | Depth |
 |---|---|---|
-| `ValueKey(Type)` — `ValueKey(dialog.runtimeType)` | identity theo *kiểu* của variant | **D-37** (CORE) |
-| `AnimatedSwitcher(duration/reverseDuration/switchInCurve/switchOutCurve/transitionBuilder)` | swap child có animation | **F-29** (CORE) |
-| `FadeTransition` + `Transform.translate` + `AnimatedBuilder` | transition composite senior | F-29 |
-| `MediaQuery.of(context).disableAnimations` | a11y — `Duration.zero` | F-30 |
+| `ValueKey(Type)` — `ValueKey(dialog.runtimeType)` | identity theo *kiểu* của variant | mới — CORE |
+| `AnimatedSwitcher(duration/reverseDuration/switchInCurve/switchOutCurve/transitionBuilder)` | swap child có animation | mới — CORE |
+| `FadeTransition` + `Transform.translate` + `AnimatedBuilder` | transition composite senior | mới |
+| `MediaQuery.of(context).disableAnimations` | a11y — `Duration.zero` | mới |
 
 ### `ValueKey(runtimeType)` — key là tuyên bố danh tính
 

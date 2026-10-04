@@ -21,7 +21,7 @@ Bài này **thuần additive**: file mới + test mới, không đụng code cũ
 - Bài 1: save nằm trong VM; EXP = `earnedAmount` — cần một "bảng
   ngưỡng theo level" để biết khi nào lên cấp.
 - Learner đang có curve tạm: `gainExp` tăng ngưỡng ×1.5 mỗi cấp
-  (register FR-01/FR-03 — scaffold chờ đúng M22 này để retire).
+  (scaffold từ các bước trước chờ đúng M22 này để retire).
   `LevelConfig` là bản thật của nó.
 
 ## Vì sao việc này quan trọng ngay bây giờ
@@ -45,11 +45,11 @@ mốc**: mỗi cấp trả `(baseExp + level×growth)` nhân hệ số của *le
 
 ## Bạn đã biết gì
 
-- `static const` field + `Map<K,V>` literal (D-15).
-- `factory`/`const ctor` (D-16); `class` private ctor `LevelConfig._()`
+- `static const` field + `Map<K,V>` literal.
+- `factory`/`const ctor`; `class` private ctor `LevelConfig._()`
   = "namespace chỉ chứa statics".
-- `for` loop cộng dồn (D-07); `int.clamp(min,max)`.
-- Unit test `test`/`expect`/`group` (D-23 — MASTERED).
+- `for` loop cộng dồn; `int.clamp(min,max)`.
+- Unit test `test`/`expect`/`group` (đã thành thạo từ M04+).
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
@@ -60,7 +60,7 @@ mốc**: mỗi cấp trả `(baseExp + level×growth)` nhân hệ số của *le
 | `while (level < max) { if (exp < need) break; … }` | vòng lặp "đốt" ngưỡng từng cấp — dùng ở Bài 4 |
 | `9007199254740991` | sentinel "vô cực" an toàn cho dart2js (JS chỉ chính xác tới 2^53−1) |
 
-Bảng multiplier + vòng `while` thăng cấp + kẹp min/max là **D-38**
+Bảng multiplier + vòng `while` thăng cấp + kẹp min/max là concept mới
 (NORMAL): *config-table progression* — đọc là được, không cần thuộc.
 
 :::note[Divergence duy nhất so với senior]

@@ -37,7 +37,7 @@ phép còn lại trong `State`.
   `context.watch` (M11–M12).
 - `StreamSubscription` + cancel trong `dispose` (M13/M15 menu event
   bridge).
-- `PopScope`/`onPopInvokedWithResult` — **concept mới F-27** (thay
+- `PopScope`/`onPopInvokedWithResult` — **concept mới** (thay
   `WillPopScope` deprecated).
 - `Navigator.push/pop` cơ bản; `GlobalKey` đã gặp (form).
 
@@ -182,7 +182,7 @@ return PopScope(
 );
 ```
 
-`PopScope` (F-27) thay `WillPopScope` deprecated: `canPop: false`
+`PopScope` thay `WillPopScope` deprecated: `canPop: false`
 chặn pop mặc định; `onPopInvokedWithResult` chạy *sau* quyết định
 pop — `didPop == false` nghĩa là pop bị chặn và đây là lúc route
 "ý định back" vào VM. Ý nghĩa nút back giờ là **hàm của
@@ -251,7 +251,7 @@ r1 — đừng bỏ nhánh `action == null`.
   }
 ```
 
-Đây là **scaffold có chủ đích** (đánh dấu FR-07): `dialogState` là
+Đây là **scaffold có chủ đích** (sẽ đến M21): `dialogState` là
 nguồn thật cho *nội dung + nghĩa*, còn *cơ chế* `showDialog` sẽ bị
 `GameDialogLayer` trong `Stack` thay ở M21. Chú ý pattern
 `Navigator.pop(action)` → `switch` action → method VM: dialog
@@ -393,7 +393,50 @@ flutter run      # hoặc build web — chơi thật: intro → 15 câu → th�
 Quan sát: tap tiền giữa ván → timer *đứng* (pause); đóng dialog →
 đếm tiếp. Back hệ thống ở màn game → confirm-exit, không pop trần.
 
-## Kiểm tra hiểu biết
+## Tự làm — ai sở hữu gì trên màn mới
+
+Trả lời từng câu **bằng chữ** trước khi mở đáp án — đây là phần kiến
+trúc của màn, không phải cú pháp:
+
+1. `_GameScreenEventBridge` là `StatefulWidget` riêng chỉ để giữ một
+   `StreamSubscription`. Vì sao **không** `listen` ngay trong
+   `GameScreen` (stateless) hoặc trong VM — hậu quả của từng cách?
+2. `PopScope(canPop: false, …)` nghĩa là **VM quyết** chứ không phải
+   hệ thống. Trace: user bấm back khi dialog kết quả đang mở → gọi
+   gì trên VM → VM emit state nào → widget nào nhìn thấy gì?
+3. `GameScreen` (stateless, chỉ tạo `ChangeNotifierProvider`) —
+   nếu bạn đặt provider này lên `main()` tầng app thay vào, hai hậu
+   quả gì? (gợi: VM sống qua mọi ván? `dispose` khi nào?)
+4. `AppNavigationController` + `navigatorKey` được tạo ở tầng nào —
+   và vì sao `MaterialApp` phải nằm *dưới* nó?
+
+<details><summary>Đáp án</summary>
+
+1. `listen` cần `dispose`/`cancel` → cần `State`. `GameScreen`
+   stateless không có lifecycle để huỷ → subscription rò. Trong VM:
+   VM là nguồn *phát* event — tự listen event của chính mình vòng
+   quanh là sai ranh giới (VM không biết `BuildContext`/Navigator
+   để `showDialog`/`pop`). Bridge = vị trí duy nhất có cả lifecycle
+   lẫn context.
+2. System back → `onPopInvokedWithResult` (canPop đã chặn pop) →
+   `_handleRouteBack()` trong bridge *đọc* `viewModel.dialogState`:
+   đang có dialog → gọi `viewModel.dismissDialog()` (VM emit state
+   đóng dialog, UI đổi theo); chưa có dialog → gọi
+   `viewModel.showConfirmExit()` — *quyết định "back làm gì" nằm ở
+   VM qua các method của nó, widget chỉ đọc state và route*. Route
+   không bao giờ pop trừ khi VM cho phép.
+3. VM sống suốt app → timer/flowToken/subscriptions của ván trước
+   dính sang ván sau; `dispose` không bao giờ được gọi khi thoát màn
+   → đồng hồ cũ vẫn tick. Phạm vi màn là đúng: VM sinh/chết cùng
+   `GameScreen`.
+4. Tầng app (trong `AppDependencyScope`), trên `MaterialApp` —
+   `navigatorKey` phải được gán vào `MaterialApp` nên controller
+   phải tồn tại *trước* và *ngoài* nó; dialog route cũng cần thấy
+   controller → phải trên Navigator.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. `create: … ..startNewGame()` gọi `notifyListeners` ngay khi VM
    được tạo — vì sao không crash `!_dirty`?
@@ -426,7 +469,7 @@ Quan sát: tap tiền giữa ván → timer *đứng* (pause); đóng dialog →
 
 - `GameDialogLayer` trong `Stack` + dismiss animation — M21.
 - Thanh `featureButtons` (50:50/poll/AI) — M20.
-- `GameShareResultEvent` + SharePlus — FR-33.
+- `GameShareResultEvent` + SharePlus — đến M27.
 - `openGame` trả `Future<void>` (không result payload) + VM-side
   save — M22.
 

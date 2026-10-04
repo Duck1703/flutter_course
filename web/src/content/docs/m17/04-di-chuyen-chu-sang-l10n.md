@@ -38,8 +38,8 @@ lỗi riêng. Đi theo checklist, không sáng tạo.
 ## Bạn đã biết gì
 
 - `AppLocalizations.of(context)` = tra InheritedWidget l10n do
-  `MaterialApp` cấp (F-25, bài 2–3).
-- `context.watch`/`context.read` (F-17, M12) — cùng họ tra-ngược-cây.
+  `MaterialApp` cấp (bài 2–3).
+- `context.watch`/`context.read` (M12) — cùng họ tra-ngược-cây.
 - `SettingItemData` sealed + `buildSettingItems` factory (M16).
 - Widget test cần `MaterialApp` host bọc widget (M13+).
 
@@ -249,7 +249,7 @@ thêm `import '../../../l10n/app_localizations.dart';` và thay:
 `MenuViewModel` **giữ nguyên** `'Đã đặt lại hồ sơ.'` literal —
 đây là chuỗi learner-scaffolding (senior `MenuScreenViewModel` có
 variant `MenuSnackBarRequested` nhưng **không emit** từ luồng
-reset-profile — senior không có nút đó). Register FR-31 ghi nhận;
+reset-profile — senior không có nút đó).
 không phải key ARB.
 
 ### Bước 6 — game screen
@@ -392,7 +392,53 @@ en (LANGUAGE/AUDIO/NOTIFICATIONS/ACCOUNT/DONE…); chọn "Tiếng Việt"
 - Truyền `BuildContext` vào VM để VM tự lấy l10n → sai ranh giới;
   chữ đi vào VM **qua tham số**.
 
-## Kiểm tra hiểu biết
+## Tự làm — migrate nốt hàng "Phiên bản"
+
+Ở Tự làm cuối M16 bạn đã thêm `SettingInfoItemData` với label cứng
+`'Phiên bản'`. Chuỗi đó vẫn nằm ngoài l10n — migrate nó đầy đủ.
+
+**Phần A — quyết định phạm vi.** Ba chuỗi còn "cứng" trong app — với
+mỗi cái: *đưa vào l10n hay không, và vì sao?*
+
+| Chuỗi | Vào l10n? |
+|---|---|
+| Label `'Phiên bản'` của info row (M16/05 Tự làm) | |
+| Câu hỏi/đáp án trong quiz question bank | |
+| `nativeName` `'Tiếng Việt'` trên `LanguageChip` | |
+
+**Phần B — migrate end-to-end** (không copy — quyết rồi mở đáp án):
+
+1. Tên key bạn chọn + nội dung `app_en.arb`/`app_vi.arb`.
+2. `localizedSettingItems` nhận String tham số — label mới đi qua
+   tham số nào: thêm param thứ bảy hay tái dùng param có sẵn?
+3. Call site truyền `l10n.<key>` ở đâu?
+4. Verify: `flutter gen-l10n` exit 0; widget test ghim `Locale('vi')`
+   thấy 'Phiên bản', `Locale('en')` thấy bản en.
+
+<details><summary>Đáp án</summary>
+
+**A.** Label 'Phiên bản' → **vào l10n** (chrome UI, đổi theo locale).
+Quiz content → **không** — đó là domain data, senior cũng không
+localize ngân hàng câu hỏi. `nativeName` → **không** — chuỗi tự mô
+tả bằng chính ngôn ngữ đó ("Tiếng Việt" phải luôn hiện là "Tiếng
+Việt" kể cả khi app đang en).
+
+**B.**
+1. `settingsVersionLabel` — `"Version"` en / `"Phiên bản"` vi.
+2. Thêm param thứ bảy `String versionText` vào
+   `localizedSettingItems` — factory không biết l10n, chữ đi vào
+   qua tham số (đúng pattern Bước 1–2).
+3. Ở chỗ gọi `localizedSettingItems(...)` trong settings dialog —
+   thêm `versionText: l10n.settingsVersionLabel`.
+4. Test ghim locale: pump với `Locale('vi')` → `find.text('Phiên
+   bản')`; `Locale('en')` → `find.text('Version')`.
+
+Điểm học: quyết định "có localize không" nằm ở *vai trò của chuỗi*
+— chrome UI thì có, domain data và tên-tự-thân thì không.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. Vì sao `localizedSettingItems` nhận 6 String thay vì tự gọi
    `AppLocalizations.of`?
@@ -406,10 +452,10 @@ en (LANGUAGE/AUDIO/NOTIFICATIONS/ACCOUNT/DONE…); chọn "Tiếng Việt"
 ## Ta cố ý chưa thêm
 
 - **Leaderboard/auth/onboarding strings** — surface tương ứng chưa
-  đến (M18 onboarding; M22+ auth) → chưa có key (FR-31).
+  đến (M18 onboarding; M22+ auth) → chưa có key.
 - **`.toUpperCase()` tại widget layer** — senior giữ data
   sentence-case rồi upper khi render; learner bake sẵn casing trong
-  ARB ('START GAME'). Tương đương về hiển thị; FR-31 ghi nhận, đổi
+  ARB ('START GAME'). Tương đương về hiển thị — chỉ đổi
   chỉ khi cần parity pass.
 - **Localization cho quiz-bank** — nội dung câu hỏi là data; senior
   cũng không localize chúng trong hệ l10n này.
@@ -421,4 +467,4 @@ en (LANGUAGE/AUDIO/NOTIFICATIONS/ACCOUNT/DONE…); chọn "Tiếng Việt"
 - Runtime check: đổi chip ngôn ngữ trong settings → toàn bộ chrome
   đổi en↔vi không restart.
 - `grep` lib/ không còn literal vi trong 4 file UI đã migrate (trừ
-  quiz data + snackbar VM FR-31).
+  quiz data + enum snackbar ở VM).

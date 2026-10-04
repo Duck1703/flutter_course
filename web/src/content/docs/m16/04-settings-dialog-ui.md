@@ -41,8 +41,8 @@ không phải nguồn.
 
 - Event bridge menu (M13): tap → `vm.request…()` → event →
   `showDialog`/snack trong `_handleUiEvent`.
-- `showDialog`/`AlertDialog` (F-13, M09), `GestureDetector` (F-09).
-- `Provider` trong subtree + `context.read`/`watch` (F-17/F-18).
+- `showDialog`/`AlertDialog` (M09), `GestureDetector`.
+- `Provider` trong subtree + `context.read`/`watch`.
 - Sealed item + exhaustive switch render (bài 2 + M15).
 
 ## Flutter cần dùng
@@ -54,7 +54,7 @@ không phải nguồn.
 | `HitTestBehavior.opaque` | tham số trên | vùng hit-test gồm cả phần "trống" của hàng |
 | `CircleAvatar` | placeholder avatar | ảnh đại diện tròn — dùng tạm `Icons.person` |
 
-`Switch` là first-appearance (F-23): hãy nhớ — nó **không** có state
+`Switch` là first-appearance: hãy nhớ — nó **không** có state
 riêng. Quên `onChanged` = switch chết; quên cập nhật `value` = switch
 giật về.
 
@@ -99,8 +99,8 @@ cùng nguyên lý: `onChanged` đổi *nguồn*, không đổi *switch*.
 - `lib/widgets/menu/profile/menu_profile_header.dart` — gear icon
   `GlassIconButton(iconGear, onTap: onSettingsTap)` →
   `vm.requestSettingsDialog()`; learner tương đương bằng
-  `GestureDetector` + `Icons.settings` (FR-30) →
-  `vm.requestSettings()` → `MenuSettingsRequested` (FR-29).
+  `GestureDetector` + `Icons.settings` →
+  `vm.requestSettings()` → `MenuSettingsRequested`.
 
 ## Build it step by step
 
@@ -203,7 +203,7 @@ Future<void> showSettingsDialog(BuildContext context) {
 ra vẫn đọc được từ trong route (scope nằm trên Navigator) — nhưng
 truyền tay giữ `SettingsDialogScope` tự chứa, pump một mình trong test
 không cần `MultiProvider` giả. Profile truyền snapshot (hàng tài
-khoản display-only, FR-28).
+khoản display-only).
 
 ```dart
 class SettingsDialogScope extends StatelessWidget {
@@ -399,7 +399,7 @@ Row(children: [
 
 `_SettingsAccountRow`: `Container` bo góc + `CircleAvatar(
 Icons.person)` + `profile.username` + dòng phụ — **display-only**
-(FR-28: nút auth thật đến M22+).
+(nút auth thật đến M22+).
 
 ## Hiểu code
 
@@ -444,7 +444,59 @@ Trong `_SettingsDialog`, bỏ `context.watch` (đọc `viewModel` bằng
 4. **Tạo `SettingsViewModel` trong `MultiProvider`** — mất
    dialog-scope; picker-visible dính giữa các lần mở.
 
-## Kiểm tra hiểu biết
+## Tự làm — dòng tóm tắt "N đang bật"
+
+Thêm một dòng tóm tắt dưới title dialog: đếm bao nhiêu switch đang
+bật và render `"3 nguồn đang bật"` (số thay đổi theo state).
+
+**Phần A — quyết định TRƯỚC khi code.** Trả lời ra giấy:
+
+1. Đếm ở đâu — trong `build` của dialog, trong một getter trên VM,
+   hay trong `buildSettingItems` factory? Chọn một và bảo vệ bằng
+   câu "ai cần biết con số này?".
+2. Đọc state bằng `context.read` hay `context.watch`? Điểm khác
+   nhau nhìn thấy được là gì nếu chọn sai?
+3. Nguồn đếm là `viewModel.settingItems` (data) — `whereType` lọc
+   `SettingSwitchItemData` rồi đếm `isEnabled` — hay đếm trên
+   `UserSettingsData`? Cái nào đúng "nguồn truth đã đi qua factory"?
+
+**Phần B — implement + verify.** Thêm `Text` vào dialog, chạy:
+
+```bash
+flutter analyze
+flutter test          # widget test ghim: bật 2 switch → find.text('2 nguồn đang bật')
+```
+
+<details><summary>Đáp án</summary>
+
+1. **Trong `build`** là lựa chọn đúng ở quy mô này: list ~5 item,
+   đếm là O(n) tầm thường, và con số chỉ phục vụ *hiển thị* của
+   dialog — không ai khác cần nó. Đặt getter trên VM cũng chấp nhận
+   được nếu bảo vệ được ("VM là nơi duy nhất biết định nghĩa
+   'đang bật'"), nhưng đặt trong `buildSettingItems` là **sai**:
+   factory mô tả *hàng nào tồn tại*, không mô tả "UI muốn nói gì".
+2. `context.watch` — `read` chỉ chụp một lần; gạt switch xong dòng
+   tóm tắt đứng yên (đúng bẫy đã thử ở Thử nghiệm).
+3. `viewModel.settingItems` — nó đã phản ánh `effective` merge của
+   factory; đếm trên `UserSettingsData` thô bỏ qua guard
+   `effectiveNotificationEnabled` và đếm sai hàng giờ.
+
+```dart
+// trong _SettingsDialog.build, trước ListView items:
+final enabledCount = viewModel.settingItems
+    .whereType<SettingSwitchItemData>()
+    .where((i) => i.isEnabled)
+    .length;
+Text('$enabledCount nguồn đang bật'),
+```
+
+Điểm học: **VM state → derived UI → interaction** tạo thành một
+vòng — bạn vừa tự kéo dữ liệu từ stream lên pixels mà không qua
+bước nào mới.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. Vì sao `saveSettings()` của VM phát *event* thay vì gọi `pop`?
 2. `_didLoadSettings` cờ dùng để làm gì — và vì sao không để trong
@@ -461,8 +513,8 @@ Trong `_SettingsDialog`, bỏ `context.watch` (đọc `viewModel` bằng
    nhưng `loadSettings()` chỉ nên chạy một lần mỗi lần mở dialog —
    cờ chặn gọi lặp. `initState` chạy trước khi `context.read` an
    toàn cho inherited — bridge phải attach ở `didChangeDependencies`.
-3. FR-30: learner dùng `Icons.settings` thay `iconGear` asset (chưa
-   có pipeline assets); FR-29: event `MenuSettingsRequested` thay
+3. Learner dùng `Icons.settings` thay `iconGear` asset (chưa có
+   pipeline assets); và event `MenuSettingsRequested` thay
    `MenuDialogSettings` state (đến M21).
 
 </details>
@@ -470,9 +522,9 @@ Trong `_SettingsDialog`, bỏ `context.watch` (đọc `viewModel` bằng
 ## Ta cố ý chưa thêm
 
 - `SettingsDialogShell`/glass styling + `transitionKey` của senior —
-  learner dùng `AlertDialog` + tokens (FR-16 → M21).
+  learner dùng `AlertDialog` + tokens (M21).
 - Nút đăng nhập trên account row + `v$appVersion` — **M22+/M27**
-  (FR-28).
+.
 - `languageCode` lái locale thật — **M17** (chips giờ chỉ persist).
 
 ## Checkpoint hoàn thành

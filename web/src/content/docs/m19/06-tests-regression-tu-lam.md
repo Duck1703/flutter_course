@@ -117,11 +117,11 @@ nào để leak — bug chỉ lộ khi có delay đang chờ.
 
 ## Tổng kết milestone
 
-1. **Học gì?** Máy trạng thái hữu hạn làm model session (A-18);
-   `copyWith` + `clear*` trên immutable state (D-34); VM-owned
-   `Timer.periodic` + `flowToken` anti-stale (D-33); presentation
-   mapper tách state ↔ DTO (A-20); `PopScope` (F-27); nav
-   controller + `navigatorKey` (A-19).
+1. **Học gì?** Máy trạng thái hữu hạn làm model session;
+   `copyWith` + `clear*` trên immutable state; VM-owned
+   `Timer.periodic` + `flowToken` anti-stale; presentation
+   mapper tách state ↔ DTO; `PopScope`; nav
+   controller + `navigatorKey`.
 2. **Giải thích được?** Vì sao enum thắng boolean; vì sao timer ở
    VM; vì sao `dialogState` là nguồn thật còn `showDialog` chỉ là
    bridge; vì sao back phải route theo variant.

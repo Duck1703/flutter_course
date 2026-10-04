@@ -36,7 +36,7 @@ trong cây. Nếu nội dung đổi cùng lúc cơ chế đổi, bug sẽ không
 
 - `Stack`/`Positioned.fill` overlay (M18); model in-tree (Bài 1).
 - `ListView`/`SingleChildScrollView`, `Column` (các màn trước).
-- `AppLocalizations.of(context)` + key ARB (M17, F-25).
+- `AppLocalizations.of(context)` + key ARB (M17).
 - Widget test `pumpWidget` + `find.text` (M19–M20).
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
@@ -49,7 +49,7 @@ trong cây. Nếu nội dung đổi cùng lúc cơ chế đổi, bug sẽ không
 | `IgnorePointer(ignoring:)` | tắt hit-test của cả subtree mà không gỡ widget |
 | `MediaQuery.of(context).disableAnimations` | a11y reduced-motion (dùng ở Bài 3) |
 
-`BackdropFilter`/`ClipRect`/`IgnorePointer`/`opaque` là **F-30**
+`BackdropFilter`/`ClipRect`/`IgnorePointer`/`opaque` là concept mới
 (NORMAL) — widget hiệu ứng, không phải concept kiến trúc.
 
 ## Mental model mới — "hai chính sách dismiss, một hàm thuần"

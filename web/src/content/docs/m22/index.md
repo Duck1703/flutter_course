@@ -15,7 +15,7 @@ menu save — một scaffold tiện cho lúc chưa có repository. Sau M14
 senior đặt: trong game VM, tại boundary của transition kết thúc —
 một lần duy nhất nhờ cờ `hasSavedResult`.
 
-:::note[FR-01 + FR-03 + FR-04 đóng ở đây]
+:::note[Scaffold cũ đóng ở đây]
 - `expForNextLevel` (field lưu thừa) → xoá; ngưỡng suy qua `LevelConfig`.
 - EXP = `earnedAmount` (tiền), không còn `correctAnswers × 50`.
 - `GameResult` route transport → retire; menu đọc stream.
@@ -25,9 +25,9 @@ một lần duy nhất nhờ cờ `hasSavedResult`.
 
 | Bài | Nội dung | Checkpoint |
 |-----|----------|-----------|
-| [01](/m22/01-ket-qua-la-ghi-db/) | Mental model: save là hiệu ứng cạnh của transition; `hasSavedResult`; stream→menu (A-22, CORE) | hiểu model — chưa code |
-| [02](/m22/02-level-config/) | `LevelConfig` port + config table + `while` thăng cấp (D-38) | 164/164 |
-| [03](/m22/03-menu-level-progress/) | `MenuLevelProgress` derived view + `_LevelCard` rewire (D-39) | 169/169 |
+| [01](/m22/01-ket-qua-la-ghi-db/) | Mental model: save là hiệu ứng cạnh của transition; `hasSavedResult`; stream→menu (CORE) | hiểu model — chưa code |
+| [02](/m22/02-level-config/) | `LevelConfig` port + config table + `while` thăng cấp | 164/164 |
+| [03](/m22/03-menu-level-progress/) | `MenuLevelProgress` derived view + `_LevelCard` rewire | 169/169 |
 | [04](/m22/04-vm-save-mot-lan/) | Atomic cut: repo ctor + `_emitWithSaveResult` + `_saveGameResult` + xoá `GameResult` transport | 168/168 |
 | [05](/m22/05-regression-va-m23-boundary/) | Grep-zero scaffold, parity table, ranh giới M23 | 168/168 + build web |
 
@@ -46,7 +46,7 @@ một lần duy nhất nhờ cờ `hasSavedResult`.
   `UserProfileSyncRepository` trên ctor).
 - VM chưa là DRE — `_emitWithSaveResult` mô phỏng `_withSaveResult`,
   asyncOp queue thật là **M26**.
-- `shareResult`/`GameShareResultEvent` — **M27** (FR-33).
+- `shareResult`/`GameShareResultEvent` — **M27**.
 - Card level trên menu vẫn là `_LevelCard` đơn giản; ring/glass/
   tier-gradient của `LevelProgressCard` + `menuMaxLevelReached`/
   `menuExpToNextLevel` label là **M28**. Ở max level, bar text
@@ -68,9 +68,9 @@ một lần duy nhất nhờ cờ `hasSavedResult`.
 
 Trả lời được năm câu này là đủ:
 
-1. **Học gì?** Save-ownership trong VM + `hasSavedResult` (A-22);
-   `LevelConfig` bảng milestone-multiplier (D-38); `MenuLevelProgress`
-   derived view-model (D-39); `unawaited` fire-and-forget tại
+1. **Học gì?** Save-ownership trong VM + `hasSavedResult`;
+   `LevelConfig` bảng milestone-multiplier ; `MenuLevelProgress`
+   derived view-model; `unawaited` fire-and-forget tại
    boundary; `copyWith(clear*)` cho flag nhất-thời.
 2. **Giải thích được?** Vì sao `GameResult` route-pop sai ownership;
    vì sao guard phải check state hiện hành VÀ cờ phải được ghi vào

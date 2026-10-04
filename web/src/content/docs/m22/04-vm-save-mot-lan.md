@@ -34,21 +34,61 @@ signature). Làm theo thứ tự dưới và chỉ chạy test ở cuối.
 
 ## Bạn đã biết gì
 
-- A-22 (Bài 1): save-trong-VM, `hasSavedResult`, payload 4 transition.
+- Bài 1: save-trong-VM, `hasSavedResult`, payload 4 transition.
 - `UserProfileRepository` contract + `FakeUserProfileRepository`
-  (M14). `unawaited` (D-17). `copyWith`/`clear*` flags (D-34).
-- `debugPrint` cho log (đã gặp); `try/catch` quanh await (D-09).
+  (M14). `unawaited`. `copyWith`/`clear*` flags.
+- `debugPrint` cho log (đã gặp); `try/catch` quanh await.
 
 ## Dart/Flutter cần dùng — xuất hiện đầu tiên
 
 | Construct | Vai trò |
 |---|---|
-| `context.read<UserProfileRepository>()` trong `create:` | DI app-scope vào VM màn (A-07 đã học — đây là điểm gắn mới) |
-| `unawaited(_saveGameResult(…))` | fire-and-forget: transition không chờ save xong (D-17) |
-| `while (nextLevel < max) { … break; }` | "đốt" ngưỡng từng cấp — vòng lặp accumulation (D-38) |
+| `context.read<UserProfileRepository>()` trong `create:` | DI app-scope vào VM màn (đã học ở M14 — đây là điểm gắn mới) |
+| `unawaited(_saveGameResult(…))` | fire-and-forget: transition không chờ save xong |
+| `while (nextLevel < max) { … break; }` | "đốt" ngưỡng từng cấp — vòng lặp accumulation |
 | `num.clamp` thủ công | `_normalizedLevel` kẹp level về 1..100 |
 
-## Bước 1 — `GameSessionState`: `hasSavedResult` vào, `resolvedResult` ra
+## Mental model mới — "cờ và kết quả hiện diện *cùng nhau*"
+
+Bốn đường khác nhau có thể kết thúc một ván: thắng câu cuối, thua,
+walk-away, bấm về menu. Nhiều đường hơi *chạm nhau* — ví dụ
+`_endGame` vừa kết thúc ván, người chơi lập tức bấm "về menu" →
+`backToMenu` chạy. Nếu cả hai đường đều gọi save, profile ghi hai
+lần: `gamesPlayed` +2 cho một ván, EXP nhân đôi.
+
+Bất biến senior giữ cho việc này chỉ gồm ba câu:
+
+```
+TRƯỚC transition kết thúc:      hasSavedResult == false
+KHI  transition kết thúc emit:  state mới ĐÃ chứa hasSavedResult == true
+                                → save side-effect bắt đầu (unawaited)
+SAU ĐÓ mọi đường khác:          đọc _state.hasSavedResult == true
+                                → emit bình thường, KHÔNG save nữa
+```
+
+Chỗ dễ trật là chữ "**ĐÃ**": cờ không phải "sẽ được set sau khi
+emit". Nó phải nằm *bên trong chính state mà transition phát ra* —
+`_emit(next.copyWith(hasSavedResult: true))`. Vì sao bắt buộc vậy?
+
+- `_state` là nguồn đọc duy nhất của guard. Nếu emit `next` *trước*
+  rồi set cờ ở một lệnh khác, tồn tại một khoảng mà `_state` công
+  khai vẫn nói "chưa lưu" — và bất kỳ transition kết thúc nào chạy
+  trong khoảng đó (back-to-menu, confirm-exit) đều đọc `false` và
+  save thêm lần nữa.
+- Emit cờ *cùng* transition = "ghi nhận xong" và "phát hiện đã ghi"
+  là **một sự kiện nguyên tử** — không có kẽ hở để lệch thứ tự.
+
+Đây cũng là cách senior làm: `_withSaveResult` gắn flag vào chính
+state được reduce ra, và op save chỉ bắn khi flag cũ là `false`.
+Learner chưa có kiến trúc reducer của M26 — bạn sẽ thấy bất biến
+này xuất hiện lại ở đó dưới hình thức chặt chẽ hơn — nhưng bản
+chất đã là nó: *flag và transition đi cùng nhau*.
+
+> **Giữ câu này khi làm Tự làm cuối bài:** bug trồng sẵn ở đó phá
+> đúng chỗ "ĐÃ" — bạn sẽ tự chứng kiến kẽ hở đó làm `saveCallCount`
+> thành 2.
+
+## Bước 1 — `GameSessionState`: `hasSavedResult` vào, `resolvedResult` ra## Bước 1 — `GameSessionState`: `hasSavedResult` vào, `resolvedResult` ra
 
 `game_session_state_data.dart`:
 
@@ -204,9 +244,9 @@ Xoá khỏi `user_profile_data.dart`:
 - import '../game/game_result.dart';
 - field expForNextLevel (+ ctor param, + copyWith, + toMap key,
   + fromMap parse, + ==, + hashCode, + doc mentions)
-- gainExp(int amount)            // curve ×1.5 — FR-02 scaffold
+- gainExp(int amount)            // curve ×1.5 — scaffold chờ M22
 - expPerCorrectAnswer            // hằng EXP tạm
-- applyGameResult(GameResult)    // menu-side policy — FR-04
+- applyGameResult(GameResult)    // menu-side policy — retire ở bài này
 - expPercent getter              // menu dùng MenuLevelProgress.ratio
 ```
 
@@ -217,7 +257,7 @@ Giữ nguyên: 9 field còn lại, `winRateDisplay`, `formatVnd`,
 > nó chỉ đọc key mình biết — key lạ tự bị bỏ qua (đúng bản chất
 > parse phòng thủ).
 
-Cập nhật doc class: field set khớp senior nguyên bộ (FR-01/FR-03
+Cập nhật doc class: field set khớp senior nguyên bộ (hội tụ
 converge).
 
 ## Bước 5 — transport retirement

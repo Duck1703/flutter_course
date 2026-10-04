@@ -74,7 +74,7 @@ Trả lời được năm câu này là đủ:
 
 ## Còn lại sau M19 (đã register)
 
-- FR-04: `openGame()` trả `GameResult` qua pop — VM-side save ở M22.
-- FR-07: dialog layer `showDialog` — in-`Stack` layer ở M21.
-- FR-33: `GameShareResultEvent`/SharePlus — milestone chưa gán.
+- `openGame()` trả `GameResult` qua pop — VM-side save ở M22.
+- Dialog layer `showDialog` — in-`Stack` layer ở M21.
+- `GameShareResultEvent`/SharePlus — milestone chưa gán (M27).
 - DRE (`DreChangeNotifier` + reducer thuần) — M26 theo roadmap.

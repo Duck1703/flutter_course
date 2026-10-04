@@ -52,12 +52,12 @@ _fiftyUsed = true)`. Hỏng ở ba chỗ:
 ## Bạn đã biết gì
 
 - Máy trạng thái + phase guard `phase != GamePhase.playing →
-  return` (M19, A-18).
-- State bất biến + `copyWith` + cờ `clear*` (M19, D-34).
+  return` (M19).
+- State bất biến + `copyWith` + cờ `clear*` (M19).
 - Dialog đi qua `dialogState` + `GameDialogRequested` event
-  (M19); mapper thuần `buildGameScreenPresentation` (A-20).
-- `Future.delayed` cơ bản (M05, D-09); `Timer.periodic` do VM
-  sở hữu (M19, D-33).
+  (M19); mapper thuần `buildGameScreenPresentation`.
+- `Future.delayed` cơ bản (M05); `Timer.periodic` do VM
+  sở hữu (M19).
 
 ## Mental model mới — "quyền trợ giúp là tập đã-tiêu"
 
@@ -99,10 +99,10 @@ Ba ý đồng thời:
 | đóng băng | `Set.unmodifiable(set)` | Set chỉ-đọc — ném lỗi nếu ai `.add` |
 
 :::note[Vì sao không `.add(x)` trực tiếp?]
-State của ta là **bất biến** (D-34): `usedFeatureButtons` được gói
+State của ta là **bất biến**: `usedFeatureButtons` được gói
 bằng `Set.unmodifiable` — gọi `.add` trên nó sẽ **ném lỗi runtime**.
 Muốn "thêm" phải tạo Set mới `{...old, x}` rồi `copyWith` — giống
-hệt cách list-state emit ở D-32 (`List.unmodifiable`), chỉ khác
+hệt cách list-state emit ở M18 (`List.unmodifiable`), chỉ khác
 collection type.
 :::
 
@@ -176,11 +176,11 @@ luật không-thể-phá.)*
 ## Ta cố ý chưa thêm
 
 - Nút lifeline trong senior vẽ bằng `CustomPainter` + icon SVG —
-  learner dùng `IconData` phẳng ở milestone này (**FR-34**, hội
+  learner dùng `IconData` phẳng ở milestone này (hội
   tụ M28 với visual parity pass). Hành vi giữ nguyên, chỉ độ
   sâu visual được dời.
 - Dialog vẫn `showDialog` — layer `GameDialogLayer` trong `Stack`
-  là **M21** (FR-07).
+  là **M21**.
 - VM vẫn `ChangeNotifier` — DRE (`DreChangeNotifier` + reducer
   thuần) là **M26**.
 

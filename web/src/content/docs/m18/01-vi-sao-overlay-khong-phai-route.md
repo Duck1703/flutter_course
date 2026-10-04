@@ -38,10 +38,10 @@ của menu. Nếu bạn bỏ qua "vì sao", Bài 4 sẽ chỉ là copy code.
 
 - `Stack` xếp lớp widget (dùng trong card/badge ở các bài trước).
 - `Positioned.fill` = con chiếm hết vùng `Stack`.
-- `HitTestBehavior.opaque` — nuốt tap trên vùng "trống" (F-23, M16).
+- `HitTestBehavior.opaque` — nuốt tap trên vùng "trống" (M16).
 - Repository stream + `BehaviorSubject` seeded value (M14).
-- `FutureBuilder` chờ một `Future` (F-10).
-- `GameDialogState` render-by-state (A-14, M15) — cùng ý tưởng.
+- `FutureBuilder` chờ một `Future`.
+- `GameDialogState` render-by-state (M15) — cùng ý tưởng.
 
 ## Mental model mới — "visibility là state, không phải route"
 
@@ -85,7 +85,7 @@ Không `push`, không `pop`, không barrier của `showDialog`.
   learner M18 làm đúng vậy.
 - `onboarding_overlay.dart` (senior): `BackdropFilter` blur + haze
   scrim + `AnimatedSwitcher` — learner giữ scrim + tap-absorber, bỏ
-  phần hiệu ứng (FR-32 → parity M28).
+  phần hiệu ứng (visual parity đến M28).
 - Gating chain senior `FutureBuilder → StreamBuilder → Provider`:
   learner giữ `FutureBuilder` + `Provider`, bỏ `StreamBuilder` trong
   vì VM tự subscribe stream (EXPLAIN_ONLY — giải thích, chủ động
@@ -107,8 +107,8 @@ nào?" — Bài 4 trả lời bằng code thật.
 
 ## Ta cố ý chưa thêm
 
-- `BackdropFilter`/`AnimatedSwitcher`/badge gradient (FR-32 → M28).
-- Permission thật cho thông báo (FR-27 → M27).
+- `BackdropFilter`/`AnimatedSwitcher`/badge gradient (M28).
+- Permission thật cho thông báo (M27).
 - Nhạy ứng back-button — senior cũng không gate back; overlay chỉ
   hút tap.
 

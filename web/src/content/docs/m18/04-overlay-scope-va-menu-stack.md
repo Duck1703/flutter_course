@@ -36,10 +36,10 @@ render ngay thì frame đầu chớp onboarding trên máy đã xem rồi. Gate
 
 - `didChangeDependencies` + `context.read` + `identical()` guard —
   "lấy dependency đúng một lần" (M14).
-- `FutureBuilder` (F-10, M05); `ChangeNotifierProvider(create:)` (M12/M16).
-- `Stack`/`Positioned.fill`/`HitTestBehavior.opaque` (Bài 1 + F-23).
+- `FutureBuilder` (M05); `ChangeNotifierProvider(create:)` (M12/M16).
+- `Stack`/`Positioned.fill`/`HitTestBehavior.opaque` (Bài 1).
 - `switch` expression + object pattern `:final f` trên sealed (M15).
-- `AppLocalizations.of(context)` (F-25, M17).
+- `AppLocalizations.of(context)` (M17).
 
 ## Dart cần dùng
 
@@ -54,15 +54,15 @@ render ngay thì frame đầu chớp onboarding trên máy đã xem rồi. Gate
 
 - `FutureBuilder<bool>` — chờ persist read trước khi quyết hiện.
 - `ChangeNotifierProvider<OnboardingViewModel>` — VM sinh/chết cùng
-  subtree overlay (scope = lifetime, A-15 → A-17).
+  subtree overlay — scope = lifetime như M16/03.
 - `SingleChildScrollView` + `ConstrainedBox(minHeight: maxHeight)` —
   card căn giữa mà vẫn cuộn khi màn thấp.
 - `FilledButton`/`TextButton` — learner dùng nút material thay
-  `OnboardingGameButton` (FR-32).
+  `OnboardingGameButton`.
 
 ## Mental model mới
 
-Không mới — bài này *áp dụng* F-26 (Bài 1) + A-17 (Bài 3) vào cây
+Không mới — bài này *áp dụng* gate FutureBuilder (Bài 1) + overlay-scope (Bài 3) vào cây
 thật. Câu chốt: **FutureBuilder chặn "chưa đọc xong", VM + stream
 sub chặn "đã xong"** — hai lớp cho hai mốc thời gian khác nhau.
 
@@ -86,11 +86,11 @@ phần mới thật sự là wiring, đã trình bày nguyên khối.
 - Senior `onboarding_overlay_scope.dart`: giống hệt, *cộng thêm* một
   `StreamBuilder` lồng trong `FutureBuilder` + `_requestNotificationPermission`
   gọi `LocalNotificationService` thật. Learner bỏ lớp StreamBuilder
-  (VM đã tự subscribe — FR-32) và mô phỏng grant (FR-27 → M27).
+  (VM đã tự subscribe) và mô phỏng grant (M27).
 - Senior `onboarding_overlay.dart`: `BackdropFilter` blur +
   `AnimatedSwitcher` + `OnboardingTokens` gradient/badge +
   `OnboardingGameButton` — learner giữ scrim + opaque absorber +
-  card cuộn + indicator tĩnh + nút Material (FR-32).
+  card cuộn + indicator tĩnh + nút Material.
 - Senior `lib/widgets/common/language_chip_row.dart`: file shared
   settings/onboarding — learner promote đúng vị trí đó.
 - Senior `menu_screen_view.dart:95`: `Positioned.fill(child:
@@ -177,14 +177,14 @@ class _OnboardingOverlayScopeState extends State<OnboardingOverlayScope> {
 
 `_OnboardingOverlayConnector` = `context.watch<OnboardingViewModel>()`
 → `OnboardingOverlay(step: vm.currentStep, …)` — callback map thẳng
-vào VM (`unawaited` cho async). **FR-27 tại đây**:
+vào VM (`unawaited` cho async). Điểm khác senior tại đây:
 `onEnableNotifications` gọi `viewModel.onNotificationPermissionResult(true)`
 — *mô phỏng* granted; permission thật qua `LocalNotificationService`
 → M27.
 
 ### Bước 3 — `lib/widgets/onboarding/onboarding_overlay.dart`
 
-UI rút gọn senior (FR-32): scrim `ColoredBox` đen 70% +
+UI rút gọn senior: scrim `ColoredBox` đen 70% +
 `GestureDetector opaque` hút tap + card giữa màn (cuộn được) +
 3 chấm `stepOrder` + `switch (step)` chọn actions. Đọc file
 production — ba cụm xương sống:
@@ -330,8 +330,8 @@ tiếp. Subtree chứa Provider + overlay không hề được tạo — đó l�
 ## Ta cố ý chưa thêm
 
 - `BackdropFilter`/`AnimatedSwitcher`/badge/`OnboardingGameButton`
-  (FR-32 → parity pass M28).
-- `LocalNotificationService` permission thật (FR-27 → M27).
+  (visual parity đến M28).
+- `LocalNotificationService` permission thật (M27).
 - `OnboardingHeaderConfig` color/badge per step — learner chỉ
   title/desc.
 - Replay sau reset-profile — senior cũng không liên kết hai cờ.

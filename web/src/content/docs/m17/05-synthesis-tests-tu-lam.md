@@ -1,6 +1,6 @@
 ---
 title: "Bài 5 · Tổng hợp M17 — locale-switch test + tự thêm key mới"
-description: "Viết widget test đúng shape senior: en default → persist 'vi' → chữ Việt hiện không restart; FR-26 whitelist unit tests; 90/90 + build web; Tự làm thêm ARB key end-to-end."
+description: "Viết widget test đúng shape senior: en default → persist 'vi' → chữ Việt hiện không restart; unit test whitelist `languageCode`; 90/90 + build web; Tự làm thêm ARB key end-to-end."
 sidebar:
   label: "Bài 5 · Tổng hợp + Tự làm"
   order: 5
@@ -12,7 +12,7 @@ Sau bài này bạn **làm được**:
 
 - Viết widget test chứng minh "locale follows persisted settings" —
   đúng test senior có trong `widget_test.dart`.
-- Unit-test whitelist FR-26: mã hợp lệ giữ nguyên, mã lạ → `null`.
+- Unit-test whitelist `languageCode`: mã hợp lệ giữ nguyên, mã lạ → `null`.
 - Tự thêm một key l10n mới đầu-cuối: ARB en+vi → `gen-l10n` →
   consume trong widget → test.
 
@@ -27,7 +27,7 @@ Sau bài này bạn **làm được**:
 "Đổi ngôn ngữ không restart" là *promise* của milestone — promise
 cần test. Senior có sẵn test đó trong `widget_test.dart`; tái dựng
 nó là bằng chứng learner đạt parity hành vi, không chỉ "hình như
-chạy được". Unit test FR-26 khoá cửa sau cho dữ kiện bẩn từ disk.
+chạy được". Unit test whitelist khoá cửa sau cho dữ kiện bẩn từ disk.
 
 ## Bạn đã biết gì
 
@@ -191,7 +191,7 @@ flutter build web                               # √
 - `saveUserSettings(languageCode: 'vi')` đi qua repo thật (fake
   cùng contract) → stream emit → StreamBuilder rebuild → assert chữ
   vi — kiểm chứng **live switch**, y hệt senior.
-- FR-26 group khoá cửa sau: `fr`/`''`/`7`/missing đều → `null`.
+- Group whitelist khoá cửa sau: `fr`/`''`/`7`/missing đều → `null`.
 
 ## Chạy và quan sát
 
@@ -292,7 +292,7 @@ expect(find.text('Vượt quiz, lên đỉnh bảng'), findsOneWidget);
 - Test mọi key trên mọi màn — không cần; một test switch chứng minh
   cơ chế, việc còn lại là coverage lặp.
 - Golden test theo locale — chưa có golden infra (không phải scope).
-- Onboarding strings — M18 sẽ đụng (FR-31).
+- Onboarding strings — M18 sẽ đụng.
 
 ## Checkpoint hoàn thành — TỔNG HỢP M17
 

@@ -35,7 +35,7 @@ không biết lỗi ở đâu.
 ## Bạn đã biết gì
 
 - `pubspec.yaml` + `flutter pub get` (từ M01) — thêm dependency.
-- JSON + `Map` literal (D-15, M10) — ARB là JSON có quy ước thêm.
+- JSON + `Map` literal (M10) — ARB là JSON có quy ước thêm.
 - `UserSettingsData.languageCode` (M14/M16) — sẽ là đầu vào của
   `MaterialApp.locale` ở bài 3.
 - **Chưa biết** (bài này dạy): cú pháp ARB + `@key` metadata,
@@ -113,7 +113,7 @@ use-escaping: true
 
 Senior `app_en.arb` có 119 keys; learner 48 — chỉ đủ cho surface đã
 có (M18+ sẽ thêm onboarding/auth/leaderboard keys khi màn tương ứng
-đến — register **FR-31** ghi nhận delta này).
+đến).
 
 ## Build it step by step
 
@@ -250,7 +250,7 @@ Tạo `lib/l10n/app_en.arb` — **file đầy đủ**:
 ```
 
 > 31 trong 48 keys trùng tên với senior; 17 keys learner tự đặt cho
-> phần chrome senior không localize (nút CHỐT ĐÁP ÁN… — xem FR-31).
+> phần chrome senior không localize (nút CHỐT ĐÁP ÁN…).
 
 ### Bước 4 — `lib/l10n/app_vi.arb`: bản dịch Việt
 
@@ -412,7 +412,43 @@ có consumer. Đừng hoảng khi không thấy gì đổi.
 - Tạo `l10n.yaml` trong `lib/` → tool không thấy; nó nằm **gốc
   package**.
 
-## Kiểm tra hiểu biết
+## Tự làm — một key mới, từ quyết định tới generated code
+
+Bạn sắp cần key cho thanh tiến trình (milestone sau): chuỗi dạng
+`"LEVEL {level} · {exp} XP"`. **Đừng copy** — tự quyết:
+
+**Phần A — dự đoán trước khi gen.** Viết ra giấy:
+
+1. Tên key bạn chọn (camelCase, mô tả *vai trò* chứ không phải nội
+   dung — vì sao `levelProgress` tốt hơn `levelXxp`?)
+2. Signature Dart mà gen-l10n sẽ sinh — kiểu trả về, tham số, thứ tự.
+3. Câu gọi ở widget: `l10n.???`
+
+**Phần B — viết cặp ARB + gen.** Thêm entry vào `app_en.arb` (kèm
+`@key` với hai placeholders `int`) và `app_vi.arb` — **thứ tự
+placeholder trong câu vi có được đổi không?** (thử `"Cấp {level} —
+{exp} kinh nghiệm"`). Chạy `flutter gen-l10n` → exit 0 → mở file
+generated kiểm chứng signature bạn dự đoán.
+
+**Phần C — chẩn đoán.** Cố tình đổi `app_vi.arb` để placeholder
+khác tên en (`{exp}` → `{diem}`). Chạy `flutter gen-l10n` — đọc
+thông báo lỗi, sửa lại, gen lại exit 0. Đây là triệu chứng bạn sẽ
+gặp khi đồng bộ hai file.
+
+<details><summary>Đáp án</summary>
+
+1. `levelProgress` — key đặt theo vai trò sống được khi text đổi;
+   `levelXxp` gắn vào nội dung cụ thể nên bẻ key mỗi lần đổi chữ.
+2. `String levelProgress(int level, int exp)` — key có placeholder
+   gen ra **method** (không phải getter); tham số theo thứ tự khai
+   báo trong `placeholders`.
+3. `l10n.levelProgress(4, 1250)`.
+4. Thứ tự placeholder trong value của *từng file* tự do — chỉ tên
+   phải khớp en template; `{diem}` khác tên là lỗi gen-l10n.
+
+</details>
+
+## Kiểm tra hiểu biết## Kiểm tra hiểu biết
 
 1. `template-arb-file` nghĩa là gì — chuyện gì xảy ra nếu vi thiếu
    một key?

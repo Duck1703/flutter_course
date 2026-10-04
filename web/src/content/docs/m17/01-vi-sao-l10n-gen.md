@@ -49,13 +49,13 @@ cách duy nhất để `MaterialApp.locale` phát huy tác dụng.
 ## Bạn đã biết gì
 
 - `languageCode` đã persist trong `UserSettingsData` qua repository
-  stream (A-08, M14) — M16 đã có chip chọn ngôn ngữ ghi giá trị này.
+  stream (M14) — M16 đã có chip chọn ngôn ngữ ghi giá trị này.
 - `SupportedLanguageData` — danh sách ngôn ngữ hỗ trợ + `fromCode`
   (model tạo ở M16/02).
 - `MaterialApp` cấu hình app-level: `theme`, `home`… bài 3 sẽ thêm
   `locale`/`localizationsDelegates`/`supportedLocales`.
-- `StreamBuilder` (F-11, M14) — rebuild khi stream emit.
-- `InheritedWidget` lookup qua `context` (F-17, M12 Provider là
+- `StreamBuilder` (M14) — rebuild khi stream emit.
+- `InheritedWidget` lookup qua `context` (M12 — Provider là
   trường hợp riêng) — `AppLocalizations.of(context)` cùng họ hàng.
 
 ## Mental model mới — "chuỗi là resource, không phải code"
@@ -99,7 +99,8 @@ Senior `lib/l10n/`:
 
 - `app_en.arb` = **template** (mọi `@key` metadata khai báo ở đây),
   `app_vi.arb` cùng bộ key. Senior có ~119 keys; learner M17 bắt đầu
-  48 keys — chỉ đủ cho surface hiện có (FR-31 ghi nhận phần còn lại;
+  48 keys — chỉ đủ cho surface hiện có (phần còn lại đến theo từng
+   feature;
   các key khác sẽ được thêm khi màn tương ứng xuất hiện ở M18+).
 - `l10n.yaml` khai báo thư mục ARB, file template, tên class sinh ra.
 - `pubspec.yaml`: `flutter_localizations: sdk: flutter` +

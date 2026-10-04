@@ -36,13 +36,13 @@ cũ và mất vị trí cuộn. Đây là lý do `_TimeWheel` là `StatefulWidge
 
 ## Bạn đã biết gì
 
-- `StatefulWidget`/lifecycle `initState`/`dispose` (F-04/F-06).
+- `StatefulWidget`/lifecycle `initState`/`dispose`.
 - Render-by-state: `timePickerVisible` lái nội dung dialog (field từ
   bài 3; nhánh render thêm trong bài này).
 - `padLeft` + `SettingTimePickerItemData` (bài 2), VM methods
   `showTimePicker`/`onNotificationTimeSelected` (bài 3).
 - Widget test `pumpWidget`/`tap`/`pumpAndSettle`/`ensureVisible`
-  (F-14, M08–M15).
+  (M08–M15).
 
 ## Flutter cần dùng
 
@@ -99,7 +99,7 @@ controller, người đó dispose**.
   confirm mới gọi callback persist — giống learner.
 - Senior phủ picker bằng overlay trong dialog layer (`MenuDialogLayer`,
   M21); learner swap *nội dung* của cùng `AlertDialog` — cùng ý tưởng
-  render-theo-state, khác cơ chế (FR-16/29).
+  render-theo-state, khác cơ chế.
 
 ## Build it step by step
 
@@ -338,7 +338,7 @@ void main() {
 }
 ```
 
-`ensureVisible` (F-14): trong test viewport 800×600, nội dung dialog
+`ensureVisible`: trong test viewport 800×600, nội dung dialog
 với thêm hàng giờ tràn viewport — tap vào phần tử off-screen không
 được hit-test. Cuộn vào tầm nhìn trước khi bấm.
 
@@ -480,9 +480,9 @@ family là checklist tự động.
 
 - Fade/magnifier chrome của `WheelPicker` senior — simplification
   (primitives giữ nguyên).
-- Reschedule notification thật khi giờ đổi — **M27** (FR-27).
-- `SettingsDialogShell` + dialog layer — **M21** (FR-16/29).
-- Locale switch thật từ `languageCode` — **M17** (FR-26 còn ACTIVE).
+- Reschedule notification thật khi giờ đổi — **M27**.
+- `SettingsDialogShell` + dialog layer — **M21**.
+- Locale switch thật từ `languageCode` — **M17**.
 
 ## Checkpoint hoàn thành — TỔNG HỢP M16
 

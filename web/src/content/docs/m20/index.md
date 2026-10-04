@@ -26,7 +26,7 @@ rồi trả `correctOption` + độ tin cậy cố định 85% +
 
 | Bài | Nội dung | Checkpoint |
 |-----|----------|-----------|
-| [01](/m20/01-lifeline-la-luat-game/) | Lifeline là luật game: `GameFeatureButtonType`, `Set` dùng-một-lần, `_canUseFeature` mental model (D-35) | hiểu model — chưa code |
+| [01](/m20/01-lifeline-la-luat-game/) | Lifeline là luật game: `GameFeatureButtonType`, `Set` dùng-một-lần, `_canUseFeature` mental model | hiểu model — chưa code |
 | [02](/m20/02-du-lieu-va-helper-lifeline/) | Nền data: 4 field state + item poll + DTO nút + `audiencePercentile`; helper thuần + test; ARB +12 (sealed variant đi kèm UI ở Bài 3/4) | analyze sạch, **131/131** |
 | [03](/m20/03-nam-muoi-nam-muoi-va-hoi-khan-gia/) | 50:50 + poll xuyên stack: mapper `featureButtons`, VM guard/mutation, bar widget, ô trống, poll dialog | **141/141** |
 | [04](/m20/04-hoi-ai-va-dung-cuoc-choi/) | AI 700ms một-route-hai-hình (`ListenableBuilder` host), walk-away → victory + `resolvedResult{won:false}` | **147/147** |
@@ -48,12 +48,12 @@ rồi trả `correctOption` + độ tin cậy cố định 85% +
 ## Điều milestone này cố ý chưa làm
 
 - Nút lifeline là `IconData` phẳng, chưa có painter/SVG của
-  senior — **FR-34**, hội tụ M28.
+  senior — hội tụ M28.
 - Dialog vẫn `showDialog` — `GameDialogLayer` trong `Stack` là
-  **M21** (FR-07; host `ListenableBuilder` là cầu nối sẵn).
+  **M21** (host `ListenableBuilder` là cầu nối sẵn).
 - VM chưa là DRE — **M26**; `resolvedResult` là interim carrier,
-  save-site thật trong VM là **M22** (FR-04).
-- `GameShareResultEvent` — chưa assign (FR-33).
+  save-site thật trong VM là **M22**.
+- `GameShareResultEvent` — chưa assign (M27).
 
 ## Checkpoint tổng kết
 
@@ -69,7 +69,7 @@ rồi trả `correctOption` + độ tin cậy cố định 85% +
 
 Trả lời được năm câu này là đủ:
 
-1. **Học gì?** `Set<T>` immutable làm sổ "dùng-một-lần" (D-35);
+1. **Học gì?** `Set<T>` immutable làm sổ "dùng-một-lần" ;
    hai lớp guard (`button.isEnabled` → `_canUseFeature`); sealed
    variant đi kèm UI arm; emit-2-lần một route (loading→result);
    `resolvedResult` tách domain-result khỏi phase.
@@ -86,4 +86,4 @@ Trả lời được năm câu này là đủ:
 5. **Cần ở đâu sau?** M21 thay `showDialog` bằng `GameDialogLayer`
    trong `Stack` (host `ListenableBuilder` là cầu nối sẵn); M22
    persist `resolvedResult` qua repository; M28 painter/SVG cho
-   nút (FR-34).
+   nút (đến M28).

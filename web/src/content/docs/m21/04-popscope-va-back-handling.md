@@ -33,9 +33,9 @@ cắt dây route → gắn layer → đổi back handling, rồi chạy suite ng
 
 | Construct | Vai trò | Depth |
 |---|---|---|
-| `PopScope(canPop: false, onPopInvokedWithResult:)` | chặn pop mặc định, callback khi hệ thống đòi back | **F-30** (CORE) |
-| `NavigatorState.pop` vs `maybePop` | imperative pop **bypass** PopScope; `maybePop`/system back mới hỏi | F-30 |
-| `unawaited(Future)` (`dart:async`) | gọi async, chủ động không await | reuse — D-17/M11 |
+| `PopScope(canPop: false, onPopInvokedWithResult:)` | chặn pop mặc định, callback khi hệ thống đòi back | mới — CORE |
+| `NavigatorState.pop` vs `maybePop` | imperative pop **bypass** PopScope; `maybePop`/system back mới hỏi | cùng họ |
+| `unawaited(Future)` (`dart:async`) | gọi async, chủ động không await | đã học ở M11 |
 
 ### `PopScope` — chặn cái gì, cho qua cái gì
 

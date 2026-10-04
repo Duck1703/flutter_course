@@ -35,8 +35,8 @@ riêng, `switch` kiệt hợp bắt buộc xử lý hết.
 
 - `sealed class`/`final class`/`switch` kiệt hợp + object pattern
   (M15), `copyWith`, `==`/`hashCode` theo giá trị (M04).
-- `.arb` + `@key` + `''` escaping + `flutter gen-l10n` (M17, D-31).
-- `padLeft(2,'0')` format giờ (D-29, M16).
+- `.arb` + `@key` + `''` escaping + `flutter gen-l10n` (M17).
+- `padLeft(2,'0')` format giờ (M16).
 
 ## Dart cần dùng
 
@@ -71,7 +71,7 @@ family đã học ở M15; bài này là *áp dụng*, không phải concept m�
   gọn: thiết kế đã đủ gọn cho người mới).
 - `onboarding_content_data.dart` (senior) trả `OnboardingHeaderConfig`
   (title + màu + gradient + badge asset). Learner chỉ trả chuỗi —
-  header/badge visual là FR-32 (→ M28).
+  header/badge visual đến M28.
 - `onboardingQuestionCount` senior đọc từ `gameSampleQuestions`;
   learner đọc `quizQuestions` — cùng nguyên tắc "đếm từ bank thật".
 
@@ -261,7 +261,7 @@ thấy giá trị mới. Đổi lại sau khi quan sát.
 
 - JSON thiếu dấu phẩy trước key mới → gen-l10n báo parse error —
   đọc kỹ thông báo, thường là `,` cuối entry trước đó.
-- `You''re` trong en ARB: `''` là escape của nháy đơn (D-31) — đừng
+- `You''re` trong en ARB: `''` là escape của nháy đơn — đừng
   "sửa" thành `'` đơn.
 - Thêm key chỉ một phía ARB → hai file lệch key-set → getter thiếu
   ở một locale.
@@ -322,10 +322,10 @@ trong hai hàm `*For`.
 
 ## Ta cố ý chưa thêm
 
-- `OnboardingHeaderConfig` (màu/gradient/badge per step — FR-32).
+- `OnboardingHeaderConfig` (màu/gradient/badge per step — đến M28).
 - ICU plurals, placeholder `{count}` trong label — senior cũng tách
   số và nhãn thành chip riêng.
-- L10n cho quiz-bank / repo error (FR-31 — vẫn literal, có chủ đích).
+- L10n cho quiz-bank / repo error (vẫn literal, có chủ đích).
 
 ## Checkpoint hoàn thành
 

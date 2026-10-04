@@ -26,7 +26,7 @@ Sau bài này bạn **giải thích được**:
   từ **M14** — repository settings đã *tồn tại* nhưng **chưa có UI
   nào dùng nó**.
 - App cuối M15: menu có avatar + tên + nút chơi; chưa có icon cài đặt.
-  Công tắc âm thanh demo của M03 đã bị gỡ ở Step-10 (FR-20) — vì nó
+  Công tắc âm thanh demo của M03 đã bị gỡ ở Step-10 — vì nó
   là `setState` giả, không persist.
 - M16 biến repository "đang ngủ" thành **feature settings thật**: mở
   dialog từ icon bánh răng, gạt switch, đóng app, mở lại — cài đặt
@@ -60,16 +60,14 @@ bạn đã học ở M14 — mà là **áp pattern vào một domain thứ hai**
 
 ## Bạn đã biết gì
 
-- **Repository boundary** (A-06, M14/01): lớp giữa domain và storage.
-- **BehaviorSubject / ValueStream / `.value` / replay** (A-08,
-  M14/03): subscriber mới nhận ngay giá trị hiện tại.
-- **`ChangeNotifier` + `notifyListeners`** (F-15, M11) và
-  **`ChangeNotifierProvider` create/auto-dispose** (F-18, M12).
-- **`Provider<T>.value` + `context.read`/`watch`** (F-17/F-21,
-  M12–M14): DI theo contract.
+- **Repository boundary** (M14/01): lớp giữa domain và storage.
+- **BehaviorSubject / ValueStream / `.value` / replay** (M14/03): subscriber mới nhận ngay giá trị hiện tại.
+- **`ChangeNotifier` + `notifyListeners`** (M11) và
+  **`ChangeNotifierProvider` create/auto-dispose** (M12).
+- **`Provider<T>.value` + `context.read`/`watch`** (M12–M14): DI theo contract.
 - **`UserSettingsRepository`** contract + fake (M14): `save/load/
   userSettingsStream`.
-- **State-driven UI** (A-14, M15): render = hàm của state.
+- **State-driven UI** (M15): render = hàm của state.
 
 ## Mental model mới — "vòng lặp persist"
 
@@ -162,7 +160,7 @@ lần lượt là gì — và `saveCallCount` là mấy? Vì sao không phải 0
 2. **"VM set `_settings` rồi mới save."** Đảo thứ tự phá luật 2 —
    lỗi save thì UI hiển thị giá trị chưa từng tồn tại trên disk.
 3. **"Đọc `SharedPreferences` trực tiếp trong VM."** Vượt qua
-   repository boundary (A-06) — test không fake được, domain rò vào
+   repository boundary — test không fake được, domain rò vào
    storage.
 
 ## Kiểm tra hiểu biết
@@ -188,10 +186,10 @@ lần lượt là gì — và `saveCallCount` là mấy? Vì sao không phải 0
 ## Ta cố ý chưa thêm
 
 - Xin quyền + hẹn thông báo thật (`LocalNotificationService`,
-  `SettingsNotificationCoordinator`) — **M27** (FR-27).
-- Nút đăng nhập/đăng xuất trên hàng tài khoản — **M22+** (FR-28).
+  `SettingsNotificationCoordinator`) — **M27**.
+- Nút đăng nhập/đăng xuất trên hàng tài khoản — **M22+**.
 - `MaterialApp.locale` lái ngôn ngữ thật — **M17**.
-- Dialog-layer trong `Stack` thay `showDialog` — **M21** (FR-16/29).
+- Dialog-layer trong `Stack` thay `showDialog` — **M21**.
 
 ## Checkpoint hoàn thành
 
